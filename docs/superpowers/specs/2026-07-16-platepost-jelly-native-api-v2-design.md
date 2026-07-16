@@ -5,6 +5,8 @@
 **Owners:** PlatePost mission platform, JellyJelly identity/content/wallet platform
 **Primary native consumer:** JellyJelly iOS and Android, implemented by Kris and the Jelly engineering team
 
+**Approved extension:** The [JellyHunt Leaderboard and PlatePost Native Integration Design](2026-07-16-jellyhunt-leaderboard-native-integration-design.md) supersedes this document's earlier leaderboard score, route, persistence, launch-history, legacy-ranking, and physical shared-Convex table/function namespace assumptions. The generic data-model names below are logical names mapped to `jellyhunt*` physical names by that extension. Mission, submission, reward, and webhook rules in this document remain binding except where the extension explicitly tightens legacy cutover policy.
+
 ## Executive decision
 
 PlatePost and Convex will be the canonical mission platform. They own editable campaigns, mission and map configuration, submission intake, deduplication, review, reward orchestration, status history, budgets, and the native-facing API. Jelly remains authoritative for users, sessions, Jelly posts and media, canonical place association, trusted post-location evidence, wallet balances, and the final Jelly-My-Jelly tip transaction.
@@ -147,7 +149,7 @@ Before any dual-write change, the team freezes executable fixtures for every cur
 | `reward_failed` | `approved` | `failed` |
 | `reward_uncertain` | `approved` | `uncertain` |
 
-Backfill validates row counts, copies the original value into `legacyStatusProjection`, and validates every mapping before v1 reads switch to the adapter. The adapter returns that projection, not a lossy reverse inference from the two v2 fields. Thus legacy `approved` and `reward_queued` remain distinguishable even though both can correspond to v2 submission `approved` plus reward `queued`. For a new v2 record, queue creation projects `reward_queued` atomically; `approved` is not externally observable as a separate v1 phase. A terminal linked attempt that disagrees with the v1 projection is quarantined for reconciliation rather than guessed. All v1 and v2 writes then use one shared Convex transition mutation; there is no independent dual-write path. Rollback disables v2 routes while retaining the additive split fields and v1 adapter, so it cannot erase new audit history.
+Backfill validates row counts, copies the original value into `legacyStatusProjection`, and validates every mapping before v1 reads switch to the adapter. The adapter returns that projection, not a lossy reverse inference from the two v2 fields. Thus legacy `approved` and `reward_queued` remain distinguishable even though both can correspond to v2 submission `approved` plus reward `queued`. For a new v2 record, queue creation projects `reward_queued` atomically; `approved` is not externally observable as a separate v1 phase. A terminal linked attempt that disagrees with the v1 projection is quarantined for reconciliation rather than guessed. During the pre-cutover compatibility window, all v1 and v2 writes use one shared Convex transition mutation; there is no independent dual-write path. At the UTC watermark, v1 write routes switch permanently to `410 legacy_write_disabled` as specified in Phase 7. Rollback disables v2 routes while retaining the additive split fields and read adapter, but never re-enables v1 writes or erases new audit history.
 
 ### v2
 
@@ -341,7 +343,8 @@ Public messages are safe for users. Internal verification notes, upstream bodies
 | `GET` | `/missions/{missionId}/jellies` | Normalized public Jellies linked by Jelly to the mission's canonical place. |
 | `GET` | `/places/{placeId}` | Reviewed PlatePost place snapshot and canonical Jelly place relation. |
 | `GET` | `/places/{placeId}/jellies` | Same place-linked Jelly feed independent of one mission. |
-| `GET` | `/campaigns/{campaignId}/leaderboard` | Privacy-gated aggregate leaderboard scored only from confirmed `reward_sent` records. |
+| `GET` | `/leaderboards/current-season` | Public current-campaign standings ranked by approved mission count. |
+| `GET` | `/leaderboards/all-time` | Public standings ranked by approvals recorded since the PlatePost JellyHunt launch epoch. |
 
 ### Authenticated Jelly user
 
@@ -434,6 +437,70 @@ GET /api/v2/jellyhunt/missions
 - Anonymous catalog responses support ETag and short CDN caching.
 - `availability` may include `available`, `upcoming`, or `ended` anonymously. `paused` requires authentication and returns only missions in which that subject already participated.
 - Optional `sort=curated|nearby|updated` defaults to `curated`. `nearby` requires coordinates.
+
+Every mission-list item has a frozen native map summary; it is not an arbitrary subset of detail:
+
+```json
+{
+  "data": {
+    "missions": [
+      {
+        "id": "mis_01...",
+        "campaignId": "cam_01...",
+        "revision": 7,
+        "title": "The Scarr's Cheese Pull",
+        "availability": {
+          "state": "available",
+          "startsAt": "2026-08-01T16:00:00Z",
+          "endsAt": "2026-08-31T23:00:00Z",
+          "acceptingSubmissions": true,
+          "reasonCode": null
+        },
+        "reward": {
+          "amount": "60",
+          "token": "JELLY-MY-JELLY",
+          "displayName": "Jelly-My-Jelly"
+        },
+        "display": {
+          "category": "Pizza",
+          "difficulty": "easy",
+          "emoji": "🍕",
+          "neighborhood": "Lower East Side",
+          "price": "$",
+          "sortOrder": 1
+        },
+        "place": {
+          "id": "plc_01...",
+          "jellyPlaceId": "jpl_01...",
+          "name": "Scarr's Pizza",
+          "address": "35 Orchard St, New York, NY",
+          "latitude": 40.7163,
+          "longitude": -73.9914,
+          "timeZone": "America/New_York"
+        },
+        "links": {
+          "self": "/api/v2/jellyhunt/missions/mis_01...",
+          "start": "https://platepost.io/human-social/missions/mis_01.../start"
+        },
+        "updatedAt": "2026-07-16T19:00:00Z"
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01...",
+    "generatedAt": "2026-07-16T20:00:00Z",
+    "catalogRevision": 34,
+    "page": {
+      "limit": 20,
+      "nextCursor": null,
+      "hasMore": false
+    }
+  }
+}
+```
+
+Anonymous items omit `viewer`. With `include=viewer`, each item adds the same safe viewer summary defined by mission detail. `place.latitude`, `place.longitude`, and `place.jellyPlaceId` are required so Jelly can render the native map and bind the composer without another discovery lookup.
 
 Lifecycle visibility is fixed:
 
@@ -584,6 +651,7 @@ The first successful call returns `201`; an exact replay against the same active
     "status": "started",
     "missionId": "mis_01...",
     "missionRevision": 7,
+    "jellyPlaceId": "jpl_01...",
     "startedAt": "2026-08-05T18:10:00Z",
     "submissionDeadlineAt": "2026-08-06T18:10:00Z",
     "resubmissionDeadlineAt": null,
@@ -709,14 +777,14 @@ A rejection does not collide with the 24-hour start deadline. When resubmission 
 - `verifying` — Jelly proof is being checked.
 - `needs_review` — verification completed or was unavailable and an operator decision is required.
 - `approved` — the completion was approved. This does not mean the token transfer is complete.
-- `rejected` — the attempt is final and did not qualify; a new post may be submitted when `canResubmit` is true.
+- `rejected` — the attempt is final and did not qualify, or a paid completion was later removed by the restricted post-payment moderation operation. A new post may be submitted only when `canResubmit` is true; it is always false for a paid moderated completion.
 
 ### Reward status
 
 - `not_eligible` — the submission is not approved.
 - `queued` — an approved, budget-reserved reward is queued.
 - `processing` — Jelly may be executing the transfer.
-- `sent` — Jelly returned a canonical successful receipt/transaction.
+- `sent` — Jelly returned a canonical successful receipt/transaction. This remains immutable when post-payment moderation later rejects the submission and reverses its ranking completion.
 - `failed` — Jelly confirmed no transfer was created; operator retry may be possible.
 - `uncertain` — Jelly may have processed the transfer; lookup/reconciliation is required and no blind retry is allowed.
 
@@ -728,6 +796,7 @@ A rejection does not collide with the 24-hour start deadline. When resubmission 
 - `under_review`
 - `approved_reward_pending`
 - `rewarded`
+- `rewarded_removed_from_rankings`
 - `rejected`
 - `support_needed`
 The server derives those values exactly:
@@ -740,14 +809,15 @@ The server derives those values exactly:
 | submission `verifying` or `needs_review` | `under_review` |
 | submission `approved` + reward `queued` or `processing` | `approved_reward_pending` |
 | submission `approved` + reward `sent` | `rewarded` |
-| submission `rejected` | `rejected` |
+| submission `rejected` + reward `sent` + reason `post_became_ineligible_after_reward` | `rewarded_removed_from_rankings` |
+| submission `rejected` + reward `not_eligible` | `rejected` |
 | submission `approved` + reward `failed` or `uncertain` | `support_needed` |
 
 Clients render the server-provided `displayStatus`, `publicMessage`, and `nextAction`; they do not reimplement the transition table.
 
 Closed `nextAction` values are `start_mission`, `publish_jelly`, `submit_post`, `wait_for_verification`, `wait_for_review`, `wait_for_reward`, `view_reward`, `submit_new_post`, `contact_support`, and `none`.
 
-Safe client reason codes are `manual_review_required`, `verification_delayed`, `post_not_found`, `post_not_eligible`, `post_became_ineligible`, `author_mismatch`, `place_mismatch`, `outside_mission_area`, `attempt_limit_reached`, `resubmission_window_closed`, `reward_delayed`, `reward_failed`, and `reward_reconciling`. Availability reason codes are `campaign_upcoming`, `mission_upcoming`, `mission_paused`, `mission_ended`, and `reward_capacity_exhausted`. Unknown additive reason codes render the supplied `publicMessage`.
+Safe client reason codes are `manual_review_required`, `verification_delayed`, `post_not_found`, `post_not_eligible`, `post_became_ineligible`, `post_became_ineligible_after_reward`, `author_mismatch`, `place_mismatch`, `outside_mission_area`, `attempt_limit_reached`, `resubmission_window_closed`, `reward_delayed`, `reward_failed`, and `reward_reconciling`. Availability reason codes are `campaign_upcoming`, `mission_upcoming`, `mission_paused`, `mission_ended`, and `reward_capacity_exhausted`. Unknown additive reason codes render the supplied `publicMessage`.
 
 ### Allowed transitions
 
@@ -756,11 +826,31 @@ Safe client reason codes are `manual_review_required`, `verification_delayed`, `
 | `submitted` | `not_eligible` | `verifying` or `needs_review` |
 | `verifying` | `not_eligible` | `needs_review`, `approved`, or `rejected` |
 | `needs_review` | `not_eligible` | `approved` or `rejected` |
-| `approved` | `queued` | reward `processing`, or submission `rejected` + reward `not_eligible` when the pre-payout Jelly recheck fails |
+| `approved` | `queued` | reward `processing`, or the canonical audited approval-reversal mutation produces submission `rejected` + reward `not_eligible` when the pre-payout Jelly recheck fails |
 | `approved` | `processing` | reward `sent`, `failed`, or `uncertain` |
+| `approved` | `sent` | only the restricted named-operator post-payment moderation mutation may produce submission `rejected` + reward `sent`; reward receipt/reservation fields do not change |
 | `approved` | `failed` | reward `queued` after a confirmed operator retry |
 | `approved` | `uncertain` | reward `sent` or `failed` only after Jelly lookup/reconciliation |
 | `rejected` | `not_eligible` | no mutation of the old attempt; the user may create a new attempt with a new Jelly post |
+| `rejected` | `sent` | terminal paid-moderation state; no resubmission, reward retry, release, or clawback |
+
+A failed pre-payout recheck after approval is not an ordinary rejection. The same Convex transaction reverses the durable approved-completion fact and both affected leaderboard projections, emits `post_became_ineligible`, and records the audit/outbox event before returning. Replaying that reversal is idempotent.
+
+The exact owner-status fixture after post-payment moderation is:
+
+```json
+{
+  "submissionStatus": "rejected",
+  "rewardStatus": "sent",
+  "displayStatus": "rewarded_removed_from_rankings",
+  "reasonCode": "post_became_ineligible_after_reward",
+  "publicMessage": "Reward sent; completion later removed from rankings.",
+  "canResubmit": false,
+  "nextAction": "contact_support"
+}
+```
+
+The paid receipt, transaction identity, `approvedAt`, and rewarded history remain present in the full submission resource. The completion is reversed for both eligible standings, and `canStart`, `canSubmit`, and `canResubmit` are false. The frozen v1 adapter retains its last `reward_sent` projection because v1 has no safe representation for this new v2-only state; v1 never drives standings and remains on its retirement path.
 
 Status events are append-only. An old submission is never rewritten into a new attempt.
 
@@ -964,7 +1054,7 @@ It includes ended and archived missions, defaults to 20, allows at most 100, and
 
 `GET /me/events?after=<opaque>&limit=50` provides an ordered, lightweight polling feed. It defaults to 50, allows at most 100, and orders by the authenticated user's monotonic event sequence ascending after the cursor. Event sequence is scoped to the authenticated user and permits the app to refresh only affected resources.
 
-`GET /campaigns/{campaignId}/leaderboard?cursor=<opaque>&limit=20` defaults to 20, allows at most 100, and orders by confirmed reward amount descending, `missionsRewarded` descending, then stable public participant alias. It never exposes Jelly user IDs.
+`GET /leaderboards/current-season?cursor=<opaque>&limit=20` and `GET /leaderboards/all-time?cursor=<opaque>&limit=20` default to 20 and allow at most 100. They rank by non-reversed approved user/mission completions, independently from reward delivery. Equal totals share competition rank and use canonical username plus stable public entry ID for deterministic presentation. The all-time epoch is the launch of the new PlatePost tool, not pre-PlatePost history. Neither route exposes Jelly user IDs.
 
 ### Personal resource fixtures
 
@@ -1525,7 +1615,7 @@ The policy matrix is binding:
 | `outside_geofence` | Reject when trusted coordinates and accuracy make the result unambiguous; borderline accuracy/tolerance goes to `needs_review`. | A named operator may apply only the documented geofence tolerance to trusted Jelly coordinates. |
 | Complete positive evidence for every required component | Apply mission policy and automatic/manual approval mode. | `approved` records `evidenceVersion`, `verificationId`, and `approvalCheckedAt`. |
 
-Immediately before every reward attempt capable of initiating a transfer—including attempt `N+1`—PlatePost requests fresh readiness, visibility, deletion/moderation, canonical-owner, and place evidence. A new authoritative negative changes an `approved`/`queued` submission to `rejected` with `post_became_ineligible`, changes the local reward intent to `canceled`, releases or converts the reservation under the resubmission policy, and emits an `approval.revoked` event. This local check is advisory against races: the Jelly reward operation must repeat the guard atomically as specified below. Once a reward is `processing` or `uncertain`, PlatePost reconciles before any decision. A deletion/moderation event after `sent` removes the post from feeds and opens an audit/support event, but never automatically claws back or sends another reward.
+Immediately before every reward attempt capable of initiating a transfer—including attempt `N+1`—PlatePost requests fresh readiness, visibility, deletion/moderation, canonical-owner, and place evidence. A new authoritative negative invokes the canonical approval-reversal mutation from the approved leaderboard extension: while the intent is queued, has no active worker lease, and no transfer-capable attempt has been accepted, that one mutation cancels the intent, releases or converts `approved_reserved`, changes the submission to `rejected` with `post_became_ineligible`, reverses the completion, updates both leaderboard projections/revisions, and emits `approval.revoked`. The worker lease may select only a queued intent backed by `approved_reserved`, so Convex transaction conflicts serialize the lease against reversal. This local check is advisory against races: the Jelly reward operation must repeat the guard atomically as specified below. Once a reward is `processing` or `uncertain`, PlatePost returns `reconciliation_required` and changes none of the approval, completion, projection, intent, or reservation state until Jelly proves no transfer occurred. After `sent`, the extension's named-operator post-payment moderation mutation keeps the paid reservation, receipt, transaction identity, and reward status immutable while atomically rejecting the submission with a public-safe reason, reversing its completion and standings, and emitting an owner-visible “reward sent; removed from rankings” status with no resubmission or second reward. It never automatically claws back or retries the payment.
 
 ### Reward intent and idempotent payout attempts
 
@@ -1907,6 +1997,13 @@ Do not return raw Convex error text or Jelly response bodies. `404 submission_no
 - Submission relation, owner ID, monotonic sequence, event type, safe public status/reason, timestamp.
 - Internal metadata kept separately and never returned through `/me/events`.
 
+### `approvedCompletions`, `publicProfiles`, and `leaderboardEntries`
+
+- One durable, non-reversed approved-completion fact per Jelly subject and mission; reward state never supplies or removes this fact.
+- A short-lived public profile projection sourced only from Jelly's canonical username contract.
+- Materialized current-campaign and all-time counts updated atomically with approval, backed by an append-only projection event and rebuildable from approved completions.
+- Public ordering, shared-rank pagination, launch epoch, profile refresh, and reversal rules follow the approved leaderboard extension linked above.
+
 ### `idempotencyRecords`
 
 - Subject, method, normalized path, key hash, RFC 8785 canonical request hash, state, `processingExpiresAt`, original request ID, and resource ID.
@@ -1943,7 +2040,7 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 - Submission and webhook bodies have strict size limits and schema validation.
 - Partner calls use HTTPS, deadlines, bounded retries, and circuit breaking.
 - Media/profiles honor Jelly deletion/moderation updates and cache invalidation.
-- Leaderboard participation is opt-in or otherwise approved by product/privacy. The v2 score is the sum of confirmed `reward_sent` amounts, accompanied by `missionsRewarded`; it never uses an internal display balance or merely approved submission.
+- The leaderboard is an approved public product surface and displays only Jelly's canonical public username, competition rank, and approved mission count. It never exposes Jelly user IDs, internal balances, reward totals, or merely client-reported completion.
 
 ## Migration plan
 
@@ -1996,11 +2093,13 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 
 ### Phase 7 — atomic legacy write fence and reconciliation
 
-- Inventory every legacy JellyHunt submission writer and payout worker, including the hardcoded JellyJelly website flow and PlatePost v1.
+- Inventory every legacy JellyHunt submission, verify/approval/status, wallet-credential, tip, and payout route/job, including the hardcoded JellyJelly website flow and PlatePost v1. Fence only JellyHunt writers; shared Pets/Wobbles table consumers remain live and receive regression coverage.
 - Map legacy mission keys to stable v2 mission IDs, deploy the shared dedupe import tooling, and choose a UTC cutover watermark.
-- At the watermark, atomically stop every legacy submission write and pause every legacy payout worker before taking an export. Drain in-flight requests and manually reconcile every pending/uncertain `/crypto/send` result.
-- Export the now-stable legacy snapshot and import subject, mission, exact Jelly post ID, status, amount/token, transaction ID/hash, and timestamps as `source: legacy`. Populate the same global post, user/mission, reward-intent, and transaction dedupe indexes; imported rows are never paid again.
+- Pre-deploy and rehearse a JellyHunt-specific Supabase cutover migration. At the watermark, one transaction takes access-exclusive locks to drain pre-existing submission/credential writers, activates an immutable cutover record, removes the authenticated submission-insert policy/grant, enables fail-closed `BEFORE INSERT OR UPDATE OR DELETE` triggers on `jellyhunt_submissions` and `jellyhunt_business_wallets` for authenticated and service-role callers, deactivates legacy business-wallet records, and emits a signed fence receipt. Do not revoke the shared campaign/shop service credential or broadly block `jellyhunt_balances`/`jellyhunt_tip_audit_log`, because Pets/Wobbles still depend on them.
+- First pause legacy verify/retry routes and payout workers, drain in-flight requests, and revoke JellyHunt business-account passwords, tokens, and active sessions at Jelly; then immediately execute the database fence transaction. These are ordered safety barriers, not a claimed distributed transaction. Credential/session revocation closes stale `PATCH /api/jellyhunt/verify` instances that can call `/crypto/send` after a read. Drain in-flight requests and manually reconcile every pending/uncertain transfer; web rollback preserves the database fence and revoked payout authority.
+- Export the now-stable legacy snapshot and use a dedicated server-only import mutation to materialize subject, legacy mission, exact Jelly post ID, status, amount/token, transaction ID/hash, and timestamps as `source: legacy` with `countsTowardLeaderboard: false`. The signed Production import window closes irreversibly. That mutation cannot increment standings, allocate or reserve budget, create a reward intent, or emit payout work. Populate global post, reward-intent, and transaction tombstones so imported work is never replayed or paid again. Do not occupy a new campaign's live user/campaign/mission key: a participant may complete the new campaign-bound mission with a new post. Null identifiers create no uniqueness claim; duplicate, conflicting, or unreconciled identifiers remain quarantined and block automatic payout for the affected pair until resolved.
 - Reconcile source/import counts and hashes, require zero orphan successful transactions, and retain an auditable cutover report.
+- Prove after the watermark that direct authenticated inserts and stale service-role writes fail on both fenced tables; stale wallet create/update/session routes cannot restore payout authority; stale verify/retry requests produce zero successful legacy transfers; read-only export still works; and Pets/Wobbles balances, purchases, refunds, shields, and audit writes still pass.
 - Production v1 writes remain disabled after the watermark. Any temporary Jelly backend fallback calls v2 through the same mission-token subject or a narrowly scoped service identity that derives and compares the Jelly subject; caller-controlled `jellyUserId` can never reach automatic rewards.
 - The production v2 automatic-reward flag cannot be enabled until these checks pass and no independent legacy payout path remains.
 
@@ -2040,7 +2139,7 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 - Concurrent submissions enforce one live user/mission attempt and global post uniqueness.
 - Exact Jelly ownership is checked before a reservation/uniqueness claim, and v2 never reveals a cross-user reuse reason.
 - Rejected users can submit a new Jelly without changing the old attempt.
-- Native status distinguishes started, submitted, under review, approved/reward pending, rewarded, rejected, failed, and uncertain.
+- Native status distinguishes started, submitted, under review, approved/reward pending, rewarded, rewarded-but-removed-from-rankings, rejected, failed, and uncertain, including the exact paid-moderation fixture.
 - Reservation deadlines pause/alert without silently releasing `needs_review`, `processing`, or `uncertain` rewards.
 - Every transition appears once, in order, in detail/history/events.
 
@@ -2060,6 +2159,7 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 - A timeout/dropped response becomes uncertain and lookup resolves it without blind retry.
 - Jelly transaction IDs are unique in Convex.
 - `reward_sent` always points to a canonical receipt whose full immutable payout tuple exactly matches PlatePost.
+- Post-payment moderation can reverse the completion and every counted standing, but it preserves the paid reservation, receipt, transaction identity, and owner-visible rewarded history and cannot create another reward.
 
 ### Webhooks and reliability
 
@@ -2075,8 +2175,8 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 
 ### Migration and cutover
 
-- Frozen v1 fixtures pass before and after split-state backfill and shared-mutation routing.
-- Imported legacy post and transaction IDs occupy the same v2 uniqueness indexes and are never re-paid.
+- Frozen v1 read fixtures and pre-cutover shared-mutation write fixtures pass; after the watermark, v1 write retirement fixtures return `410 legacy_write_disabled`.
+- Imported legacy post and transaction IDs occupy the same v2 uniqueness indexes and are never re-paid; the import path cannot create standings, reservations, reward intents, or payout work and cannot run after its signed window closes.
 - Source/import counts and hashes match, every prior successful transaction is reconciled, and no independent legacy writer/payout worker remains before production automatic rewards are enabled.
 
 ## Approval gates before implementation planning
