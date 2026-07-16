@@ -2,6 +2,8 @@
 
 ## Purpose
 
+This document describes the currently implemented v1 architecture. v1 remains a compatibility surface; signed direct-native identity, full mission/submission status resources, canonical Jelly place content, idempotent rewards, and webhooks are specified in the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md).
+
 This service moves Jellyhunt operations out of hardcoded JellyJelly website data and into a PlatePost-owned backend. It has three consumers:
 
 - The PlatePost-hosted **PlatePost x JellyJelly: Human Social!** map.

@@ -40,6 +40,7 @@ Mission content must not be embedded in the PlatePost production frontend or Jel
 | Consumer map and responsive mission explorer | Implemented and fixture-verified; needs live Mapbox/Convex acceptance |
 | Public mission API and authenticated user status | Implemented |
 | Authenticated submission intake | Implemented |
+| Native Mission API v2 contract | Proposed and ready for PlatePost/Jelly engineering review; not implemented yet |
 | Convex mission/location schema and workflow state | Implemented; needs deployment against the PlatePost development project |
 | Jelly verification and reward integration | Adapter code exists; production partner contracts and credentials are still required |
 | Signed admin session and private admin APIs | Implemented |
@@ -257,9 +258,9 @@ Rollback the Vercel deployment first if a web release fails. For data or workflo
 
 ## Native JellyJelly handoff
 
-Kris can build the native map against `GET /api/v1/jellyhunt/missions`. Server-authenticated calls with `user_id` include the user's mission state. Submission writes use `POST /api/v1/jellyhunt/submissions`.
+v1's anonymous mission catalog may be read publicly, but personalized v1 reads and all v1 writes remain transitional server-to-server surfaces. A mobile app must not ship `JELLYHUNT_API_KEY`, trust caller-supplied user IDs, or treat approval as proof of payment.
 
-The current shared header is transitional. A mobile app must not ship `JELLYHUNT_API_KEY`. Before native production, Jelly and PlatePost should agree on a short-lived Jelly-signed user token that PlatePost validates server-side.
+The proposed v2 contract gives Kris revision-locked mission start, config/detail, place-linked Jelly content, signed user identity, idempotent submission creation, owner-only paginated status history, separate approval and reward state, polling events, and signed backend webhooks. Jelly must also provide the mission token, canonical place/evidence APIs, and at-most-once reward-intent contract. Legacy post and transaction history must enter the same deduplication boundary before direct-native production rewards.
 
 ## Documentation
 
@@ -268,4 +269,5 @@ The current shared header is transitional. A mobile app must not ship `JELLYHUNT
 - [Next steps and launch gates](docs/NEXT_STEPS.md)
 - [Changelog](CHANGELOG.md)
 - [End-to-end design](docs/superpowers/specs/2026-07-15-jellyhunt-end-to-end-design.md)
+- [Native Mission API v2 design](docs/superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md)
 - [Implementation plan](docs/superpowers/plans/2026-07-15-platepost-jellyhunt.md)

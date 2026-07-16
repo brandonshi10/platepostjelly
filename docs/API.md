@@ -1,6 +1,6 @@
 # Jellyhunt API
 
-This document describes the HTTP API currently exposed by the PlatePost Jellyhunt Next.js application. It is the contract Kris and the Jelly team can use to build the native mission map.
+This document describes the currently implemented v1 compatibility API. Jelly may use it for server-to-server integration and prototyping, but it is not the final direct-native production contract because its personalized calls still rely on a transitional shared key and caller-supplied identity. The proposed clean native surface is the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md).
 
 ## Base URL and version
 

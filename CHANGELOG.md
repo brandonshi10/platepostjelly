@@ -45,6 +45,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Contract, domain, map UI, admin-session/time, authentication, repository, HTTP timeout, Convex validation, workflow-guard, guarded migration, app-link, and Convex security tests.
 - Non-interactive ESLint configuration and a `pnpm lint` command that fails on warnings.
 - End-to-end architecture design and implementation plan.
+- Proposed PlatePost ↔ JellyJelly Native Mission API v2 contract covering signed identity, revision-locked mission participation, campaigns, mission/place detail, place-linked Jelly feeds, durable HTTP idempotency, separate approval/reward states, owner history, budgets/reservation watchdogs, evidence-only partner verification, reward intents with guarded attempts, polling, and signed webhooks.
+- Independent API-contract reviews and corrections for personalized cache isolation, privacy-safe dedupe errors, full payout-receipt tuple validation, bidirectional webhook inbox/outbox behavior, legacy v1 state mapping, and a mandatory legacy submission/transaction cutover fence before automatic v2 rewards.
 - Complete setup, API, architecture, deployment, ownership, security, migration, and launch documentation.
 
 ### Changed
@@ -89,11 +91,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The 16 legacy missions still require an approved production import; the matching 16-mission local fixture is visual test data only.
 
 - PlatePost Convex developer access is still required for code generation, deployment, seeding, and live workflow validation.
-- Jelly and PlatePost must finalize a trusted partner verification contract.
-- Jelly must provide an idempotent partner reward endpoint or transaction reconciliation contract.
+- Jelly and PlatePost must finalize canonical place/content and component-evidence partner contracts; legacy topics/`xdata` remain non-authoritative.
+- Jelly must provide the reviewed reward-intent/attempt, lookup, full-tuple receipt, and capacity contracts.
 - The protected admin UI must pass live create/edit/publish/review/reward browser acceptance against development Convex.
 - Admin login rate limiting, failed-login monitoring, and Vercel WAF/platform protection are not implemented in the application.
-- Duplicate and reused-post conflicts now have stable `409` codes; remaining business-rule and malformed-JSON errors still need final HTTP normalization.
+- v1 duplicate/reused-post conflicts retain their stable `409` codes; proposed v2 uses generic `submission_conflict` to avoid cross-user disclosure. Remaining v1 business-rule and malformed-JSON errors still need final HTTP normalization.
 - The transitional shared Jelly API key must be replaced before direct native-app requests.
 - Production Mapbox, Vercel, Convex, and Jelly environment values are not configured in source control.
+- Legacy submissions and transactions have not yet been imported/reconciled into the v2 deduplication boundary; production automatic v2 rewards remain blocked.
 - No production deployment or real reward test has been completed.

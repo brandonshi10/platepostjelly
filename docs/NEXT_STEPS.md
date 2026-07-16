@@ -60,117 +60,104 @@ The server routes and dashboard are implemented locally. Validate each control a
 
 **Acceptance evidence:** a browser test covers login, mission create/edit/publish, submission approval/rejection, logout, and an unauthenticated request receiving `401`. The browser never sees `PLATEPOST_CONVEX_SERVICE_KEY`.
 
-### 4. Agree on the Jelly verification contract
+### 4. Agree on the Jelly evidence and place contract
 
 **Owners:** Jelly and PlatePost
 
-The legacy API can read a post and broad topics/`xdata`, but it does not guarantee a restaurant entity or trusted generic post coordinates. Production verification therefore needs a documented Jelly-owned contract.
+The legacy API can read an exact post plus broad topics/`xdata`, but it does not guarantee a canonical restaurant relation, trusted generic post coordinates, or complete eligibility. Legacy evidence therefore remains manual-review-only.
 
-Minimum request fields from PlatePost:
+The production Jelly partner contract must provide:
 
-```json
-{
-  "submission_id": "platepost-submission-id",
-  "mission_id": "platepost-mission-id",
-  "user_id": "jelly-user-id",
-  "post_id": "jelly-post-id",
-  "restaurant_tag": "configured-tag",
-  "location": {
-    "jelly_restaurant_id": "optional-jelly-location-id",
-    "latitude": 40.7163,
-    "longitude": -73.9914,
-    "geofence_radius_meters": 75
-  }
-}
-```
+- [ ] Canonical place detail and cursor-paginated public Jellies linked by a server-owned place relation.
+- [ ] Component evidence for exact post, author, readiness, visibility, deletion, moderation, publication time, canonical place, and trusted post location.
+- [ ] `evidenceStatus: complete|incomplete|unavailable` and stable evidence reason codes; Jelly does not return PlatePost's approve/reject decision.
+- [ ] Provenance and evidence timestamps for each component.
+- [ ] Authentication, HTTPS-only production transport, timeout, retry, and rate-limit behavior.
+- [ ] Exact `POST /partner/v1/jellyhunt/posts/{postId}/preflight` ownership metadata, including canonical owner, eligible participants, post type, duration, state, visibility, moderation, deletion, and canonical place, before PlatePost creates a uniqueness claim or reward reservation.
+- [ ] The retry/review/rejection matrix from the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md), including delayed/not-ready posts and Jelly outages.
+- [ ] A pre-payout eligibility recheck for deletion, moderation, visibility, author, and place changes.
+- [ ] Contract fixtures for positive evidence, author/place mismatch, missing/untrusted/negative/outside-geofence location, deleted/private/moderated post, propagation delay, rate limit, and outage.
+- [ ] Confirmation that generic topics or client-writable `xdata` can never prove restaurant/place membership.
 
-Minimum response fields from Jelly:
+Configure the partner URLs and restricted credential in development Convex only after the schema is approved. Automatic missions remain blocked until all required Jelly evidence is authoritative.
 
-```json
-{
-  "outcome": "verified",
-  "summary": "Authorship, restaurant, and location verified",
-  "reason": null,
-  "latitude": 40.7164,
-  "longitude": -73.9915,
-  "distance_meters": 18
-}
-```
+**Acceptance evidence:** Jelly and PlatePost consume the same versioned fixtures. Missing or unavailable required evidence cannot be approved, Jelly downtime does not reject a user, and a post-ID squatting attempt creates neither a reservation nor a permanent uniqueness claim.
 
-- [ ] Define authentication, timeout, retry, and rate-limit behavior.
-- [ ] Define which Jelly field proves authorship.
-- [ ] Define restaurant proof and whether a mission tag is server-generated or client-writable.
-- [ ] Define trusted location source and precision.
-- [ ] Require trusted coordinates plus a non-negative distance for `verified`, and contract-test missing, negative, mismatched, and outside-geofence evidence.
-- [ ] Define deleted, private, moderated, edited, or unavailable post behavior.
-- [ ] Define stable reason codes and contract tests.
-- [ ] Configure `JELLY_PARTNER_VERIFY_URL` and `JELLY_PARTNER_API_KEY` in development Convex; automatic missions remain blocked until both exist.
-- [ ] Confirm every credential-bearing partner and legacy endpoint uses HTTPS; allow loopback HTTP only in non-production development.
-
-**Acceptance evidence:** PlatePost fixtures cover verified, author mismatch, restaurant mismatch, missing/negative/mismatched distance, outside geofence, deleted post, rate limit, the implemented 10-second timeout, non-HTTPS configuration, and Jelly outage. A successful legacy response always enters manual review, and incomplete or unavailable proof never pays automatically.
-
-### 5. Agree on an idempotent Jelly reward contract
+### 5. Agree on Jelly reward intents and guarded payout attempts
 
 **Owners:** Jelly and PlatePost
 
-The legacy `POST /crypto/send` endpoint does not document idempotency. That makes blind retries unsafe.
+The legacy `POST /crypto/send` endpoint does not enforce request-body idempotency. That makes blind retries unsafe and limits it to a manual development pilot.
 
-The partner reward endpoint must:
+The production Jelly partner contract must:
 
-- [ ] Accept a stable `Idempotency-Key`.
-- [ ] Return the same transaction for repeated requests with that key.
-- [ ] Accept recipient, post, token, amount, and note derived from Convex.
-- [ ] Return a canonical Jelly transaction ID.
-- [ ] Expose a lookup/reconciliation method by idempotency key.
-- [ ] Confirm a worker that remains `processing` for two minutes becomes uncertain and can be reconciled without another send.
-- [ ] Document insufficient balance, invalid recipient, rate limit, timeout, and server error behavior.
-- [ ] Use a restricted reward account with agreed per-mission and daily limits, plus a PlatePost campaign budget cap.
+- [ ] Create one immutable reward intent per approved PlatePost submission.
+- [ ] Accept versioned attempt keys such as `reward:<rewardIntentId>:attempt:<N>`.
+- [ ] Guarantee at most one successful transfer across every attempt for a reward intent.
+- [ ] Replay the same attempt result for the same key/payload and reject key/payload mismatches.
+- [ ] Permit attempt `N+1` only after lookup says attempt `N` is final with `confirmedNoTransfer: true`.
+- [ ] Expose reward-intent lookup with accepted, pending, sent, failed, and confirmed-absence behavior.
+- [ ] Return and let PlatePost verify the full immutable tuple: reward intent, submission, mission, Jelly post, recipient, amount, token, and canonical transaction ID.
+- [ ] Resolve the recipient wallet from the Jelly user; PlatePost never supplies a wallet address.
+- [ ] Expose a restricted reward-account capacity endpoint with token precision, available amount, transaction ceiling, and daily remaining amount.
+- [ ] Document invalid/ineligible recipient, unsupported token, invalid precision/amount, insufficient funds, rate limit with `Retry-After`, dependency failure, timeout, and chain-finality behavior.
+- [ ] Default reward visibility to private; public rewards require campaign policy and auditable participant consent.
+- [ ] Atomically revalidate the post/recipient/immutable payout guard inside every transfer-capable Jelly attempt, including retries; guard failure must confirm no transfer.
+- [ ] Treat amounts as human-token decimal strings, use the authoritative 6 decimals for `JELLY-MY-JELLY`, and never use binary floating point.
+- [ ] Prove a dropped response, timeout, retry, and failed first attempt cannot create a duplicate transfer.
 
-**Acceptance evidence:** sending the same test reward request twice results in one tip, PlatePost stores one canonical transaction ID and no raw payout body, and a simulated dropped or abandoned worker can be reconciled without sending another reward.
+**Acceptance evidence:** one logical test reward with multiple replays/guarded attempts produces at most one transfer, a sent receipt matches the full immutable tuple, and PlatePost stores one canonical transaction ID without raw payout bodies.
 
-Until that exists, legacy ambiguous responses must stay `reward_uncertain` and require manual Jelly confirmation.
+Until that contract exists, legacy ambiguous responses stay `reward_uncertain` and require manual Jelly confirmation.
 
-### 6. Normalize API errors and freeze v1
+- [ ] Correct the transitional legacy adapter to treat `/crypto/send` `transaction_hash` as the canonical receipt; keep integer `transaction_id` only as an optional legacy ledger reference.
+- [ ] Remove any claim that a body `idempotency_key` makes legacy `/crypto/send` idempotent; the endpoint ignores it.
+- [ ] Confirm the development funding wallet is intentionally managed and not migrated to crypto v2. A migrated v1 wallet returns `409`, and the interactive v2 PIN/signature/nonce flow is not a PlatePost service payout API.
+
+### 6. Normalize API errors, preserve v1, and approve v2
 
 **Owners:** PlatePost with Jelly review
 
-- [ ] Verify the implemented `409 mission_already_submitted` and `409 jelly_post_reused` responses against development Convex.
+- [ ] Freeze executable v1 success/error fixtures, including `409 mission_already_submitted` and `409 jelly_post_reused`, before storage changes.
+- [ ] Make v2 return privacy-safe `409 submission_conflict` for global post/attempt uniqueness conflicts.
+- [ ] Backfill and test the exact v1-to-v2 submission/reward status mapping; route both versions through shared Convex mutations.
 - [ ] Keep configuration and transport errors at `503`.
 - [ ] Add request IDs to error responses and logs.
-- [ ] Add route tests for `400`, `401`, `409`, `500`, and `503`.
-- [ ] Confirm timestamp, hours, timezone, enum, and optional-field behavior with Kris.
-- [ ] Publish an OpenAPI document or shared contract fixtures after v1 review.
+- [ ] Add route tests for `400`, `401`, `404`, `409`, `422`, `429`, `500`, and `503`.
+- [ ] Preserve v1 response shapes and statuses while it remains the compatibility surface.
+- [ ] Review and approve the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md) with Kris, PlatePost, and Jelly backend engineering.
+- [ ] Publish OpenAPI 3.1 and shared v2 success/error/webhook fixtures only after design approval.
 
 **Acceptance evidence:** Jelly's integration tests consume versioned fixtures and do not depend on undocumented fields or error strings.
 
-### 7. Replace the transitional native authentication
+### 7. Implement the dedicated Jelly mission token
 
 **Owners:** Jelly and PlatePost
 
-`JELLYHUNT_API_KEY` is suitable only for server-to-server use.
+`JELLYHUNT_API_KEY` is suitable only for server-to-server use. The proposed v2 target is a five-minute asymmetrically signed Jelly token with audience `platepost-jellyhunt`.
 
-- [ ] Choose a short-lived Jelly-signed JWT or an authenticated Jelly backend proxy.
-- [ ] Include subject/user ID, audience, issuer, expiry, and key ID.
-- [ ] Publish a JWKS or agree on secure key rotation.
-- [ ] Ensure PlatePost derives `jellyUserId` from the verified token instead of trusting the JSON body.
-- [ ] Add replay, wrong-audience, expired-token, and key-rotation tests.
+- [ ] Add Jelly `POST /auth/mission-token` for an authenticated active Jelly session.
+- [ ] Include subject/user ID, `iss`, `aud`, scope, issue/expiry, session ID, unique token ID, and `kid`.
+- [ ] Publish a rotating Jelly JWKS and validate signature, issuer, audience, expiry, scope, and subject in PlatePost.
+- [ ] Ensure PlatePost derives the Jelly user exclusively from verified `sub`; remove caller-supplied identity from v2.
+- [ ] Add wrong-audience, wrong-issuer, insufficient-scope, expired-token, subject-spoof, logout, and key-rotation tests.
 
-**Acceptance evidence:** no long-lived PlatePost secret ships in the mobile binary, and one user cannot submit on behalf of another.
+**Acceptance evidence:** no long-lived PlatePost secret ships in the mobile binary, and one user cannot submit or read status on behalf of another.
 
 ## Native JellyJelly work
 
 **Owner:** Kris / Jelly engineering
 
-After v1 and auth are frozen:
+After the v2 contract and mission-token authentication are frozen:
 
-- [ ] Fetch `GET /api/v1/jellyhunt/missions` instead of hardcoding missions.
-- [ ] Render location, category, difficulty, schedule, reward, and status.
-- [ ] Open the camera with `mission_id` attached to the Jelly post workflow.
-- [ ] Submit the canonical post ID after publish succeeds.
-- [ ] Refresh status while verification/review/reward is pending.
-- [ ] Show rejection reasons and allow a new post after rejection.
-- [ ] Treat `reward_uncertain` as “being reconciled,” not “retry payout.”
-- [ ] Support additive v1 fields and a future v2 without crashing.
+- [ ] Fetch `GET /api/v2/jellyhunt/campaigns/current` and `/missions` instead of hardcoding campaign or mission data.
+- [ ] Render mission detail, place/hours, category, difficulty, schedule, reward, availability, and viewer status.
+- [ ] Use the PlatePost HTTPS universal start link, then call `PUT /missions/{missionId}/participation` with the displayed mission revision and pass the returned participation ID, locked revision, deadline, and canonical Jelly place ID into the Jelly composer.
+- [ ] Submit the participation ID, locked revision, and canonical post ID to `POST /missions/{missionId}/submissions` with a client idempotency key after publish succeeds.
+- [ ] Read `/submissions/{id}` and `/me/events` while verification, review, or reward work is pending.
+- [ ] Show safe rejection reasons and allow a new post only when `canResubmit` is true.
+- [ ] Display approved/reward-pending separately from confirmed `reward_sent`; treat `uncertain` as reconciliation, never a client retry.
+- [ ] Render place-linked Jelly content from the normalized PlatePost endpoint without persisting signed media URLs.
 - [ ] Add analytics for map opened, mission viewed, Jelly started, submitted, approved, rejected, and rewarded without logging secrets or precise location unnecessarily.
 
 **Acceptance evidence:** a development user completes a mission in the native app, sees the same mission state as the PlatePost admin, and receives exactly one development reward.
@@ -208,6 +195,24 @@ Production Convex starts empty. The local-only fixture mirrors all 16 schema-val
 - [ ] Remove or redirect the legacy hardcoded mission source after PlatePost is proven.
 
 **Acceptance evidence:** the PlatePost mission count and reviewed field values match the migration sheet, and Jelly clients contain no production mission constants.
+
+## Legacy submission and reward cutover
+
+**Owners:** PlatePost, Jelly backend, and operations
+
+Production v2 rewards must remain disabled until legacy completions share the same deduplication boundary.
+
+- [ ] Inventory every legacy JellyHunt submission writer and payout worker.
+- [ ] Map legacy mission identifiers to stable PlatePost mission IDs, prepare shared dedupe import tooling, and choose a UTC cutover watermark.
+- [ ] At the watermark, atomically stop every legacy submission write and pause every legacy payout worker before export.
+- [ ] Drain in-flight work and manually reconcile every pending or uncertain `/crypto/send` result.
+- [ ] Export the stable snapshot and import exact Jelly post ID, Jelly subject, mission, status, amount/token, transaction ID/hash, and timestamps as `source: legacy`.
+- [ ] Populate the same v2 global post, user/mission, reward-intent, and transaction uniqueness indexes; imported records are never re-paid.
+- [ ] Reconcile counts and hashes and require zero orphan successful transactions.
+- [ ] Keep production v1 writes disabled. Any temporary backend fallback must call v2 with a derived/verified Jelly subject; caller-controlled identity never reaches rewards.
+- [ ] Remove every independent payout path and keep production automatic rewards off until the signed cutover report passes.
+
+**Acceptance evidence:** a legacy post, user/mission completion, or transaction cannot be submitted or paid again through v2, and no post-watermark write bypasses PlatePost deduplication.
 
 ## Map, accessibility, and browser acceptance
 
@@ -267,8 +272,9 @@ Production Convex starts empty. The local-only fixture mirrors all 16 schema-val
 - [ ] Initial missions reviewed and published.
 - [ ] Lower the configured reward ceiling below a draft reward and verify activation fails closed.
 - [ ] Per-mission, daily, and campaign reward limits plus available balance confirmed.
+- [ ] Legacy submission/transaction cutover report approved and all independent legacy payout workers disabled before automatic v2 rewards.
 - [ ] Rollback and pause runbooks exercised.
-- [ ] Native app release points at the production v1 base URL.
+- [ ] Native app release points at the approved production v2 base URL; v1 remains compatibility-only and no secret API key ships in the app.
 - [ ] PlatePost and Jelly operators monitor the pilot.
 
 ## Do not do these
