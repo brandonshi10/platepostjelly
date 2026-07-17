@@ -18,6 +18,11 @@ describe("frozen JellyHunt v1 contract", () => {
   it("freezes malformed JSON as the existing 500 response", async () => {
     const fixture = await import("./contracts/jellyhunt-v1/submission-malformed.500.json");
     expect(fixture.default.status).toBe(500);
-    expect(fixture.default.body).toEqual({ error: "submission_failed" });
+    expect(fixture.default.body).toEqual({
+      error: {
+        code: "submission_failed",
+        message: "The submission could not be completed.",
+      },
+    });
   });
 });

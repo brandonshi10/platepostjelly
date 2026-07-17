@@ -4,12 +4,12 @@
     "content-type": "application/json"
   },
   "body": {
-    "error": "submission_failed"
+    "error": {
+      "code": "submission_failed",
+      "message": "The submission could not be completed."
+    }
   },
   "legacyProjection": {
-    "error": "submission_failed"
-  },
-  "actualResponseBody": {
     "error": {
       "code": "submission_failed",
       "message": "The submission could not be completed."
