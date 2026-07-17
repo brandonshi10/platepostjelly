@@ -1,12 +1,12 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
-import { fetchTextWithTimeout } from "./http";
+import { fetchTextWithTimeout } from "./httpFetch";
 import { legacyVerificationOutcome } from "./workflow";
 import {
   evaluatePartnerLocationProof,
   requireCredentialedEndpoint,
-} from "./jelly-security";
+} from "./jellySecurity";
 
 type JsonObject = Record<string, unknown>;
 

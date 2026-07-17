@@ -2,6 +2,11 @@ import { anyApi } from "convex/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createJellyhuntTestConvex, TEST_SERVICE_KEY } from "./helpers/setup";
 
+// See the comment in tests/convex/jellyhunt-campaigns.test.ts: `anyApi` is
+// used deliberately instead of the real generated `api` object so this
+// file's TypeScript program never transitively type-checks the broken
+// pre-namespacing `convex/audit.ts` / `missions.ts` / `submissions.ts`
+// files that `convex/_generated/api.d.ts` type-references.
 const campaigns = anyApi.jellyhunt.campaigns;
 const places = anyApi.jellyhunt.places;
 const missions = anyApi.jellyhunt.missions;

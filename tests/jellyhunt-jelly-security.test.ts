@@ -17,7 +17,7 @@ type JellySafetyModule = {
 
 async function loadJellySafety(): Promise<Partial<JellySafetyModule>> {
   try {
-    return (await import("../convex/jelly-security")) as JellySafetyModule;
+    return (await import("../convex/jellySecurity")) as JellySafetyModule;
   } catch {
     return {};
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fetchTextWithTimeout } from "../convex/http";
+import { fetchTextWithTimeout } from "../convex/httpFetch";
 
 describe("Convex outbound HTTP bounds", () => {
   it("returns both the response and its text", async () => {

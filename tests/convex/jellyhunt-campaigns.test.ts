@@ -2,6 +2,17 @@ import { anyApi } from "convex/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createJellyhuntTestConvex, TEST_SERVICE_KEY } from "./helpers/setup";
 
+// See tests/convex/helpers/setup.ts: real generated bindings exist
+// (convex/_generated/), but `convex/_generated/api.d.ts` type-references
+// every top-level Convex module -- including the pre-namespacing
+// `convex/audit.ts`, `convex/missions.ts`, and `convex/submissions.ts`
+// files, which still reference table names `convex/schema.ts` retired.
+// Importing the typed `api` object here would pull those files into this
+// test's TypeScript program and fail `pnpm build`
+// (see docs/PLATEPOST_INTEGRATION.md, "Known gap surfaced by turning on
+// real typecheck"). `anyApi` avoids that without changing runtime
+// behavior: it is the same untyped reference form these tests used before
+// codegen existed, still resolved through the hand-built module map below.
 const campaigns = anyApi.jellyhunt.campaigns;
 
 function campaignArgs(overrides: Partial<Record<string, unknown>> = {}) {
