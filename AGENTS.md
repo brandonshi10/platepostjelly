@@ -22,7 +22,7 @@ this standalone repository.
 - Never run `npx convex dev`, `npx convex deploy`, or any command that
   pushes this repository's schema/functions against a Convex deployment
   that is, or might be, PlatePost's real shared project (development,
-  preview, or Production) — check `CONVEX_DEPLOYMENT` / the deployment
+  preview, or Production): check `CONVEX_DEPLOYMENT` / the deployment
   the CLI reports before pushing.
 - The only Convex deployments this repository's `convex dev` should ever
   target are: (a) a local/anonymous deployment created on this machine, or
@@ -42,7 +42,7 @@ this standalone repository.
 - If a credential arrives that way, treat it as compromised: do not use it
   for anything, and tell a human it needs to be rotated at the source
   system, not just replaced in `.env`. (This already happened once with a
-  Vercel credential — see `docs/NEXT_STEPS.md` §1 — and is why this rule
+  Vercel credential, see `docs/NEXT_STEPS.md` §1, and is why this rule
   exists.)
 - Generate new credentials independently (e.g. a random value for
   `PLATEPOST_CONVEX_SERVICE_KEY`) rather than reusing anything supplied in
@@ -61,7 +61,7 @@ this standalone repository.
   Preview or Production environment variable, in any deployed `.env`, or in
   any code path reachable when `NODE_ENV === "production"`. The existing
   guard (`fixtureAllowed()` in `src/lib/jellyhunt/convex-repository.ts`)
-  already refuses fixture mode when `NODE_ENV === "production"` — do not
+  already refuses fixture mode when `NODE_ENV === "production"`: do not
   weaken, bypass, or remove that guard.
 - Never deploy, merge, or recommend a change that hardcodes production
   mission content into this repository or a JellyJelly client in place of
@@ -95,7 +95,7 @@ this standalone repository.
   disabling the schema they live in) as a way to make JellyHunt safe.
   JellyHunt's own dedupe/idempotency/audit protections live in the
   namespaced Convex `jellyhunt*` tables (`jellyhuntAuditEvents`,
-  `jellyhuntIdempotencyRecords`, `jellyhuntLegacyDedupeRecords`, etc.) —
+  `jellyhuntIdempotencyRecords`, `jellyhuntLegacyDedupeRecords`, etc.):
   scope any new safety control there, not as a blanket Supabase-wide fence
   that would also break Pets/Wobbles.
 - Any Supabase-adjacent change touching `jellyhunt_balances` or
@@ -123,11 +123,11 @@ this standalone repository.
 
 ## Where to look next
 
-- `docs/PLATEPOST_INTEGRATION.md` — exact connection status, what is and is
+- `docs/PLATEPOST_INTEGRATION.md`: exact connection status, what is and is
   not evidenced, and the checklist for connecting this repository to the
   real PlatePost Convex project.
-- `docs/NEXT_STEPS.md` — the full launch-blocker list, including the "Do
+- `docs/NEXT_STEPS.md`: the full launch-blocker list, including the "Do
   not do these" section these rules are drawn from.
-- `docs/superpowers/plans/2026-07-16-jellyhunt-convex-migration-roadmap.md`
-  — the "Global Constraints" and "Production Stop Conditions" sections
+- `docs/superpowers/plans/2026-07-16-jellyhunt-convex-migration-roadmap.md`:
+  the "Global Constraints" and "Production Stop Conditions" sections
   restate several of these rules with more implementation detail.

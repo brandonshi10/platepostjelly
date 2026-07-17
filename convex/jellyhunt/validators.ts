@@ -30,6 +30,9 @@ export const submissionStatus = v.union(
   v.literal("rejected"),
 );
 
+// Intent cancellation maps to submission rewardStatus `not_eligible`; `canceled`
+// is a reward-intent-only state (see `rewardIntentStatus` below), never a
+// submission-level rewardStatus value.
 export const rewardStatus = v.union(
   v.literal("not_eligible"),
   v.literal("queued"),
@@ -37,7 +40,6 @@ export const rewardStatus = v.union(
   v.literal("sent"),
   v.literal("failed"),
   v.literal("uncertain"),
-  v.literal("canceled"),
 );
 
 export const verificationStatus = v.union(

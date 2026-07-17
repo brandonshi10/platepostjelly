@@ -25,7 +25,7 @@ describe("JellyHunt v2 OpenAPI", () => {
   it("declares every approved operation exactly once", () => {
     const source = readFileSync("openapi/jellyhunt-v2.yaml", "utf8");
     for (const operationId of REQUIRED) {
-      expect(source.match(new RegExp(`operationId: ${operationId}`, "g"))).toHaveLength(1);
+      expect(source.match(new RegExp(`operationId: "?${operationId}"?\\s*$`, "gm"))).toHaveLength(1);
     }
   });
 });

@@ -105,7 +105,7 @@ paths:
 
   /missions/{missionId}:
     get:
-      operationId: "getMission"
+      operationId: getMission
       tags: [missions]
       summary: Get complete mission detail
       security:
@@ -160,7 +160,7 @@ paths:
 
   /places/{placeId}:
     get:
-      operationId: "getPlace"
+      operationId: getPlace
       tags: [places]
       summary: Get a reviewed PlatePost place snapshot
       security: []

@@ -5,7 +5,7 @@ import { createPublicId, assertPublicId } from "./publicIds";
 import { recordAuditEvent } from "./audit";
 import { requireServiceKey } from "./security";
 import { loadCampaignByPublicId } from "./campaigns";
-import { loadPlaceByPublicId } from "./places";
+import { loadPlaceByPublicId, toPublicPlace } from "./places";
 
 /**
  * Draft mission CRUD, immutable publish-time revisioning, and lifecycle
@@ -83,11 +83,67 @@ async function assertPlaceReviewed(ctx: any, placeId: any) {
   return place;
 }
 
-/** Public: current mission detail by public ID. */
+/**
+ * Public: current mission detail by public ID.
+ *
+ * This query has no `serviceKey` gate, so it must never return a raw
+ * `jellyhuntMissions` row: that row carries internal-only fields
+ * (`geofenceRadiusMeters` via the place link, `approvalMode`,
+ * `budgetAllocation`, `createdBy`, legacy IDs, Convex `_id`/`_creationTime`)
+ * and can describe a draft/unpublished mission. Instead this returns `null`
+ * for any mission that has never published a revision or whose lifecycle is
+ * outside `active`/`paused` (`draft` and `archived` are never visible here),
+ * and otherwise a projected public-safe shape built from the mission's
+ * current published revision and its reviewed place.
+ */
 export const getMissionByPublicId = queryGeneric({
   args: { missionPublicId: v.string() },
   handler: async (ctx: any, args: any) => {
-    return await loadMissionByPublicId(ctx, args.missionPublicId);
+    const mission = await loadMissionByPublicId(ctx, args.missionPublicId);
+    if (mission.status !== "active" && mission.status !== "paused") return null;
+    if (mission.currentRevision < 1) return null;
+
+    const revision = await ctx.db
+      .query("jellyhuntMissionRevisions")
+      .withIndex("by_mission_revision", (q: any) =>
+        q.eq("missionId", mission._id).eq("revision", mission.currentRevision),
+      )
+      .unique();
+    if (!revision) return null;
+
+    const campaign = await ctx.db.get(mission.campaignId);
+    if (!campaign) return null;
+
+    const place = await ctx.db.get(mission.placeId);
+    if (!place || place.reviewStatus !== "reviewed") return null;
+
+    return {
+      id: mission.publicId,
+      campaignId: campaign.publicId,
+      slug: mission.slug,
+      revision: mission.currentRevision,
+      title: mission.title,
+      description: revision.description,
+      instructions: revision.instructions,
+      availability: {
+        state: mission.status,
+        startsAt: mission.startsAt,
+        endsAt: mission.endsAt,
+        acceptingSubmissions: mission.acceptingSubmissions,
+      },
+      reward: mission.reward,
+      requirements: revision.requirements,
+      display: {
+        category: mission.category,
+        difficulty: mission.difficulty,
+        emoji: mission.emoji,
+        neighborhood: mission.neighborhood,
+        price: mission.price,
+        sortOrder: mission.sortOrder,
+      },
+      place: toPublicPlace(place),
+      updatedAt: mission.updatedAt,
+    };
   },
 });
 

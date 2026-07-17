@@ -51,6 +51,25 @@ const PUBLIC_FIXTURES = [
   "leaderboard-all-time.200.json",
 ];
 
+// Owner-only personalized resources (/participations/*, /submissions/*, /me)
+// that legitimately return the caller's own jellyUserId and are therefore
+// intentionally excluded from the public-fixture privacy scan above. Every
+// manifest success fixture must appear in exactly one of PUBLIC_FIXTURES or
+// PERSONALIZED_FIXTURES (see the completeness test below) so a future
+// fixture can never silently skip the privacy scan by omission.
+const PERSONALIZED_FIXTURES = [
+  "participation-created.201.json",
+  "participation-replay.200.json",
+  "submission-accepted.202.json",
+  "submission-detail-under-review.200.json",
+  "submission-detail-paid-moderated.200.json",
+  "submission-events.200.json",
+  "me.200.json",
+  "me-missions.200.json",
+  "me-submissions.200.json",
+  "me-events.200.json",
+];
+
 const FORBIDDEN_KEY_PATTERN = /convex|wallet|geofence|approvalMode|jellyUserId/i;
 
 const openapiDoc = parseYaml(readFileSync(OPENAPI_PATH, "utf8")) as Record<string, unknown>;
@@ -113,6 +132,25 @@ describe("JellyHunt v2 fixtures", () => {
       expect(valid, JSON.stringify(validate.errors, null, 2)).toBe(true);
     });
   }
+
+  it("classifies every manifest success fixture as public or personalized/exempt", () => {
+    // A future fixture added to the manifest but forgotten in both lists
+    // below must fail loudly here, instead of silently skipping the privacy
+    // scan in the "keeps every public fixture free of internal/private keys"
+    // test above.
+    const classified = new Set([...PUBLIC_FIXTURES, ...PERSONALIZED_FIXTURES]);
+    const unclassified = manifest.successFixtures.filter((fixtureFile) => !classified.has(fixtureFile));
+    expect(unclassified, `unclassified fixtures (add to PUBLIC_FIXTURES or PERSONALIZED_FIXTURES): ${unclassified.join(", ")}`).toEqual([]);
+
+    // Every classified fixture must also actually exist in the manifest, and
+    // neither list may double-count the same fixture.
+    const manifestSet = new Set(manifest.successFixtures);
+    for (const fixtureFile of classified) {
+      expect(manifestSet.has(fixtureFile), `${fixtureFile} is classified but missing from the manifest`).toBe(true);
+    }
+    const overlap = PUBLIC_FIXTURES.filter((fixtureFile) => PERSONALIZED_FIXTURES.includes(fixtureFile));
+    expect(overlap, `fixtures listed in both PUBLIC_FIXTURES and PERSONALIZED_FIXTURES: ${overlap.join(", ")}`).toEqual([]);
+  });
 
   it("keeps every public fixture free of internal/private keys", () => {
     for (const fixtureFile of PUBLIC_FIXTURES) {

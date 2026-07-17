@@ -33,11 +33,40 @@ export async function loadPlaceByPublicId(ctx: any, placePublicId: string) {
   return place;
 }
 
-/** Public: reviewed place snapshot for map/detail rendering. */
+/**
+ * Public-safe projection of a reviewed place row. Deliberately omits
+ * internal-only fields (`geofenceRadiusMeters`, `reviewStatus`,
+ * `jellySourceRevision`, `lastSyncedAt`, Convex `_id`/`_creationTime`) that
+ * an ungated public query must never leak.
+ */
+export function toPublicPlace(place: any) {
+  return {
+    id: place.publicId,
+    jellyPlaceId: place.jellyPlaceId,
+    name: place.name,
+    address: place.address,
+    latitude: place.latitude,
+    longitude: place.longitude,
+    timeZone: place.timeZone,
+    hours: place.hours,
+    updatedAt: place.updatedAt,
+  };
+}
+
+/**
+ * Public: reviewed place snapshot for map/detail rendering.
+ *
+ * This query has no `serviceKey` gate, so it must never return a place row
+ * directly: unreviewed/draft places return `null` (never their raw data),
+ * and reviewed places are returned only as the projected public-safe shape
+ * from `toPublicPlace`, never the raw `jellyhuntPlaces` row.
+ */
 export const getPlaceByPublicId = queryGeneric({
   args: { placePublicId: v.string() },
   handler: async (ctx: any, args: any) => {
-    return await loadPlaceByPublicId(ctx, args.placePublicId);
+    const place = await loadPlaceByPublicId(ctx, args.placePublicId);
+    if (place.reviewStatus !== "reviewed") return null;
+    return toPublicPlace(place);
   },
 });
 
