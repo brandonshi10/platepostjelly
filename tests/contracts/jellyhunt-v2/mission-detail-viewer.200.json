@@ -1,0 +1,110 @@
+{
+  "data": {
+    "id": "mis_01HXMISSION000001",
+    "campaignId": "cam_01HXCAMPAIGN0000001",
+    "slug": "scarrs-cheese-pull",
+    "revision": 7,
+    "title": "The Scarr's Cheese Pull",
+    "description": "Order one slice and film the cheese pull.",
+    "instructions": [
+      "Visit the venue during the mission window.",
+      "Record and publish the requested Jelly.",
+      "Attach the venue when JellyJelly asks for a place."
+    ],
+    "availability": {
+      "state": "available",
+      "startsAt": "2026-08-01T16:00:00Z",
+      "endsAt": "2026-08-31T23:00:00Z",
+      "acceptingSubmissions": true,
+      "reasonCode": null
+    },
+    "reward": {
+      "amount": "60",
+      "token": "JELLY-MY-JELLY",
+      "displayName": "Jelly-My-Jelly"
+    },
+    "requirements": {
+      "post": {
+        "allowedPostTypes": ["video"],
+        "authorshipPolicy": "canonical_owner",
+        "prompt": "Film the cheese pull and your first reaction.",
+        "minDurationSeconds": 5,
+        "maxDurationSeconds": 90,
+        "requiredVisibility": "public"
+      },
+      "place": {
+        "attachmentRequired": true
+      },
+      "location": {
+        "required": true,
+        "trustedSource": "jelly_post"
+      },
+      "schedule": {
+        "mustBeWithinMissionWindow": true,
+        "mustBeDuringVenueHours": false
+      },
+      "resubmission": {
+        "allowedAfterRejection": true,
+        "maxAttempts": 3
+      }
+    },
+    "display": {
+      "category": "Pizza",
+      "difficulty": "easy",
+      "emoji": "🍕",
+      "neighborhood": "Lower East Side",
+      "price": "$",
+      "sortOrder": 1
+    },
+    "place": {
+      "id": "plc_01HXPLACE0000001",
+      "jellyPlaceId": "jpl_01HXJELLYPLACE001",
+      "name": "Scarr's Pizza",
+      "address": "35 Orchard St, New York, NY",
+      "latitude": 40.7163,
+      "longitude": -73.9914,
+      "timeZone": "America/New_York",
+      "hours": {
+        "monday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+        "tuesday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+        "wednesday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+        "thursday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+        "friday": [{ "opensAt": "12:00", "closesAt": "00:00" }],
+        "saturday": [{ "opensAt": "12:00", "closesAt": "00:00" }],
+        "sunday": [{ "opensAt": "12:00", "closesAt": "23:00" }]
+      }
+    },
+    "viewer": {
+      "participationStatus": "not_started",
+      "participationId": null,
+      "missionRevision": null,
+      "submissionDeadlineAt": null,
+      "resubmissionDeadlineAt": null,
+      "displayStatus": "not_started",
+      "submissionStatus": null,
+      "rewardStatus": "not_eligible",
+      "latestSubmissionId": null,
+      "startedAt": null,
+      "canStart": true,
+      "canSubmit": false,
+      "canResubmit": false,
+      "nextAction": "start_mission",
+      "publicMessage": "Visit the place and start this mission in JellyJelly.",
+      "updatedAt": null
+    },
+    "links": {
+      "self": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001",
+      "participation": null,
+      "jellies": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001/jellies",
+      "start": "https://platepost.io/human-social/missions/mis_01HXMISSION000001/start",
+      "directions": "https://www.google.com/maps/dir/?api=1&destination=40.7163,-73.9914"
+    },
+    "updatedAt": "2026-07-16T19:00:00Z"
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000005",
+    "generatedAt": "2026-07-16T20:00:00Z"
+  },
+  "links": {}
+}

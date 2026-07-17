@@ -1,0 +1,25 @@
+{
+  "apiVersion": "2.0",
+  "successFixtures": [
+    "campaign-current.200.json",
+    "missions-list-anonymous.200.json",
+    "missions-list-viewer.200.json",
+    "mission-detail-anonymous.200.json",
+    "mission-detail-viewer.200.json",
+    "place-detail.200.json",
+    "place-jellies.200.json",
+    "participation-created.201.json",
+    "participation-replay.200.json",
+    "submission-accepted.202.json",
+    "submission-detail-under-review.200.json",
+    "submission-detail-paid-moderated.200.json",
+    "submission-events.200.json",
+    "me.200.json",
+    "me-missions.200.json",
+    "me-submissions.200.json",
+    "me-events.200.json",
+    "leaderboard-current-season.200.json",
+    "leaderboard-all-time.200.json"
+  ],
+  "errorStatuses": [400, 401, 403, 404, 409, 422, 429, 500, 502, 503]
+}

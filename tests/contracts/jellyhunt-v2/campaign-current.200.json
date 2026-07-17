@@ -1,0 +1,42 @@
+{
+  "data": {
+    "id": "cam_01HXCAMPAIGN0000001",
+    "revision": 12,
+    "catalogRevision": 34,
+    "title": "PlatePost x JellyJelly: Human Social!",
+    "shortTitle": "JellyHunt",
+    "status": "active",
+    "startsAt": "2026-08-01T04:00:00Z",
+    "endsAt": "2026-09-01T03:59:59Z",
+    "claimsCloseAt": "2026-09-08T03:59:59Z",
+    "timeZone": "America/New_York",
+    "rewardToken": {
+      "code": "JELLY-MY-JELLY",
+      "displayName": "Jelly-My-Jelly"
+    },
+    "map": {
+      "center": { "latitude": 40.7218, "longitude": -73.9914 },
+      "bounds": {
+        "south": 40.711,
+        "west": -74.004,
+        "north": 40.734,
+        "east": -73.978
+      },
+      "defaultZoom": 13
+    },
+    "links": {
+      "rules": "https://platepost.io/human-social/rules",
+      "iosApp": "https://apps.apple.com/app/jellyjelly",
+      "androidApp": "https://play.google.com/store/apps/details?id=com.jellyjelly",
+      "support": "https://platepost.io/human-social/support"
+    }
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000001",
+    "generatedAt": "2026-07-16T20:00:00Z"
+  },
+  "links": {
+    "missions": "/api/v2/jellyhunt/missions?campaignId=cam_01HXCAMPAIGN0000001"
+  }
+}

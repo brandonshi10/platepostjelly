@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "authentication_required",
+    "message": "A valid Jelly mission token is required for this request.",
+    "requestId": "req_01HXREQUESTERR401",
+    "retryable": false,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR401",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "route": "GET /partner/v1/jellyhunt/reward-intents/{rewardIntentId}",
+  "status": 200,
+  "body": {
+    "rewardIntent": {
+      "id": "rwd_01HXREWARD0000003",
+      "status": "pending",
+      "submissionId": "sub_01HXSUBMISSION0003",
+      "missionId": "mis_01HXMISSION000001",
+      "jellyPostId": "01HXJELLYPOST000004",
+      "recipientUserId": "usr_jelly_canonical_001",
+      "amount": "60",
+      "token": "JELLY-MY-JELLY",
+      "decimals": 6,
+      "transactionId": null,
+      "transactionHash": null,
+      "updatedAt": "2026-08-05T18:59:59Z"
+    },
+    "attempts": [
+      {
+        "number": 1,
+        "status": "pending",
+        "eligibility": {
+          "postRevision": 4,
+          "checkedAt": "2026-08-05T18:59:58Z"
+        },
+        "retryable": false,
+        "final": false,
+        "confirmedNoTransfer": false,
+        "reasonCode": null,
+        "acceptedAt": "2026-08-05T18:59:58Z",
+        "updatedAt": "2026-08-05T18:59:59Z"
+      }
+    ]
+  }
+}

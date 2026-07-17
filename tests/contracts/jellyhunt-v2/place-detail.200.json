@@ -1,0 +1,38 @@
+{
+  "data": {
+    "id": "plc_01HXPLACE0000001",
+    "revision": 9,
+    "jellyPlaceId": "jpl_01HXJELLYPLACE001",
+    "name": "Scarr's Pizza",
+    "address": "35 Orchard St, New York, NY",
+    "latitude": 40.7163,
+    "longitude": -73.9914,
+    "timeZone": "America/New_York",
+    "hours": {
+      "monday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+      "tuesday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+      "wednesday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+      "thursday": [{ "opensAt": "12:00", "closesAt": "23:00" }],
+      "friday": [{ "opensAt": "12:00", "closesAt": "00:00" }],
+      "saturday": [{ "opensAt": "12:00", "closesAt": "00:00" }],
+      "sunday": [{ "opensAt": "12:00", "closesAt": "23:00" }]
+    },
+    "source": {
+      "system": "jelly",
+      "revision": 9,
+      "updatedAt": "2026-07-16T19:00:00Z",
+      "syncedAt": "2026-07-16T19:05:00Z"
+    },
+    "updatedAt": "2026-07-16T19:05:00Z"
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000006",
+    "generatedAt": "2026-07-16T20:00:00Z"
+  },
+  "links": {
+    "self": "/api/v2/jellyhunt/places/plc_01HXPLACE0000001",
+    "jellies": "/api/v2/jellyhunt/places/plc_01HXPLACE0000001/jellies",
+    "directions": "https://www.google.com/maps/dir/?api=1&destination=40.7163,-73.9914"
+  }
+}

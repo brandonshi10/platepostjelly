@@ -1,0 +1,1931 @@
+openapi: 3.1.0
+info:
+  title: PlatePost JellyHunt Native API
+  version: 2.0.0
+  description: >
+    Native v2 contract for the PlatePost x JellyJelly JellyHunt mission
+    system. See docs/superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md
+    and docs/superpowers/specs/2026-07-16-jellyhunt-leaderboard-native-integration-design.md
+    for the approved design this document implements.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-PlatePost-Proprietary
+servers:
+  - url: https://platepost.io/api/v2/jellyhunt
+security:
+  - {}
+tags:
+  - name: campaign
+    description: Campaign configuration, branding, dates, and app links.
+  - name: missions
+    description: Mission discovery, detail, and place-linked Jelly content.
+  - name: places
+    description: Reviewed PlatePost place snapshots and Jelly place content.
+  - name: participation
+    description: Revision-locked mission participation lifecycle.
+  - name: submissions
+    description: Idempotent submission creation, detail, and status history.
+  - name: me
+    description: Authenticated subject personal status and history.
+  - name: leaderboards
+    description: Public current-season and all-time standings.
+
+paths:
+  /campaigns/current:
+    get:
+      operationId: getCurrentCampaign
+      tags: [campaign]
+      summary: Get the current campaign
+      security: []
+      responses:
+        "200":
+          description: The current campaign.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignEnvelope'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /missions:
+    get:
+      operationId: listMissions
+      tags: [missions]
+      summary: List missions for map/list discovery
+      security:
+        - {}
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+        - name: availability
+          in: query
+          schema: { type: string }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: difficulty
+          in: query
+          schema: { type: string }
+        - name: latitude
+          in: query
+          schema: { type: number }
+        - name: longitude
+          in: query
+          schema: { type: number }
+        - name: radiusMeters
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [curated, nearby, updated] }
+        - name: include
+          in: query
+          schema: { type: string, enum: [viewer] }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Cursor-paginated mission summaries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionListEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /missions/{missionId}:
+    get:
+      operationId: "getMission"
+      tags: [missions]
+      summary: Get complete mission detail
+      security:
+        - {}
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/MissionId'
+        - name: include
+          in: query
+          schema: { type: string, enum: [viewer] }
+      responses:
+        "200":
+          description: Mission detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionDetailEnvelope'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /missions/{missionId}/jellies:
+    get:
+      operationId: getMissionJellies
+      tags: [missions]
+      summary: List public Jellies linked to the mission's canonical place
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/MissionId'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Place-linked Jelly feed for the mission.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JellyFeedEnvelope'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "502":
+          $ref: '#/components/responses/DependencyInvalidResponse'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /places/{placeId}:
+    get:
+      operationId: "getPlace"
+      tags: [places]
+      summary: Get a reviewed PlatePost place snapshot
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlaceId'
+      responses:
+        "200":
+          description: Place detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceEnvelope'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /places/{placeId}/jellies:
+    get:
+      operationId: getPlaceJellies
+      tags: [places]
+      summary: List public Jellies linked to a place
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlaceId'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Place-linked Jelly feed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JellyFeedEnvelope'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "502":
+          $ref: '#/components/responses/DependencyInvalidResponse'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /missions/{missionId}/participation:
+    put:
+      operationId: startMissionParticipation
+      tags: [participation]
+      summary: Idempotently start a mission
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/MissionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartParticipationRequest'
+      responses:
+        "200":
+          description: Exact replay of an already-started participation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipationStartEnvelope'
+        "201":
+          description: Participation created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipationStartEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /participations/{participationId}:
+    get:
+      operationId: getParticipation
+      tags: [participation]
+      summary: Get the owner-only immutable participation snapshot
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/ParticipationId'
+      responses:
+        "200":
+          description: Participation detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipationDetailEnvelope'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /missions/{missionId}/submissions:
+    post:
+      operationId: createMissionSubmission
+      tags: [submissions]
+      summary: Create an idempotent asynchronous mission submission
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/MissionId'
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, minLength: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubmissionRequest'
+      responses:
+        "202":
+          description: Submission accepted for asynchronous processing.
+          headers:
+            Location:
+              schema: { type: string }
+            Idempotent-Replayed:
+              schema: { type: boolean }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionCreatedEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/RateLimited'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /submissions/{submissionId}:
+    get:
+      operationId: getSubmission
+      tags: [submissions]
+      summary: Get owner-only submission, review, and reward detail
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        "200":
+          description: Submission detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionDetailEnvelope'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /submissions/{submissionId}/events:
+    get:
+      operationId: listSubmissionEvents
+      tags: [submissions]
+      summary: Get the owner-only submission status timeline
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+        - $ref: '#/components/parameters/Cursor'
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        "200":
+          description: Submission status timeline.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionEventsEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /me:
+    get:
+      operationId: getMe
+      tags: [me]
+      summary: Get the canonical subject and campaign-level summary
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+      responses:
+        "200":
+          description: Personal campaign summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeEnvelope'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /me/missions:
+    get:
+      operationId: listMyMissions
+      tags: [me]
+      summary: Get current and historical mission participation
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - $ref: '#/components/parameters/CampaignId'
+        - name: participationStatus
+          in: query
+          schema: { type: string, enum: [not_started, started] }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Personal mission list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyMissionsEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /me/submissions:
+    get:
+      operationId: listMySubmissions
+      tags: [me]
+      summary: Get cursor-paginated submission history
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - name: missionId
+          in: query
+          schema: { type: string, pattern: '^mis_[0-9A-Za-z]+$' }
+        - name: submissionStatus
+          in: query
+          schema: { type: string }
+        - name: rewardStatus
+          in: query
+          schema: { type: string }
+        - name: updatedAfter
+          in: query
+          schema: { type: string, format: date-time }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Personal submission history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySubmissionsEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /me/events:
+    get:
+      operationId: listMyEvents
+      tags: [me]
+      summary: Get an ordered, lightweight polling feed
+      security:
+        - jellyMissionToken: []
+      parameters:
+        - name: after
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+      responses:
+        "200":
+          description: Personal event feed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyEventsEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /leaderboards/current-season:
+    get:
+      operationId: getCurrentSeasonLeaderboard
+      tags: [leaderboards]
+      summary: Get public current-campaign standings
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: Current-season leaderboard.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+  /leaderboards/all-time:
+    get:
+      operationId: getAllTimeLeaderboard
+      tags: [leaderboards]
+      summary: Get public all-time standings
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        "200":
+          description: All-time leaderboard.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardEnvelope'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/DependencyUnavailable'
+
+components:
+  securitySchemes:
+    jellyMissionToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    CampaignId:
+      name: campaignId
+      in: query
+      schema: { type: string, pattern: '^cam_[0-9A-Za-z]+$' }
+    MissionId:
+      name: missionId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^mis_[0-9A-Za-z]+$' }
+    PlaceId:
+      name: placeId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^plc_[0-9A-Za-z]+$' }
+    ParticipationId:
+      name: participationId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^par_[0-9A-Za-z]+$' }
+    SubmissionId:
+      name: submissionId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^sub_[0-9A-Za-z]+$' }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100 }
+
+  responses:
+    BadRequest:
+      description: The request was malformed or a cursor was invalid.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Authentication is required or the bearer token is invalid.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: The subject is not authorized to perform this action.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: The resource does not exist or is not visible to this caller.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: The request conflicts with existing state.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    UnprocessableEntity:
+      description: The request is well-formed but semantically invalid.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RateLimited:
+      description: Too many requests.
+      headers:
+        Retry-After:
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    InternalError:
+      description: An unexpected internal error occurred.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    DependencyInvalidResponse:
+      description: An upstream dependency returned an invalid response.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    DependencyUnavailable:
+      description: A required dependency is unavailable.
+      headers:
+        Retry-After:
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    # ---------- shared envelope pieces ----------
+    Error:
+      type: object
+      additionalProperties: false
+      required: [error, meta]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            requestId: { type: string }
+            retryable: { type: boolean }
+            restartRequired: { type: boolean }
+            details:
+              type: array
+              items: {}
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    Meta:
+      type: object
+      additionalProperties: false
+      required: [apiVersion, requestId, generatedAt]
+      properties:
+        apiVersion: { const: '2.0' }
+        requestId: { type: string }
+        generatedAt: { type: string, format: date-time }
+        catalogRevision: { type: integer }
+        leaderboardRevision: { type: integer }
+        page:
+          $ref: '#/components/schemas/Page'
+
+    Page:
+      type: object
+      additionalProperties: false
+      required: [limit, nextCursor, hasMore]
+      properties:
+        limit: { type: integer, minimum: 1 }
+        nextCursor: { type: ['string', 'null'] }
+        hasMore: { type: boolean }
+
+    RewardAmount:
+      type: string
+      pattern: '^[0-9]+(?:\.[0-9]+)?$'
+
+    RewardTerms:
+      type: object
+      additionalProperties: false
+      required: [amount, token, displayName]
+      properties:
+        amount: { $ref: '#/components/schemas/RewardAmount' }
+        token: { type: string }
+        displayName: { type: string }
+
+    CampaignId:
+      type: string
+      pattern: '^cam_[0-9A-Za-z]+$'
+    PlaceId:
+      type: string
+      pattern: '^plc_[0-9A-Za-z]+$'
+    MissionId:
+      type: string
+      pattern: '^mis_[0-9A-Za-z]+$'
+    ParticipationId:
+      type: string
+      pattern: '^par_[0-9A-Za-z]+$'
+    SubmissionId:
+      type: string
+      pattern: '^sub_[0-9A-Za-z]+$'
+    RewardId:
+      type: string
+      pattern: '^rwd_[0-9A-Za-z]+$'
+    EventId:
+      type: string
+      pattern: '^evt_[0-9A-Za-z]+$'
+
+    # ---------- campaign ----------
+    Campaign:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - revision
+        - catalogRevision
+        - title
+        - shortTitle
+        - status
+        - startsAt
+        - endsAt
+        - claimsCloseAt
+        - timeZone
+        - rewardToken
+        - map
+        - links
+      properties:
+        id: { $ref: '#/components/schemas/CampaignId' }
+        revision: { type: integer }
+        catalogRevision: { type: integer }
+        title: { type: string }
+        shortTitle: { type: string }
+        status: { type: string, enum: [upcoming, active, ended] }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        claimsCloseAt: { type: string, format: date-time }
+        timeZone: { type: string }
+        rewardToken:
+          type: object
+          additionalProperties: false
+          required: [code, displayName]
+          properties:
+            code: { type: string }
+            displayName: { type: string }
+        map:
+          type: object
+          additionalProperties: false
+          required: [center, bounds, defaultZoom]
+          properties:
+            center:
+              type: object
+              additionalProperties: false
+              required: [latitude, longitude]
+              properties:
+                latitude: { type: number }
+                longitude: { type: number }
+            bounds:
+              type: object
+              additionalProperties: false
+              required: [south, west, north, east]
+              properties:
+                south: { type: number }
+                west: { type: number }
+                north: { type: number }
+                east: { type: number }
+            defaultZoom: { type: number }
+        links:
+          type: object
+          additionalProperties: false
+          required: [rules, iosApp, androidApp, support]
+          properties:
+            rules: { type: string }
+            iosApp: { type: string }
+            androidApp: { type: string }
+            support: { type: string }
+
+    CampaignEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/Campaign' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [missions]
+          properties:
+            missions: { type: string }
+
+    # ---------- place ----------
+    PlaceHours:
+      type: object
+      additionalProperties: false
+      properties:
+        monday: { $ref: '#/components/schemas/HoursIntervals' }
+        tuesday: { $ref: '#/components/schemas/HoursIntervals' }
+        wednesday: { $ref: '#/components/schemas/HoursIntervals' }
+        thursday: { $ref: '#/components/schemas/HoursIntervals' }
+        friday: { $ref: '#/components/schemas/HoursIntervals' }
+        saturday: { $ref: '#/components/schemas/HoursIntervals' }
+        sunday: { $ref: '#/components/schemas/HoursIntervals' }
+
+    HoursIntervals:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required: [opensAt, closesAt]
+        properties:
+          opensAt: { type: string }
+          closesAt: { type: string }
+
+    PlaceSummary:
+      type: object
+      additionalProperties: false
+      required: [id, jellyPlaceId, name, address, latitude, longitude, timeZone]
+      properties:
+        id: { $ref: '#/components/schemas/PlaceId' }
+        jellyPlaceId: { type: string }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number }
+        longitude: { type: number }
+        timeZone: { type: string }
+
+    Place:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - revision
+        - jellyPlaceId
+        - name
+        - address
+        - latitude
+        - longitude
+        - timeZone
+        - hours
+        - source
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/PlaceId' }
+        revision: { type: integer }
+        jellyPlaceId: { type: string }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number }
+        longitude: { type: number }
+        timeZone: { type: string }
+        hours: { $ref: '#/components/schemas/PlaceHours' }
+        source:
+          type: object
+          additionalProperties: false
+          required: [system, revision, updatedAt, syncedAt]
+          properties:
+            system: { type: string }
+            revision: { type: integer }
+            updatedAt: { type: string, format: date-time }
+            syncedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    PlaceEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/Place' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [self, jellies, directions]
+          properties:
+            self: { type: string }
+            jellies: { type: string }
+            directions: { type: string }
+
+    # ---------- jelly feed ----------
+    JellyAuthor:
+      type: object
+      additionalProperties: false
+      required: [id, username, displayName, avatarUrl]
+      properties:
+        id: { type: string }
+        username: { type: string }
+        displayName: { type: string }
+        avatarUrl: { type: string }
+
+    JellyFeedItem:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - postType
+        - author
+        - title
+        - summary
+        - thumbnailUrl
+        - mediaExpiresAt
+        - watchUrl
+        - postedAt
+      properties:
+        id: { type: string }
+        postType: { type: string }
+        author: { $ref: '#/components/schemas/JellyAuthor' }
+        title: { type: string }
+        summary: { type: string }
+        thumbnailUrl: { type: string }
+        mediaExpiresAt: { type: string, format: date-time }
+        watchUrl: { type: string }
+        postedAt: { type: string, format: date-time }
+
+    JellyFeedEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [jellies, source, sourceStatus]
+          properties:
+            jellies:
+              type: array
+              items: { $ref: '#/components/schemas/JellyFeedItem' }
+            source: { type: string, enum: [jelly] }
+            sourceStatus: { type: string, enum: [live, stale, place_not_linked] }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          properties: {}
+
+    # ---------- mission list ----------
+    MissionAvailability:
+      type: object
+      additionalProperties: false
+      required: [state, startsAt, endsAt, acceptingSubmissions, reasonCode]
+      properties:
+        state: { type: string, enum: [upcoming, available, paused, ended, archived] }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        acceptingSubmissions: { type: boolean }
+        reasonCode: { type: ['string', 'null'] }
+
+    MissionDisplay:
+      type: object
+      additionalProperties: false
+      required: [category, difficulty, emoji, neighborhood, price, sortOrder]
+      properties:
+        category: { type: string }
+        difficulty: { type: string }
+        emoji: { type: string }
+        neighborhood: { type: string }
+        price: { type: string }
+        sortOrder: { type: integer }
+
+    MissionListItemLinks:
+      type: object
+      additionalProperties: false
+      required: [self, start]
+      properties:
+        self: { type: string }
+        start: { type: string }
+
+    ViewerSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - participationStatus
+        - participationId
+        - missionRevision
+        - submissionDeadlineAt
+        - resubmissionDeadlineAt
+        - displayStatus
+        - submissionStatus
+        - rewardStatus
+        - latestSubmissionId
+        - startedAt
+        - canStart
+        - canSubmit
+        - canResubmit
+        - nextAction
+        - publicMessage
+        - updatedAt
+      properties:
+        participationStatus: { type: string, enum: [not_started, started] }
+        participationId: { type: ['string', 'null'] }
+        missionRevision: { type: ['integer', 'null'] }
+        submissionDeadlineAt: { type: ['string', 'null'], format: date-time }
+        resubmissionDeadlineAt: { type: ['string', 'null'], format: date-time }
+        displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+        submissionStatus: { type: ['string', 'null'] }
+        rewardStatus: { type: string }
+        latestSubmissionId: { type: ['string', 'null'] }
+        startedAt: { type: ['string', 'null'], format: date-time }
+        canStart: { type: boolean }
+        canSubmit: { type: boolean }
+        canResubmit: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        publicMessage: { type: string }
+        updatedAt: { type: ['string', 'null'], format: date-time }
+
+    DisplayStatus:
+      type: string
+      enum:
+        - not_started
+        - in_progress
+        - submitted
+        - under_review
+        - approved_reward_pending
+        - rewarded
+        - rewarded_removed_from_rankings
+        - rejected
+        - support_needed
+
+    NextAction:
+      type: string
+      enum:
+        - start_mission
+        - publish_jelly
+        - submit_post
+        - wait_for_verification
+        - wait_for_review
+        - wait_for_reward
+        - view_reward
+        - submit_new_post
+        - contact_support
+        - none
+
+    MissionListItem:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - campaignId
+        - revision
+        - title
+        - availability
+        - reward
+        - display
+        - place
+        - links
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/MissionId' }
+        campaignId: { $ref: '#/components/schemas/CampaignId' }
+        revision: { type: integer }
+        title: { type: string }
+        availability: { $ref: '#/components/schemas/MissionAvailability' }
+        reward: { $ref: '#/components/schemas/RewardTerms' }
+        display: { $ref: '#/components/schemas/MissionDisplay' }
+        place: { $ref: '#/components/schemas/PlaceSummary' }
+        viewer: { $ref: '#/components/schemas/ViewerSummary' }
+        links: { $ref: '#/components/schemas/MissionListItemLinks' }
+        updatedAt: { type: string, format: date-time }
+
+    MissionListEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [missions]
+          properties:
+            missions:
+              type: array
+              items: { $ref: '#/components/schemas/MissionListItem' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ---------- mission detail ----------
+    MissionRequirements:
+      type: object
+      additionalProperties: false
+      required: [post, place, location, schedule, resubmission]
+      properties:
+        post:
+          type: object
+          additionalProperties: false
+          required:
+            - allowedPostTypes
+            - authorshipPolicy
+            - prompt
+            - minDurationSeconds
+            - maxDurationSeconds
+            - requiredVisibility
+          properties:
+            allowedPostTypes:
+              type: array
+              items: { type: string }
+            authorshipPolicy: { type: string }
+            prompt: { type: string }
+            minDurationSeconds: { type: number }
+            maxDurationSeconds: { type: number }
+            requiredVisibility: { type: string }
+        place:
+          type: object
+          additionalProperties: false
+          required: [attachmentRequired]
+          properties:
+            attachmentRequired: { type: boolean }
+        location:
+          type: object
+          additionalProperties: false
+          required: [required, trustedSource]
+          properties:
+            required: { type: boolean }
+            trustedSource: { type: string }
+        schedule:
+          type: object
+          additionalProperties: false
+          required: [mustBeWithinMissionWindow, mustBeDuringVenueHours]
+          properties:
+            mustBeWithinMissionWindow: { type: boolean }
+            mustBeDuringVenueHours: { type: boolean }
+        resubmission:
+          type: object
+          additionalProperties: false
+          required: [allowedAfterRejection, maxAttempts]
+          properties:
+            allowedAfterRejection: { type: boolean }
+            maxAttempts: { type: integer }
+
+    MissionDetailLinks:
+      type: object
+      additionalProperties: false
+      required: [self, participation, jellies, start, directions]
+      properties:
+        self: { type: string }
+        participation: { type: ['string', 'null'] }
+        jellies: { type: string }
+        start: { type: string }
+        directions: { type: string }
+
+    Mission:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - campaignId
+        - slug
+        - revision
+        - title
+        - description
+        - instructions
+        - availability
+        - reward
+        - requirements
+        - display
+        - place
+        - links
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/MissionId' }
+        campaignId: { $ref: '#/components/schemas/CampaignId' }
+        slug: { type: string }
+        revision: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        instructions:
+          type: array
+          items: { type: string }
+        availability: { $ref: '#/components/schemas/MissionAvailability' }
+        reward: { $ref: '#/components/schemas/RewardTerms' }
+        requirements: { $ref: '#/components/schemas/MissionRequirements' }
+        display: { $ref: '#/components/schemas/MissionDisplay' }
+        place:
+          type: object
+          additionalProperties: false
+          required: [id, jellyPlaceId, name, address, latitude, longitude, timeZone, hours]
+          properties:
+            id: { $ref: '#/components/schemas/PlaceId' }
+            jellyPlaceId: { type: string }
+            name: { type: string }
+            address: { type: string }
+            latitude: { type: number }
+            longitude: { type: number }
+            timeZone: { type: string }
+            hours: { $ref: '#/components/schemas/PlaceHours' }
+        viewer: { $ref: '#/components/schemas/ViewerSummary' }
+        links: { $ref: '#/components/schemas/MissionDetailLinks' }
+        updatedAt: { type: string, format: date-time }
+
+    MissionDetailEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/Mission' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          properties: {}
+
+    # ---------- participation ----------
+    StartParticipationRequest:
+      type: object
+      additionalProperties: false
+      required: [expectedMissionRevision]
+      properties:
+        expectedMissionRevision: { type: integer }
+
+    ParticipationStart:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - missionId
+        - missionRevision
+        - jellyPlaceId
+        - startedAt
+        - submissionDeadlineAt
+        - resubmissionDeadlineAt
+        - canStart
+        - canSubmit
+        - canResubmit
+      properties:
+        id: { $ref: '#/components/schemas/ParticipationId' }
+        status: { type: string, enum: [started] }
+        missionId: { $ref: '#/components/schemas/MissionId' }
+        missionRevision: { type: integer }
+        jellyPlaceId: { type: string }
+        startedAt: { type: string, format: date-time }
+        submissionDeadlineAt: { type: string, format: date-time }
+        resubmissionDeadlineAt: { type: ['string', 'null'], format: date-time }
+        canStart: { type: boolean }
+        canSubmit: { type: boolean }
+        canResubmit: { type: boolean }
+
+    ParticipationStartEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, links]
+      properties:
+        data: { $ref: '#/components/schemas/ParticipationStart' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [self]
+          properties:
+            self: { type: string }
+
+    ParticipationTerms:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - description
+        - instructions
+        - missionWindow
+        - reward
+        - requirements
+        - place
+      properties:
+        title: { type: string }
+        description: { type: string }
+        instructions:
+          type: array
+          items: { type: string }
+        missionWindow:
+          type: object
+          additionalProperties: false
+          required: [startsAt, endsAt]
+          properties:
+            startsAt: { type: string, format: date-time }
+            endsAt: { type: string, format: date-time }
+        reward: { $ref: '#/components/schemas/RewardTerms' }
+        requirements: { $ref: '#/components/schemas/MissionRequirements' }
+        place:
+          type: object
+          additionalProperties: false
+          required: [id, jellyPlaceId, name, address, latitude, longitude, timeZone]
+          properties:
+            id: { $ref: '#/components/schemas/PlaceId' }
+            jellyPlaceId: { type: string }
+            name: { type: string }
+            address: { type: string }
+            latitude: { type: number }
+            longitude: { type: number }
+            timeZone: { type: string }
+
+    ParticipationDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - missionId
+        - missionRevision
+        - isCurrentMissionRevision
+        - startedAt
+        - submissionDeadlineAt
+        - resubmissionDeadlineAt
+        - attemptsUsed
+        - maxAttempts
+        - latestSubmissionId
+        - terms
+        - currentControls
+        - canStart
+        - canSubmit
+        - canResubmit
+        - nextAction
+        - publicMessage
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/ParticipationId' }
+        status: { type: string, enum: [started, expired, replaced] }
+        missionId: { $ref: '#/components/schemas/MissionId' }
+        missionRevision: { type: integer }
+        isCurrentMissionRevision: { type: boolean }
+        startedAt: { type: string, format: date-time }
+        submissionDeadlineAt: { type: string, format: date-time }
+        resubmissionDeadlineAt: { type: ['string', 'null'], format: date-time }
+        attemptsUsed: { type: integer }
+        maxAttempts: { type: integer }
+        latestSubmissionId: { type: ['string', 'null'] }
+        terms: { $ref: '#/components/schemas/ParticipationTerms' }
+        currentControls:
+          type: object
+          additionalProperties: false
+          required: [acceptingSubmissions, reasonCode]
+          properties:
+            acceptingSubmissions: { type: boolean }
+            reasonCode: { type: ['string', 'null'] }
+        canStart: { type: boolean }
+        canSubmit: { type: boolean }
+        canResubmit: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        publicMessage: { type: string }
+        updatedAt: { type: string, format: date-time }
+
+    ParticipationDetailEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/ParticipationDetail' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [mission, latestSubmission]
+          properties:
+            mission: { type: string }
+            latestSubmission: { type: ['string', 'null'] }
+
+    # ---------- submission creation ----------
+    ClientLocation:
+      type: object
+      additionalProperties: false
+      required: [latitude, longitude, accuracyMeters, capturedAt]
+      properties:
+        latitude: { type: number }
+        longitude: { type: number }
+        accuracyMeters: { type: number }
+        capturedAt: { type: string, format: date-time }
+
+    CreateSubmissionRequest:
+      type: object
+      additionalProperties: false
+      required: [participationId, missionRevision, jellyPostId]
+      properties:
+        participationId: { $ref: '#/components/schemas/ParticipationId' }
+        missionRevision: { type: integer }
+        jellyPostId: { type: string }
+        clientLocation: { $ref: '#/components/schemas/ClientLocation' }
+
+    SubmissionReward:
+      type: object
+      additionalProperties: false
+      required: [status, amount, token, transactionId]
+      properties:
+        status: { type: string, enum: [not_eligible, queued, processing, sent, failed, uncertain] }
+        amount: { $ref: '#/components/schemas/RewardAmount' }
+        token: { type: string }
+        transactionId: { type: ['string', 'null'] }
+
+    JellyPostRef:
+      type: object
+      additionalProperties: false
+      required: [id, watchUrl]
+      properties:
+        id: { type: string }
+        watchUrl: { type: string }
+
+    SubmissionCreated:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - missionId
+        - attempt
+        - jellyPost
+        - submissionStatus
+        - reward
+        - displayStatus
+        - publicMessage
+        - canResubmit
+        - submittedAt
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/SubmissionId' }
+        missionId: { $ref: '#/components/schemas/MissionId' }
+        attempt: { type: integer }
+        jellyPost: { $ref: '#/components/schemas/JellyPostRef' }
+        submissionStatus: { type: string }
+        reward: { $ref: '#/components/schemas/SubmissionReward' }
+        displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+        publicMessage: { type: string }
+        canResubmit: { type: boolean }
+        submittedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    SubmissionCreatedEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/SubmissionCreated' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [self, mission, events]
+          properties:
+            self: { type: string }
+            mission: { type: string }
+            events: { type: string }
+
+    # ---------- submission detail ----------
+    TimelineEntry:
+      type: object
+      additionalProperties: false
+      required: [sequence, type, submissionStatus, rewardStatus, displayStatus, occurredAt]
+      properties:
+        sequence: { type: integer }
+        type: { type: string }
+        submissionStatus: { type: string }
+        rewardStatus: { type: string }
+        displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+        reasonCode: { type: ['string', 'null'] }
+        occurredAt: { type: string, format: date-time }
+
+    SubmissionDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - mission
+        - attempt
+        - jellyPost
+        - submissionStatus
+        - verification
+        - decision
+        - reward
+        - displayStatus
+        - publicMessage
+        - canResubmit
+        - nextAction
+        - timeline
+        - submittedAt
+        - updatedAt
+      properties:
+        id: { $ref: '#/components/schemas/SubmissionId' }
+        mission:
+          type: object
+          additionalProperties: false
+          required: [id, revision, title]
+          properties:
+            id: { $ref: '#/components/schemas/MissionId' }
+            revision: { type: integer }
+            title: { type: string }
+        attempt: { type: integer }
+        jellyPost: { $ref: '#/components/schemas/JellyPostRef' }
+        submissionStatus: { type: string, enum: [submitted, verifying, needs_review, approved, rejected] }
+        verification:
+          type: object
+          additionalProperties: false
+          required: [status, attempts, reasonCode, checkedAt]
+          properties:
+            status: { type: string, enum: [pending, in_progress, complete, unavailable] }
+            attempts: { type: integer }
+            reasonCode: { type: ['string', 'null'] }
+            checkedAt: { type: ['string', 'null'], format: date-time }
+        decision:
+          type: object
+          additionalProperties: false
+          required: [status, reasonCode, message, decidedAt]
+          properties:
+            status: { type: string, enum: [pending, approved, rejected] }
+            reasonCode: { type: ['string', 'null'] }
+            message: { type: ['string', 'null'] }
+            decidedAt: { type: ['string', 'null'], format: date-time }
+        reward:
+          type: object
+          additionalProperties: false
+          required: [id, status, amount, token, transactionId, sentAt]
+          properties:
+            id:
+              oneOf:
+                - $ref: '#/components/schemas/RewardId'
+                - type: 'null'
+            status: { type: string, enum: [not_eligible, queued, processing, sent, failed, uncertain] }
+            amount: { $ref: '#/components/schemas/RewardAmount' }
+            token: { type: string }
+            transactionId: { type: ['string', 'null'] }
+            sentAt: { type: ['string', 'null'], format: date-time }
+        displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+        reasonCode: { type: ['string', 'null'] }
+        publicMessage: { type: string }
+        canResubmit: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        timeline:
+          type: array
+          items: { $ref: '#/components/schemas/TimelineEntry' }
+        submittedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    SubmissionDetailEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data: { $ref: '#/components/schemas/SubmissionDetail' }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [mission, events]
+          properties:
+            mission: { type: string }
+            events: { type: string }
+
+    SubmissionEventsEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [events]
+          properties:
+            events:
+              type: array
+              items: { $ref: '#/components/schemas/TimelineEntry' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ---------- me ----------
+    MeEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta, links]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [subject, campaign]
+          properties:
+            subject:
+              type: object
+              additionalProperties: false
+              required: [jellyUserId]
+              properties:
+                jellyUserId: { type: string }
+            campaign:
+              type: object
+              additionalProperties: false
+              required:
+                - id
+                - status
+                - statusCounts
+                - confirmedRewards
+                - latestEventSequence
+                - updatedAt
+              properties:
+                id: { $ref: '#/components/schemas/CampaignId' }
+                status: { type: string, enum: [upcoming, active, ended] }
+                statusCounts:
+                  type: object
+                  additionalProperties: false
+                  required:
+                    - notStarted
+                    - inProgress
+                    - submitted
+                    - underReview
+                    - approvedRewardPending
+                    - rewarded
+                    - rejected
+                    - supportNeeded
+                  properties:
+                    notStarted: { type: integer }
+                    inProgress: { type: integer }
+                    submitted: { type: integer }
+                    underReview: { type: integer }
+                    approvedRewardPending: { type: integer }
+                    rewarded: { type: integer }
+                    rejected: { type: integer }
+                    supportNeeded: { type: integer }
+                confirmedRewards:
+                  type: object
+                  additionalProperties: false
+                  required: [amount, token]
+                  properties:
+                    amount: { $ref: '#/components/schemas/RewardAmount' }
+                    token: { type: string }
+                latestEventSequence: { type: integer }
+                updatedAt: { type: string, format: date-time }
+        meta: { $ref: '#/components/schemas/Meta' }
+        links:
+          type: object
+          additionalProperties: false
+          required: [missions, submissions, events]
+          properties:
+            missions: { type: string }
+            submissions: { type: string }
+            events: { type: string }
+
+    MyMissionItem:
+      type: object
+      additionalProperties: false
+      required:
+        - mission
+        - participationStatus
+        - participation
+        - latestSubmission
+        - canStart
+        - canSubmit
+        - canResubmit
+        - nextAction
+        - reasonCode
+        - publicMessage
+        - updatedAt
+        - links
+      properties:
+        mission:
+          type: object
+          additionalProperties: false
+          required: [id, revision, title, availability, reward, display, place]
+          properties:
+            id: { $ref: '#/components/schemas/MissionId' }
+            revision: { type: integer }
+            title: { type: string }
+            availability:
+              type: object
+              additionalProperties: false
+              required: [state, acceptingSubmissions, reasonCode]
+              properties:
+                state: { type: string }
+                acceptingSubmissions: { type: boolean }
+                reasonCode: { type: ['string', 'null'] }
+            reward:
+              type: object
+              additionalProperties: false
+              required: [amount, token]
+              properties:
+                amount: { $ref: '#/components/schemas/RewardAmount' }
+                token: { type: string }
+            display:
+              type: object
+              additionalProperties: false
+              required: [emoji, category, difficulty, neighborhood]
+              properties:
+                emoji: { type: string }
+                category: { type: string }
+                difficulty: { type: string }
+                neighborhood: { type: string }
+            place:
+              type: object
+              additionalProperties: false
+              required: [id, name, latitude, longitude]
+              properties:
+                id: { $ref: '#/components/schemas/PlaceId' }
+                name: { type: string }
+                latitude: { type: number }
+                longitude: { type: number }
+        participationStatus: { type: string, enum: [not_started, started] }
+        participation:
+          type: ['object', 'null']
+          additionalProperties: false
+          required: [id, missionRevision, startedAt, submissionDeadlineAt, resubmissionDeadlineAt]
+          properties:
+            id: { $ref: '#/components/schemas/ParticipationId' }
+            missionRevision: { type: integer }
+            startedAt: { type: string, format: date-time }
+            submissionDeadlineAt: { type: string, format: date-time }
+            resubmissionDeadlineAt: { type: ['string', 'null'], format: date-time }
+        latestSubmission:
+          type: ['object', 'null']
+          additionalProperties: false
+          required: [id, attempt, submissionStatus, rewardStatus, displayStatus, updatedAt]
+          properties:
+            id: { $ref: '#/components/schemas/SubmissionId' }
+            attempt: { type: integer }
+            submissionStatus: { type: string }
+            rewardStatus: { type: string }
+            displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+            updatedAt: { type: string, format: date-time }
+        canStart: { type: boolean }
+        canSubmit: { type: boolean }
+        canResubmit: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        reasonCode: { type: ['string', 'null'] }
+        publicMessage: { type: string }
+        updatedAt: { type: string, format: date-time }
+        links:
+          type: object
+          additionalProperties: false
+          required: [mission, participation, latestSubmission]
+          properties:
+            mission: { type: string }
+            participation: { type: ['string', 'null'] }
+            latestSubmission: { type: ['string', 'null'] }
+
+    MyMissionsEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [missions]
+          properties:
+            missions:
+              type: array
+              items: { $ref: '#/components/schemas/MyMissionItem' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    MySubmissionItem:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - source
+        - attempt
+        - participationId
+        - mission
+        - jellyPost
+        - submissionStatus
+        - reward
+        - displayStatus
+        - reasonCode
+        - publicMessage
+        - canResubmit
+        - nextAction
+        - submittedAt
+        - updatedAt
+        - links
+      properties:
+        id: { $ref: '#/components/schemas/SubmissionId' }
+        source: { type: string, enum: [native, legacy] }
+        attempt: { type: integer }
+        participationId: { type: ['string', 'null'] }
+        mission:
+          type: object
+          additionalProperties: false
+          required: [id, revision, title]
+          properties:
+            id: { $ref: '#/components/schemas/MissionId' }
+            revision: { type: integer }
+            title: { type: string }
+        jellyPost: { $ref: '#/components/schemas/JellyPostRef' }
+        submissionStatus: { type: string }
+        reward:
+          type: object
+          additionalProperties: false
+          required: [id, status, amount, token, transactionId, sentAt]
+          properties:
+            id:
+              oneOf:
+                - $ref: '#/components/schemas/RewardId'
+                - type: 'null'
+            status: { type: string }
+            amount: { $ref: '#/components/schemas/RewardAmount' }
+            token: { type: string }
+            transactionId: { type: ['string', 'null'] }
+            sentAt: { type: ['string', 'null'], format: date-time }
+        displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+        reasonCode: { type: ['string', 'null'] }
+        publicMessage: { type: string }
+        canResubmit: { type: boolean }
+        nextAction: { $ref: '#/components/schemas/NextAction' }
+        submittedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        links:
+          type: object
+          additionalProperties: false
+          required: [self, events, mission]
+          properties:
+            self: { type: string }
+            events: { type: string }
+            mission: { type: string }
+
+    MySubmissionsEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [submissions]
+          properties:
+            submissions:
+              type: array
+              items: { $ref: '#/components/schemas/MySubmissionItem' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    MyEventItem:
+      type: object
+      additionalProperties: false
+      required: [id, sequence, type, entity, changes, occurredAt, links]
+      properties:
+        id: { $ref: '#/components/schemas/EventId' }
+        sequence: { type: integer }
+        type: { type: string }
+        entity:
+          type: object
+          additionalProperties: false
+          required: [type, id, sequence]
+          properties:
+            type: { type: string }
+            id: { type: string }
+            sequence: { type: integer }
+        changes:
+          type: object
+          additionalProperties: false
+          required:
+            - participationStatus
+            - submissionStatus
+            - rewardStatus
+            - displayStatus
+            - reasonCode
+            - publicMessage
+          properties:
+            participationStatus: { type: ['string', 'null'] }
+            submissionStatus: { type: ['string', 'null'] }
+            rewardStatus: { type: ['string', 'null'] }
+            displayStatus: { $ref: '#/components/schemas/DisplayStatus' }
+            reasonCode: { type: ['string', 'null'] }
+            publicMessage: { type: string }
+        occurredAt: { type: string, format: date-time }
+        links:
+          type: object
+          additionalProperties: false
+          required: [submission]
+          properties:
+            submission: { type: string }
+
+    MyEventsEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [events]
+          properties:
+            events:
+              type: array
+              items: { $ref: '#/components/schemas/MyEventItem' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ---------- leaderboard ----------
+    LeaderboardStanding:
+      type: object
+      additionalProperties: false
+      required: [rank, username, approvedMissionCount]
+      properties:
+        rank: { type: integer }
+        username: { type: string }
+        approvedMissionCount: { type: integer }
+
+    LeaderboardEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [scope, rankingBasis, standings]
+          properties:
+            scope: { type: string, enum: [current_season, all_time] }
+            rankingBasis: { type: string, enum: [approved_missions] }
+            campaign:
+              type: object
+              additionalProperties: false
+              required: [id, title, startsAt, endsAt]
+              properties:
+                id: { $ref: '#/components/schemas/CampaignId' }
+                title: { type: string }
+                startsAt: { type: string, format: date-time }
+                endsAt: { type: string, format: date-time }
+            startsAt: { type: string, format: date-time }
+            standings:
+              type: array
+              items: { $ref: '#/components/schemas/LeaderboardStanding' }
+        meta: { $ref: '#/components/schemas/Meta' }

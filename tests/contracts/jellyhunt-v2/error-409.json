@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "submission_conflict",
+    "message": "This Jelly post cannot be used for another submission.",
+    "requestId": "req_01HXREQUESTERR409",
+    "retryable": false,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR409",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

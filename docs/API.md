@@ -404,12 +404,104 @@ Admin list responses expose operational Convex records and are intentionally not
 
 The PlatePost consumer page includes a Passport progress shell, Editorial mission guide, and privacy-safe leaderboard contract state. It does not invent authenticated player data: Jelly web auth, Jelly Library/post selection, canonical profiles, personal progress, and live leaderboard standings require signed Jelly identity and progress contracts. The current completion handoff is the JellyJelly camera deep link.
 
-## Future native endpoints
+## v2 native API (executable contract, routes not yet implemented)
 
-The following design targets are not implemented public contracts yet:
+The clean native contract is published as an executable OpenAPI 3.1 document at
+[`openapi/jellyhunt-v2.yaml`](../openapi/jellyhunt-v2.yaml), validated by
+`pnpm validate:openapi` (Redocly) and exercised by `pnpm test:contracts`. It
+implements the route list, schemas, auth model, and error catalog approved in
+the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md)
+and the [Leaderboard and native-integration design](superpowers/specs/2026-07-16-jellyhunt-leaderboard-native-integration-design.md).
 
-- `GET /missions/:id`
-- `GET /progress?user_id=...`
-- `GET /leaderboard`
+**This section documents the contract only.** No `app/api/v2/jellyhunt/*`
+route handlers exist yet; do not build a production native dependency on v2
+until a specific route is implemented and verified in the target environment.
+v1 (documented above) remains the only live compatibility surface until then.
 
-Do not build a production native dependency on an endpoint until it is documented as implemented and verified in the target environment.
+### Base URL and auth
+
+```text
+https://<platepost-host>/api/v2/jellyhunt
+```
+
+Personalized routes require a short-lived Jelly mission bearer token:
+
+```http
+Authorization: Bearer <jelly-mission-token>
+```
+
+validated against the `jellyMissionToken` HTTP bearer security scheme
+(`components.securitySchemes.jellyMissionToken` in the OpenAPI document). v2
+never accepts a caller-supplied `user_id`/`jellyUserId`; the subject always
+comes from the verified token. An optional-but-present bearer token that
+fails validation returns `401`, never a silent anonymous downgrade.
+
+### Operations
+
+| Method | Route | operationId | Auth |
+| --- | --- | --- | --- |
+| `GET` | `/campaigns/current` | `getCurrentCampaign` | Public |
+| `GET` | `/missions` | `listMissions` | Public, optional viewer |
+| `GET` | `/missions/{missionId}` | `getMission` | Public, optional viewer |
+| `GET` | `/missions/{missionId}/jellies` | `getMissionJellies` | Public |
+| `GET` | `/places/{placeId}` | `getPlace` | Public |
+| `GET` | `/places/{placeId}/jellies` | `getPlaceJellies` | Public |
+| `PUT` | `/missions/{missionId}/participation` | `startMissionParticipation` | Bearer |
+| `GET` | `/participations/{participationId}` | `getParticipation` | Bearer, owner-only |
+| `POST` | `/missions/{missionId}/submissions` | `createMissionSubmission` | Bearer |
+| `GET` | `/submissions/{submissionId}` | `getSubmission` | Bearer, owner-only |
+| `GET` | `/submissions/{submissionId}/events` | `listSubmissionEvents` | Bearer, owner-only |
+| `GET` | `/me` | `getMe` | Bearer |
+| `GET` | `/me/missions` | `listMyMissions` | Bearer |
+| `GET` | `/me/submissions` | `listMySubmissions` | Bearer |
+| `GET` | `/me/events` | `listMyEvents` | Bearer |
+| `GET` | `/leaderboards/current-season` | `getCurrentSeasonLeaderboard` | Public |
+| `GET` | `/leaderboards/all-time` | `getAllTimeLeaderboard` | Public |
+
+### Conventions
+
+- Public resource IDs are opaque strings with a stable resource prefix and a
+  non-empty suffix: campaign `cam_`, place `plc_`, mission `mis_`,
+  participation `par_`, submission `sub_`, reward `rwd_`, event `evt_`.
+  Convex `_id` values are never exposed.
+- Reward amounts are positive decimal strings matching `^[0-9]+(?:\.[0-9]+)?$`
+  (e.g. `"60"`, `"0.000001"`), never floating-point JSON numbers.
+- Every success envelope has `data` and `meta` (`apiVersion: "2.0"`,
+  `requestId`, `generatedAt`, plus optional `catalogRevision`,
+  `leaderboardRevision`, and `page`); every error envelope has `error` and
+  `meta`. See `components.schemas.Error`/`Meta` in the OpenAPI document.
+- Public response schemas set `additionalProperties: false`; no
+  Convex/wallet/geofence/`approvalMode`/`jellyUserId` field is ever returned
+  from a public (non-owner) route.
+- Submission creation requires `Idempotency-Key` and returns `202 Accepted`
+  for the newly queued attempt.
+- Submission/review status and reward delivery are separate fields
+  (`submissionStatus`, `rewardStatus`); clients render the server-derived
+  `displayStatus`, `publicMessage`, and `nextAction` rather than
+  reimplementing the transition table. The frozen paid-moderation fixture
+  (`rewarded_removed_from_rankings` / `post_became_ineligible_after_reward` /
+  `canResubmit: false` / `nextAction: contact_support`) is pinned in
+  `tests/contracts/jellyhunt-v2/submission-detail-paid-moderated.200.json`.
+
+### Fixtures
+
+Versioned request/response fixtures live in
+[`tests/contracts/jellyhunt-v2/`](../tests/contracts/jellyhunt-v2/), indexed
+by `manifest.json` (`apiVersion`, `successFixtures`, `errorStatuses`).
+`tests/jellyhunt-v2-fixtures.test.ts` validates every fixture against its
+OpenAPI response schema, scans public fixtures for forbidden internal keys,
+and pins the exact paid-moderation owner-status fixture. Jelly-owned partner
+API examples (canonical place, place-indexed Jellies, post preflight,
+component verification, reward-intent attempts/lookup, reward-account
+capacity) are recorded separately in
+[`tests/contracts/jelly-partner-v1/`](../tests/contracts/jelly-partner-v1/)
+for the future partner-integration contract tests.
+
+### Migration relationship to v1
+
+v1 remains the only implemented, live compatibility surface. Per the
+approved design, v1 response shapes and statuses stay frozen while v2 is
+built out route by route; `tests/jellyhunt-v1-compatibility.test.ts` guards
+that freeze. v1 is not deprecated or retired by the existence of this
+contract — only by the phased migration/cutover plan in the design
+documents, which is out of scope for this repository until a later task.

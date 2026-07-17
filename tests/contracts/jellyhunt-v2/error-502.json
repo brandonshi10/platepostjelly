@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "dependency_invalid_response",
+    "message": "An upstream dependency returned an invalid response.",
+    "requestId": "req_01HXREQUESTERR502",
+    "retryable": true,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR502",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

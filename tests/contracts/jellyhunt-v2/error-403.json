@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "forbidden",
+    "message": "This account cannot perform the requested action.",
+    "requestId": "req_01HXREQUESTERR403",
+    "retryable": false,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR403",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

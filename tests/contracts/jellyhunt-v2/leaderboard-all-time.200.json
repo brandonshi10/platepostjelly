@@ -1,0 +1,30 @@
+{
+  "data": {
+    "scope": "all_time",
+    "rankingBasis": "approved_missions",
+    "startsAt": "2026-07-01T00:00:00Z",
+    "standings": [
+      {
+        "rank": 1,
+        "username": "ari",
+        "approvedMissionCount": 27
+      },
+      {
+        "rank": 2,
+        "username": "mika",
+        "approvedMissionCount": 19
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000019",
+    "generatedAt": "2026-08-12T20:00:00Z",
+    "leaderboardRevision": 51,
+    "page": {
+      "limit": 20,
+      "nextCursor": null,
+      "hasMore": false
+    }
+  }
+}

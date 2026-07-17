@@ -1,0 +1,52 @@
+{
+  "data": {
+    "submissions": [
+      {
+        "id": "sub_01HXSUBMISSION0001",
+        "source": "native",
+        "attempt": 1,
+        "participationId": "par_01HXPARTICIPATE01",
+        "mission": {
+          "id": "mis_01HXMISSION000001",
+          "revision": 7,
+          "title": "The Scarr's Cheese Pull"
+        },
+        "jellyPost": {
+          "id": "01HXJELLYPOST000002",
+          "watchUrl": "https://jellyjelly.com/watch/01HXJELLYPOST000002"
+        },
+        "submissionStatus": "approved",
+        "reward": {
+          "id": "rwd_01HXREWARD0000002",
+          "status": "processing",
+          "amount": "60",
+          "token": "JELLY-MY-JELLY",
+          "transactionId": null,
+          "sentAt": null
+        },
+        "displayStatus": "approved_reward_pending",
+        "reasonCode": null,
+        "publicMessage": "Approved. Your reward is being sent.",
+        "canResubmit": false,
+        "nextAction": "wait_for_reward",
+        "submittedAt": "2026-08-05T18:42:11Z",
+        "updatedAt": "2026-08-05T19:00:00Z",
+        "links": {
+          "self": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001",
+          "events": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001/events",
+          "mission": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000016",
+    "generatedAt": "2026-08-05T19:00:01Z",
+    "page": {
+      "limit": 20,
+      "nextCursor": "opaque-cursor-page-2",
+      "hasMore": true
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "route": "GET /partner/v1/jellyhunt/places/{jellyPlaceId}",
+  "status": 200,
+  "body": {
+    "place": {
+      "id": "jpl_01HXJELLYPLACE001",
+      "revision": 9,
+      "status": "active",
+      "name": "Scarr's Pizza",
+      "address": "35 Orchard St, New York, NY",
+      "latitude": 40.7163,
+      "longitude": -73.9914,
+      "timeZone": "America/New_York",
+      "updatedAt": "2026-07-16T19:00:00Z"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "route": "POST /partner/v1/jellyhunt/reward-intents/{rewardIntentId}/attempts",
+  "status": 201,
+  "request": {
+    "attemptNumber": 1,
+    "submissionId": "sub_01HXSUBMISSION0001",
+    "missionId": "mis_01HXMISSION000001",
+    "recipientUserId": "usr_jelly_canonical_001",
+    "jellyPostId": "01HXJELLYPOST000002",
+    "amount": "60",
+    "token": "JELLY-MY-JELLY",
+    "eligibilityGuard": {
+      "authorshipPolicy": "canonical_owner",
+      "canonicalOwnerUserId": "usr_jelly_canonical_001",
+      "requiredPostState": "ready",
+      "requiredVisibility": "public",
+      "requiredModerationStatus": "clear",
+      "expectedPlaceId": "jpl_01HXJELLYPLACE001"
+    },
+    "note": "Thanks for completing The Scarr's Cheese Pull",
+    "visibility": "private",
+    "participantConsentId": null
+  },
+  "body": {
+    "rewardIntent": {
+      "id": "rwd_01HXREWARD0000002",
+      "status": "sent",
+      "submissionId": "sub_01HXSUBMISSION0001",
+      "missionId": "mis_01HXMISSION000001",
+      "jellyPostId": "01HXJELLYPOST000002",
+      "recipientUserId": "usr_jelly_canonical_001",
+      "amount": "60",
+      "token": "JELLY-MY-JELLY",
+      "decimals": 6,
+      "latestAttemptNumber": 1,
+      "transactionId": "txn_01HXTRANSACTION002",
+      "transactionHash": null,
+      "acceptedAt": "2026-08-05T18:59:58Z",
+      "sentAt": "2026-08-05T19:00:00Z",
+      "updatedAt": "2026-08-05T19:00:00Z"
+    },
+    "attempt": {
+      "number": 1,
+      "status": "sent",
+      "idempotencyKey": "reward:rwd_01HXREWARD0000002:attempt:1",
+      "eligibility": {
+        "postRevision": 4,
+        "checkedAt": "2026-08-05T18:59:58Z"
+      },
+      "retryable": false,
+      "final": true,
+      "confirmedNoTransfer": false
+    }
+  }
+}

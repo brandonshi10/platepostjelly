@@ -1,0 +1,72 @@
+{
+  "route": "POST /partner/v1/jellyhunt/submissions/verify",
+  "status": 200,
+  "request": {
+    "submissionId": "sub_01HXSUBMISSION0001",
+    "verificationAttempt": 1,
+    "missionId": "mis_01HXMISSION000001",
+    "missionRevision": 7,
+    "userId": "usr_jelly_canonical_001",
+    "postId": "01HXJELLYPOST000002",
+    "expectedPlaceId": "jpl_01HXJELLYPLACE001",
+    "postRequirements": {
+      "allowedPostTypes": ["video"],
+      "authorshipPolicy": "canonical_owner",
+      "minDurationSeconds": 5,
+      "maxDurationSeconds": 90,
+      "requiredVisibility": "public"
+    },
+    "missionWindow": {
+      "startsAt": "2026-08-01T16:00:00Z",
+      "endsAt": "2026-08-31T23:00:00Z"
+    },
+    "placeSnapshot": {
+      "latitude": 40.7163,
+      "longitude": -73.9914,
+      "geofenceRadiusMeters": 75
+    }
+  },
+  "body": {
+    "verificationId": "jvr_01HXVERIFICATION1",
+    "evidenceVersion": "1",
+    "evidenceStatus": "complete",
+    "reasonCodes": [],
+    "post": {
+      "id": "01HXJELLYPOST000002",
+      "canonicalOwnerUserId": "usr_jelly_canonical_001",
+      "eligibleParticipantIds": ["usr_jelly_canonical_001"],
+      "postType": "video",
+      "durationSeconds": 31.4,
+      "state": "ready",
+      "visibility": "public",
+      "moderationStatus": "clear",
+      "postedAt": "2026-08-05T18:30:00Z",
+      "deletedAt": null,
+      "observedAt": "2026-08-05T18:42:19Z"
+    },
+    "proof": {
+      "author": {
+        "policy": "canonical_owner",
+        "matched": true,
+        "canonicalOwnerUserId": "usr_jelly_canonical_001",
+        "eligibleParticipantIds": ["usr_jelly_canonical_001"],
+        "source": "jelly_post_record"
+      },
+      "place": {
+        "matched": true,
+        "actualPlaceId": "jpl_01HXJELLYPLACE001",
+        "source": "server_place_relation"
+      },
+      "location": {
+        "matched": true,
+        "source": "trusted_post_gps",
+        "latitude": 40.7164,
+        "longitude": -73.9915,
+        "accuracyMeters": 11,
+        "capturedAt": "2026-08-05T18:29:20Z",
+        "distanceMeters": 18
+      }
+    },
+    "checkedAt": "2026-08-05T18:42:20Z"
+  }
+}

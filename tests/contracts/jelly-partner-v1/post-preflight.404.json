@@ -1,0 +1,10 @@
+{
+  "route": "POST /partner/v1/jellyhunt/posts/{postId}/preflight",
+  "status": 404,
+  "body": {
+    "error": {
+      "code": "post_not_found",
+      "message": "This Jelly post does not exist."
+    }
+  }
+}

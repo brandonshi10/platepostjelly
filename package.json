@@ -35,10 +35,13 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "convex-test": "0.0.38",
     "eslint": "8.57.1",
     "eslint-config-next": "15.5.20",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "yaml": "2.9.0"
   }
 }

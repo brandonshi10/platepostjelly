@@ -1,0 +1,38 @@
+{
+  "data": {
+    "events": [
+      {
+        "id": "evt_01HXEVENT00000042",
+        "sequence": 42,
+        "type": "jellyhunt.reward.status_changed",
+        "entity": {
+          "type": "reward_intent",
+          "id": "rwd_01HXREWARD0000002",
+          "sequence": 3
+        },
+        "changes": {
+          "participationStatus": "started",
+          "submissionStatus": "approved",
+          "rewardStatus": "sent",
+          "displayStatus": "rewarded",
+          "reasonCode": null,
+          "publicMessage": "Your reward was sent."
+        },
+        "occurredAt": "2026-08-05T19:00:00Z",
+        "links": {
+          "submission": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000017",
+    "generatedAt": "2026-08-05T19:00:01Z",
+    "page": {
+      "limit": 50,
+      "nextCursor": "opaque-after-sequence-42",
+      "hasMore": false
+    }
+  }
+}

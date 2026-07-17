@@ -1,0 +1,45 @@
+{
+  "route": "GET /partner/v1/jellyhunt/places/{jellyPlaceId}/jellies",
+  "status": 200,
+  "body": {
+    "place": {
+      "id": "jpl_01HXJELLYPLACE001",
+      "revision": 9
+    },
+    "jellies": [
+      {
+        "id": "01HXJELLYPOST000001",
+        "revision": 4,
+        "state": "ready",
+        "visibility": "public",
+        "moderationStatus": "clear",
+        "postType": "video",
+        "durationSeconds": 31.4,
+        "author": {
+          "id": "usr_jelly_ari",
+          "username": "ari",
+          "displayName": "Ari",
+          "avatarUrl": "https://cdn.jellyjelly.com/avatars/ari.jpg"
+        },
+        "title": "Best slice on Orchard",
+        "summary": "A first bite at Scarr's.",
+        "thumbnailUrl": "https://cdn.jellyjelly.com/signed/thumb1.jpg",
+        "mediaExpiresAt": "2026-08-05T19:45:00Z",
+        "watchUrl": "https://jellyjelly.com/watch/01HXJELLYPOST000001",
+        "placeAssociation": {
+          "placeId": "jpl_01HXJELLYPLACE001",
+          "source": "server_place_relation",
+          "associatedAt": "2026-08-05T18:30:00Z"
+        },
+        "postedAt": "2026-08-05T18:30:00Z",
+        "updatedAt": "2026-08-05T18:31:00Z"
+      }
+    ],
+    "page": {
+      "limit": 20,
+      "nextCursor": null,
+      "hasMore": false
+    },
+    "generatedAt": "2026-08-05T18:45:00Z"
+  }
+}
