@@ -1,6 +1,6 @@
 # PlatePost ↔ JellyJelly Native Mission API v2 Design
 
-**Status:** Proposed contract for PlatePost and Jelly engineering review
+**Status:** Approved for local and development implementation; Production integration gates remain
 **Date:** 2026-07-16
 **Owners:** PlatePost mission platform, JellyJelly identity/content/wallet platform
 **Primary native consumer:** JellyJelly iOS and Android, implemented by Kris and the Jelly engineering team
@@ -2179,9 +2179,9 @@ No v2 list query may use unbounded `.collect()` over a growing table or perform 
 - Imported legacy post and transaction IDs occupy the same v2 uniqueness indexes and are never re-paid; the import path cannot create standings, reservations, reward intents, or payout work and cannot run after its signed window closes.
 - Source/import counts and hashes match, every prior successful transaction is reconciled, and no independent legacy writer/payout worker remains before production automatic rewards are enabled.
 
-## Approval gates before implementation planning
+## Production integration gates
 
-This design is ready for PlatePost and Jelly engineering review. Approval means agreeing to these binding decisions:
+Local and development planning/implementation was authorized on 2026-07-16. Production promotion still requires named PlatePost and Jelly engineering approval of these binding decisions:
 
 1. v2—not a breaking rewrite of v1—is the clean native contract, while frozen v1 fixtures and the exact split-state adapter remain compatible.
 2. Jelly issues a five-minute asymmetric mission token with audience `platepost-jellyhunt`.
@@ -2194,4 +2194,4 @@ This design is ready for PlatePost and Jelly engineering review. Approval means 
 9. Legacy submissions and transactions are imported into the same dedupe boundary, and legacy writes/payouts are fenced before production automatic rewards.
 10. Public/personalized caching, pagination, privacy-safe errors, and idempotency retention follow this contract.
 
-After these decisions are approved, the next artifact is the task-by-task implementation plan; runtime implementation should follow that reviewed plan rather than extending the unsafe v1 assumptions ad hoc.
+The task-by-task implementation plans may now be executed against local or PlatePost development Convex only. Production deployment, data import, legacy fencing, and automatic rewards remain blocked until the integration manifest records every named approval and acceptance artifact above.

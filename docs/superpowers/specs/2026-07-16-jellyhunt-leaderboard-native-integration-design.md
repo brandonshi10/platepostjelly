@@ -1,6 +1,6 @@
 # JellyHunt Leaderboard and PlatePost Native Integration Design
 
-**Status:** Approved design awaiting written-spec review
+**Status:** Approved for local and development implementation; Production integration gates remain
 **Date:** 2026-07-16
 **Owners:** PlatePost mission platform and JellyJelly identity/content platform
 
