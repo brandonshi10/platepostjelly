@@ -91,3 +91,15 @@ export type JellyhuntMission = z.infer<typeof missionSchema>;
 export type UserMissionStatus = z.infer<typeof userMissionStatusSchema>;
 export type MissionsResponse = z.infer<typeof missionsResponseSchema>;
 export type SubmissionRequest = z.infer<typeof submissionRequestSchema>;
+
+const V1_ADDITIVE_KEYS = new Set(["publicId", "revision"]);
+
+export function projectLegacyV1(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(projectLegacyV1);
+  if (typeof value !== "object" || value === null) return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => !V1_ADDITIVE_KEYS.has(key))
+      .map(([key, child]) => [key, projectLegacyV1(child)]),
+  );
+}

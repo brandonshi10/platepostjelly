@@ -1,0 +1,9 @@
+{
+  "version": "jellyhunt-v1-frozen-2026-07-16",
+  "frozenRoutes": [
+    "GET /api/v1/jellyhunt/missions",
+    "POST /api/v1/jellyhunt/submissions"
+  ],
+  "additiveKeys": ["publicId", "revision"],
+  "malformedJsonStatus": 500
+}

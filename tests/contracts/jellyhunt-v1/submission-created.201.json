@@ -1,0 +1,20 @@
+{
+  "status": 201,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": {
+    "submission": {
+      "submissionId": "fixture_fixture_mission_1_jelly_post_456",
+      "status": "submitted",
+      "fixture": true
+    }
+  },
+  "legacyProjection": {
+    "submission": {
+      "submissionId": "fixture_fixture_mission_1_jelly_post_456",
+      "status": "submitted",
+      "fixture": true
+    }
+  }
+}
