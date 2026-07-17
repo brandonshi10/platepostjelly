@@ -10,11 +10,17 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:contracts": "vitest run tests/jellyhunt-v1-compatibility.test.ts tests/jellyhunt-v2-openapi.test.ts tests/jellyhunt-v2-fixtures.test.ts",
+    "test:convex": "vitest run --config vitest.convex.config.ts",
+    "validate:openapi": "redocly lint openapi/jellyhunt-v2.yaml",
+    "typecheck:convex": "convex dev --once --typecheck enable",
     "convex": "convex dev",
     "migrate:legacy-jellyhunt": "node scripts/import-legacy-jellyhunt.mjs"
   },
   "dependencies": {
     "convex": "^1.27.1",
+    "jose": "5.9.6",
+    "json-canonicalize": "1.1.1",
     "lucide-react": "^0.468.0",
     "mapbox-gl": "^3.26.0",
     "next": "^15.1.8",
@@ -23,10 +29,13 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@redocly/cli": "1.34.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "convex-test": "0.0.38",
     "eslint": "8.57.1",
     "eslint-config-next": "15.5.20",
     "typescript": "^5.7.2",
