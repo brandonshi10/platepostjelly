@@ -321,4 +321,27 @@ describe("JellyHunt mission publish, edit, and lifecycle transactions", () => {
     });
     expect(revisionRows).toHaveLength(0);
   });
+
+  it("trims a whitespace-padded jellyPlaceId so it dedupes against the unpadded canonical place", async () => {
+    const t = createJellyhuntTestConvex();
+    const jellyPlaceId = `jpl_${uniqueSuffix()}`;
+
+    await t.mutation(places.createPlace, placeArgs({ jellyPlaceId }));
+
+    await expect(
+      t.mutation(places.createPlace, placeArgs({ jellyPlaceId: `  ${jellyPlaceId}\n` })),
+    ).rejects.toThrow(/place_already_linked_to_jelly_place_id/);
+
+    const matchingPlaces = await t.run(async (ctx) => {
+      return await ctx.db
+        .query("jellyhuntPlaces")
+        .withIndex("by_jelly_place_id", (q) => q.eq("jellyPlaceId", jellyPlaceId))
+        .collect();
+    });
+
+    // Exactly one canonical place row exists, and it stored the trimmed
+    // (never lowercased) ID.
+    expect(matchingPlaces).toHaveLength(1);
+    expect(matchingPlaces[0].jellyPlaceId).toBe(jellyPlaceId);
+  });
 });

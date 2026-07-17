@@ -108,6 +108,10 @@ export const createCampaign = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    // `actorId` is a Jelly-sourced ID: trim surrounding whitespace at ingest
+    // but never lowercase it (design spec: "Jelly IDs are trimmed but never
+    // lowercased").
+    const actorId = args.actorId.trim();
     if (args.startsAt >= args.endsAt) throw new Error("invalid_campaign_window");
 
     const existingSlug = await ctx.db
@@ -139,7 +143,7 @@ export const createCampaign = mutationGeneric({
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "campaign.created",
       entityType: "campaign",
       entityId: campaignId,
@@ -172,6 +176,7 @@ export const selectCurrentCampaign = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
     const target = await loadCampaignByPublicId(ctx, args.campaignPublicId);
     if (target.status === "archived") throw new Error("archived_campaign_cannot_be_current");
 
@@ -201,7 +206,7 @@ export const selectCurrentCampaign = mutationGeneric({
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "campaign.selected_current",
       entityType: "campaign",
       entityId: target._id,

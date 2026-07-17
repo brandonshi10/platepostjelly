@@ -1,9 +1,11 @@
 import { mutationGeneric, queryGeneric } from "convex/server";
 import { v } from "convex/values";
-import { approvalMode, difficulty, lifecycle, missionRequirements, rewardTerms } from "./validators";
-import { assertPublicId, createPublicId } from "./publicIds";
+import { approvalMode, difficulty, missionRequirements, rewardTerms } from "./validators";
+import { createPublicId, assertPublicId } from "./publicIds";
 import { recordAuditEvent } from "./audit";
 import { requireServiceKey } from "./security";
+import { loadCampaignByPublicId } from "./campaigns";
+import { loadPlaceByPublicId } from "./places";
 
 /**
  * Draft mission CRUD, immutable publish-time revisioning, and lifecycle
@@ -111,21 +113,12 @@ export const createDraftMission = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
 
-    const campaignPublicId = assertPublicId("cam", args.campaignPublicId);
-    const campaign = await ctx.db
-      .query("jellyhuntCampaigns")
-      .withIndex("by_public_id", (q: any) => q.eq("publicId", campaignPublicId))
-      .unique();
-    if (!campaign) throw new Error("campaign_not_found");
+    const campaign = await loadCampaignByPublicId(ctx, args.campaignPublicId);
     if (campaign.status === "archived") throw new Error("campaign_archived_cannot_add_mission");
 
-    const placePublicId = assertPublicId("plc", args.placePublicId);
-    const place = await ctx.db
-      .query("jellyhuntPlaces")
-      .withIndex("by_public_id", (q: any) => q.eq("publicId", placePublicId))
-      .unique();
-    if (!place) throw new Error("place_not_found");
+    const place = await loadPlaceByPublicId(ctx, args.placePublicId);
 
     const existingSlug = await ctx.db
       .query("jellyhuntMissions")
@@ -153,13 +146,13 @@ export const createDraftMission = mutationGeneric({
       reward: args.reward,
       acceptingSubmissions: false,
       budgetAllocation: args.budgetAllocation,
-      createdBy: args.actorId,
+      createdBy: actorId,
       createdAt: now,
       updatedAt: now,
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "mission.draft_created",
       entityType: "mission",
       entityId: missionId,
@@ -199,6 +192,7 @@ export const updateMissionDraft = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
     const mission = await loadMissionByPublicId(ctx, args.missionPublicId);
     if (mission.status === "archived") throw new Error("mission_archived_cannot_edit");
     if (mission.currentRevision !== args.expectedRevision) throw new Error("draft_revision_conflict");
@@ -217,7 +211,7 @@ export const updateMissionDraft = mutationGeneric({
     await ctx.db.patch(mission._id, patch);
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "mission.draft_updated",
       entityType: "mission",
       entityId: mission._id,
@@ -265,6 +259,7 @@ export const publishMissionRevision = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
 
     const mission = await loadMissionByPublicId(ctx, args.missionPublicId);
     if (mission.status === "archived") throw new Error("mission_archived_cannot_publish");
@@ -305,7 +300,7 @@ export const publishMissionRevision = mutationGeneric({
         timeZone: place.timeZone,
       },
       missionWindow: args.content.missionWindow,
-      createdBy: args.actorId,
+      createdBy: actorId,
       createdAt: now,
     });
 
@@ -327,7 +322,7 @@ export const publishMissionRevision = mutationGeneric({
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "mission.published",
       entityType: "mission",
       entityId: mission._id,
@@ -347,7 +342,11 @@ export const publishMissionRevision = mutationGeneric({
  * audit row (nothing is deleted or rewritten) and only flips
  * `acceptingSubmissions` off so new starts are blocked while owner history
  * remains intact. Reactivating back to `active` re-validates the place's
- * review status and requires at least one prior publish.
+ * review status and requires at least one prior publish. `status` is
+ * deliberately restricted to `active|paused|archived`: this mutation is a
+ * post-publish lifecycle toggle, never a way to demote an already-published
+ * mission back to `draft` (only `createDraftMission` may create a `draft`
+ * mission).
  */
 export const setMissionLifecycle = mutationGeneric({
   args: {
@@ -355,10 +354,11 @@ export const setMissionLifecycle = mutationGeneric({
     actorId: v.string(),
     requestId: v.optional(v.string()),
     missionPublicId: v.string(),
-    status: lifecycle,
+    status: v.union(v.literal("active"), v.literal("paused"), v.literal("archived")),
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
     const mission = await loadMissionByPublicId(ctx, args.missionPublicId);
     if (mission.status === args.status) return mission.publicId;
 
@@ -375,7 +375,7 @@ export const setMissionLifecycle = mutationGeneric({
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "mission.lifecycle_changed",
       entityType: "mission",
       entityId: mission._id,

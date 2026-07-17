@@ -58,11 +58,17 @@ export const createPlace = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    // Jelly-sourced IDs are trimmed but never lowercased at ingest (design
+    // spec: "Jelly IDs are trimmed but never lowercased") so a
+    // whitespace-padded ID cannot bypass the `by_jelly_place_id` dedupe
+    // check below.
+    const actorId = args.actorId.trim();
+    const jellyPlaceId = args.jellyPlaceId.trim();
     if (args.geofenceRadiusMeters <= 0) throw new Error("invalid_geofence_radius");
 
     const existing = await ctx.db
       .query("jellyhuntPlaces")
-      .withIndex("by_jelly_place_id", (q: any) => q.eq("jellyPlaceId", args.jellyPlaceId))
+      .withIndex("by_jelly_place_id", (q: any) => q.eq("jellyPlaceId", jellyPlaceId))
       .unique();
     if (existing) throw new Error("place_already_linked_to_jelly_place_id");
 
@@ -70,7 +76,7 @@ export const createPlace = mutationGeneric({
     const publicId = createPublicId("plc");
     const placeId = await ctx.db.insert("jellyhuntPlaces", {
       publicId,
-      jellyPlaceId: args.jellyPlaceId,
+      jellyPlaceId,
       name: args.name,
       address: args.address,
       latitude: args.latitude,
@@ -84,11 +90,11 @@ export const createPlace = mutationGeneric({
     });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "place.created",
       entityType: "place",
       entityId: placeId,
-      nextState: { publicId, jellyPlaceId: args.jellyPlaceId, reviewStatus: "draft" },
+      nextState: { publicId, jellyPlaceId, reviewStatus: "draft" },
       requestId: args.requestId,
     });
 
@@ -107,6 +113,7 @@ export const setPlaceReviewStatus = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
     const place = await loadPlaceByPublicId(ctx, args.placePublicId);
     const previousReviewStatus = place.reviewStatus;
     if (previousReviewStatus === args.reviewStatus) return place.publicId;
@@ -114,7 +121,7 @@ export const setPlaceReviewStatus = mutationGeneric({
     await ctx.db.patch(place._id, { reviewStatus: args.reviewStatus, updatedAt: Date.now() });
 
     await recordAuditEvent(ctx, {
-      actor: args.actorId,
+      actor: actorId,
       action: "place.review_status_changed",
       entityType: "place",
       entityId: place._id,
