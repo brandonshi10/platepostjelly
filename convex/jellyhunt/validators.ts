@@ -131,6 +131,7 @@ export const placeSnapshot = v.object({
   address: v.optional(v.string()),
   latitude: v.number(),
   longitude: v.number(),
+  geofenceRadiusMeters: v.number(),
   timeZone: v.string(),
 });
 

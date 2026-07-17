@@ -4,6 +4,7 @@ import {
   approvalMode,
   completionSource,
   decisionStatus,
+  difficulty,
   idempotencyRecordState,
   leaderboardEventType,
   legacyDedupeKind,
@@ -58,6 +59,7 @@ const jellyhuntPlaces = defineTable({
   address: v.optional(v.string()),
   latitude: v.number(),
   longitude: v.number(),
+  geofenceRadiusMeters: v.number(),
   timeZone: v.string(),
   hours: v.optional(
     v.array(
@@ -127,6 +129,7 @@ const jellyhuntMissions = defineTable({
   currentRevision: v.number(),
   title: v.string(),
   category: v.string(),
+  difficulty,
   emoji: v.string(),
   neighborhood: v.string(),
   price: v.string(),

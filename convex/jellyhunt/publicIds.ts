@@ -19,6 +19,8 @@ function randomToken(): string {
   if (globalCrypto && typeof globalCrypto.randomUUID === "function") {
     return globalCrypto.randomUUID().replace(/-/g, "");
   }
+  // Math.random fallback is intentionally non-cryptographic: public IDs are
+  // opaque resource identifiers, never secrets or capability tokens.
   let token = "";
   for (let index = 0; index < 32; index += 1) {
     token += Math.floor(Math.random() * 16).toString(16);
