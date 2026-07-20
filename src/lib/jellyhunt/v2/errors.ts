@@ -9,6 +9,10 @@ export class JellyhuntV2Error extends Error {
   }
 }
 
+export function badRequest(code: string, message: string): JellyhuntV2Error {
+  return new JellyhuntV2Error(400, code, message);
+}
+
 export function notFound(resource: string): JellyhuntV2Error {
   return new JellyhuntV2Error(404, "not_found", `${resource} not found`);
 }
@@ -27,6 +31,10 @@ export function conflict(code: string, message: string): JellyhuntV2Error {
 
 export function validationError(message: string): JellyhuntV2Error {
   return new JellyhuntV2Error(422, "validation_error", message);
+}
+
+export function invalidCursor(): JellyhuntV2Error {
+  return badRequest("invalid_cursor", "Cursor is invalid or no longer usable");
 }
 
 export function rateLimited(): JellyhuntV2Error {

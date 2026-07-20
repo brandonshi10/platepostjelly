@@ -349,4 +349,51 @@ describe("JellyHunt mission publish, edit, and lifecycle transactions", () => {
     expect(matchingPlaces).toHaveLength(1);
     expect(matchingPlaces[0].jellyPlaceId).toBe(jellyPlaceId);
   });
+  it("requires canonical six-decimal reward amounts across draft and publish writes", async () => {
+    const t = createJellyhuntTestConvex();
+    const campaignPublicId = await t.mutation(campaigns.createCampaign, campaignArgs());
+    const placePublicId = await t.mutation(places.createPlace, placeArgs());
+
+    await expect(
+      t.mutation(
+        missions.createDraftMission,
+        missionArgs(campaignPublicId, placePublicId, {
+          reward: { amount: "01", token: "JELLY-MY-JELLY", displayName: "Jelly-My-Jelly" },
+        }),
+      ),
+    ).rejects.toThrow("invalid_reward_amount_format");
+
+    const missionPublicId = await t.mutation(
+      missions.createDraftMission,
+      missionArgs(campaignPublicId, placePublicId),
+    );
+
+    await expect(
+      t.mutation(missions.updateMissionDraft, {
+        serviceKey: TEST_SERVICE_KEY,
+        actorId: "admin_1",
+        missionPublicId,
+        expectedRevision: 0,
+        reward: { amount: "1.0", token: "JELLY-MY-JELLY", displayName: "Jelly-My-Jelly" },
+      }),
+    ).rejects.toThrow("invalid_reward_amount_format");
+
+    await t.mutation(places.setPlaceReviewStatus, {
+      serviceKey: TEST_SERVICE_KEY,
+      actorId: "admin_1",
+      placePublicId,
+      reviewStatus: "reviewed",
+    });
+    await expect(
+      t.mutation(missions.publishMissionRevision, {
+        serviceKey: TEST_SERVICE_KEY,
+        actorId: "admin_1",
+        missionPublicId,
+        expectedDraftRevision: 0,
+        content: publishContent({
+          reward: { amount: "1000.000001", token: "JELLY-MY-JELLY", displayName: "Jelly-My-Jelly" },
+        }),
+      }),
+    ).rejects.toThrow("reward_amount_exceeds_ceiling");
+  });
 });

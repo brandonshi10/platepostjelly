@@ -87,6 +87,65 @@ export const getCurrentCampaign = queryGeneric({
   },
 });
 
+function publicCampaignStatus(campaign: any, now: number): "upcoming" | "active" | "ended" {
+  if (now < campaign.startsAt) return "upcoming";
+  if (now > campaign.endsAt) return "ended";
+  return "active";
+}
+
+/**
+ * Public-safe v2 campaign projection. Unlike the legacy helper, absence is
+ * represented as null so the HTTP boundary can return campaign_not_found
+ * without leaking a raw Convex exception.
+ */
+export const getCurrentCampaignDiscovery = queryGeneric({
+  args: { now: v.optional(v.number()) },
+  handler: async (ctx: any, args: any) => {
+    const campaign = await ctx.db
+      .query("jellyhuntCampaigns")
+      .withIndex("by_is_current", (q: any) => q.eq("isCurrent", true))
+      .unique();
+    if (!campaign) return null;
+
+    const startsAt = new Date(campaign.startsAt).toISOString();
+    const endsAt = new Date(campaign.endsAt).toISOString();
+    return {
+      id: campaign.publicId,
+      revision: campaign.revision ?? 1,
+      catalogRevision: campaign.catalogRevision,
+      title: campaign.title,
+      shortTitle: campaign.shortTitle ?? campaign.title,
+      status: publicCampaignStatus(campaign, args.now ?? Date.now()),
+      startsAt,
+      endsAt,
+      claimsCloseAt: new Date(campaign.claimsCloseAt ?? campaign.endsAt).toISOString(),
+      timeZone: campaign.timeZone,
+      rewardToken: {
+        code: campaign.rewardToken.code,
+        displayName: campaign.rewardToken.displayName,
+      },
+      map: {
+        center: {
+          latitude: campaign.map.centerLatitude,
+          longitude: campaign.map.centerLongitude,
+        },
+        bounds: {
+          south: campaign.map.boundsSouth,
+          west: campaign.map.boundsWest,
+          north: campaign.map.boundsNorth,
+          east: campaign.map.boundsEast,
+        },
+        defaultZoom: campaign.map.defaultZoom,
+      },
+      links: {
+        rules: campaign.links.rules ?? "",
+        iosApp: campaign.links.iosApp ?? "",
+        androidApp: campaign.links.androidApp ?? "",
+        support: campaign.links.support ?? "",
+      },
+    };
+  },
+});
 /** Admin/service-only: create a new campaign. It never starts current; use `selectCurrentCampaign`. */
 export const createCampaign = mutationGeneric({
   args: {
@@ -136,6 +195,7 @@ export const createCampaign = mutationGeneric({
       rewardToken: { code: args.rewardTokenCode, displayName: args.rewardTokenDisplayName },
       map: args.map,
       links: args.links,
+      revision: 1,
       catalogRevision: 0,
       leaderboardRevision: 0,
       createdAt: now,

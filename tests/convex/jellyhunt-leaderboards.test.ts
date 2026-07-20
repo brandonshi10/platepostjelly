@@ -142,7 +142,7 @@ async function insertAndApprove(t: any, missionPublicId: string, jellyUserId: st
   });
 
   await t.run(async (ctx: any) => {
-    await ctx.db.insert("jellyhuntSubmissions", {
+    const submissionId = await ctx.db.insert("jellyhuntSubmissions", {
       publicId: submissionPublicId,
       campaignId: missionRow.campaignId,
       missionId: missionRow._id,
@@ -174,6 +174,17 @@ async function insertAndApprove(t: any, missionPublicId: string, jellyUserId: st
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
+    await ctx.db.insert("jellyhuntRewardReservations", {
+      submissionId,
+      campaignId: missionRow.campaignId,
+      missionId: missionRow._id,
+      jellyUserId,
+      amount: "60",
+      token: "JELLY-MY-JELLY",
+      status: "pending_verification",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
   });
 
   const result = await t.mutation(approvals.approveSubmission, {
@@ -186,99 +197,190 @@ async function insertAndApprove(t: any, missionPublicId: string, jellyUserId: st
   return { submissionPublicId, completionPublicId: result.completionPublicId };
 }
 
+async function seedProgramConfig(t: any, leaderboardRevision = 0) {
+  await t.run(async (ctx: any) => {
+    const now = Date.now();
+    await ctx.db.insert("jellyhuntProgramConfig", {
+      publicId: `cfg_${uniqueSuffix()}`,
+      singletonKey: "default",
+      leaderboardLaunchEpoch: Date.parse("2026-07-01T00:00:00Z"),
+      leaderboardRevision,
+      createdAt: now,
+      updatedAt: now,
+    });
+  });
+}
+
+async function seedPublicProfile(
+  t: any,
+  jellyUserId: string,
+  username: string,
+  publicEligible = true,
+) {
+  await t.run(async (ctx: any) => {
+    const now = Date.now();
+    await ctx.db.insert("jellyhuntPublicProfiles", {
+      jellyUserId,
+      username,
+      normalizedUsername: username.trim().normalize("NFKC").toLocaleLowerCase("en-US"),
+      accountState: publicEligible ? "active" : "moderated",
+      publicEligible,
+      refreshedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    });
+  });
+}
+
+async function seedLeaderboardEntry(
+  t: any,
+  scopeKey: string,
+  jellyUserId: string,
+  username: string,
+  approvedMissionCount: number,
+) {
+  await seedPublicProfile(t, jellyUserId, username);
+  await t.run(async (ctx: any) => {
+    const now = Date.now();
+    await ctx.db.insert("jellyhuntLeaderboardEntries", {
+      publicId: `lbe_${uniqueSuffix()}`,
+      scopeKey,
+      jellyUserId,
+      approvedMissionCount,
+      rankSortScore: -approvedMissionCount,
+      normalizedUsername: username.trim().normalize("NFKC").toLocaleLowerCase("en-US"),
+      scoreReachedAt: now,
+      publicEligible: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+  });
+}
+
 describe("listLeaderboard", () => {
   let t: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.stubEnv("PLATEPOST_CONVEX_SERVICE_KEY", TEST_SERVICE_KEY);
     t = createJellyhuntTestConvex();
+    await seedProgramConfig(t);
   });
 
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it("returns ranked entries for all_time scope", async () => {
+  it("rejects direct Convex reads without the server service key", async () => {
+    await expect(
+      t.query(leaderboards.listLeaderboard, { scopeKey: "all_time", limit: 10 }),
+    ).rejects.toThrow(/serviceKey|unauthorized_service_key/);
+  });
+
+  it("returns canonical usernames with shared competition ranks and no identifiers", async () => {
     const { missionPublicId } = await seedCampaignAndMission(t);
 
+    await seedPublicProfile(t, "alice", "Alice.Jelly");
+    await seedPublicProfile(t, "bob", "BobJelly");
     await insertAndApprove(t, missionPublicId, "alice");
     await insertAndApprove(t, missionPublicId, "bob");
 
     const page = await t.query(leaderboards.listLeaderboard, {
+      serviceKey: TEST_SERVICE_KEY,
       scopeKey: "all_time",
       limit: 10,
     });
 
-    expect(page.entries.length).toBe(2);
-    expect(page.entries[0].rank).toBe(1);
-    expect(page.entries[1].rank).toBe(2);
-    expect(page.entries[0].approvedMissionCount).toBe(1);
+    expect(page.standings).toEqual([
+      { rank: 1, username: "Alice.Jelly", approvedMissionCount: 1 },
+      { rank: 1, username: "BobJelly", approvedMissionCount: 1 },
+    ]);
+    expect(page.standings[0]).not.toHaveProperty("jellyUserId");
+    expect(page.standings[0]).not.toHaveProperty("publicId");
   });
 
-  it("returns empty for unknown scope", async () => {
-    const page = await t.query(leaderboards.listLeaderboard, {
-      scopeKey: "campaign:nonexistent",
-      limit: 10,
-    });
+  it("uses the public campaign id for the campaign scope", async () => {
+    const { campaignPublicId, missionPublicId } = await seedCampaignAndMission(t);
+    await seedPublicProfile(t, "public_scope_user", "scope-user");
+    await insertAndApprove(t, missionPublicId, "public_scope_user");
 
-    expect(page.entries).toHaveLength(0);
-    expect(page.hasMore).toBe(false);
+    const scopeKeys = await t.run(async (ctx: any) =>
+      (await ctx.db.query("jellyhuntLeaderboardEntries").collect()).map((entry: any) => entry.scopeKey),
+    );
+
+    expect(scopeKeys).toContain(`campaign:${campaignPublicId}`);
+    expect(scopeKeys.filter((scopeKey: string) => scopeKey.startsWith("campaign:"))).toEqual([
+      `campaign:${campaignPublicId}`,
+    ]);
   });
 
-  it("excludes ineligible profiles", async () => {
+  it("withholds entries without an eligible canonical username instead of inventing a fallback", async () => {
     const { missionPublicId } = await seedCampaignAndMission(t);
 
+    await seedPublicProfile(t, "visible_user", "VisibleUser");
     await insertAndApprove(t, missionPublicId, "visible_user");
     await insertAndApprove(t, missionPublicId, "hidden_user");
 
-    await t.run(async (ctx: any) => {
-      const entry = await ctx.db
-        .query("jellyhuntLeaderboardEntries")
-        .filter((q: any) =>
-          q.and(
-            q.eq(q.field("scopeKey"), "all_time"),
-            q.eq(q.field("jellyUserId"), "hidden_user"),
-          ),
-        )
-        .unique();
-      if (entry) {
-        await ctx.db.patch(entry._id, { publicEligible: false });
-      }
-    });
-
     const page = await t.query(leaderboards.listLeaderboard, {
+      serviceKey: TEST_SERVICE_KEY,
       scopeKey: "all_time",
       limit: 10,
     });
 
-    expect(page.entries.length).toBe(1);
-    expect(page.entries[0].username).toBe("visible_user");
+    expect(page.standings).toEqual([
+      { rank: 1, username: "VisibleUser", approvedMissionCount: 1 },
+    ]);
   });
 
-  it("paginates with hasMore and nextCursor", async () => {
-    const { missionPublicId } = await seedCampaignAndMission(t);
-
-    for (let i = 0; i < 3; i++) {
-      await insertAndApprove(t, missionPublicId, `paginate_user_${i}`);
-    }
+  it("continues competition ranks across a page boundary without skipping tied users", async () => {
+    await seedLeaderboardEntry(t, "all_time", "u_zed", "zed", 3);
+    await seedLeaderboardEntry(t, "all_time", "u_amy", "Amy", 3);
+    await seedLeaderboardEntry(t, "all_time", "u_ben", "Ben", 2);
+    await seedLeaderboardEntry(t, "all_time", "u_cia", "Cia", 2);
+    await seedLeaderboardEntry(t, "all_time", "u_dee", "Dee", 1);
 
     const page1 = await t.query(leaderboards.listLeaderboard, {
+      serviceKey: TEST_SERVICE_KEY,
       scopeKey: "all_time",
-      limit: 2,
+      limit: 3,
     });
 
-    expect(page1.entries.length).toBe(2);
+    expect(page1.standings).toEqual([
+      { rank: 1, username: "Amy", approvedMissionCount: 3 },
+      { rank: 1, username: "zed", approvedMissionCount: 3 },
+      { rank: 3, username: "Ben", approvedMissionCount: 2 },
+    ]);
     expect(page1.hasMore).toBe(true);
-    expect(page1.nextCursor).toBeTruthy();
+    expect(page1.cursorState).toEqual({
+      eligibleItemsSeen: 3,
+      lastRank: 3,
+      lastScore: 2,
+      lastUsername: "ben",
+      lastPublicId: expect.stringMatching(/^lbe_/),
+    });
+
+    const page2 = await t.query(leaderboards.listLeaderboard, {
+      serviceKey: TEST_SERVICE_KEY,
+      scopeKey: "all_time",
+      limit: 3,
+      resume: page1.cursorState,
+    });
+
+    expect(page2.standings).toEqual([
+      { rank: 3, username: "Cia", approvedMissionCount: 2 },
+      { rank: 5, username: "Dee", approvedMissionCount: 1 },
+    ]);
+    expect(page2.hasMore).toBe(false);
+    expect(page2.cursorState).toBeNull();
   });
 });
 
 describe("refreshProfileInLeaderboards", () => {
   let t: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.stubEnv("PLATEPOST_CONVEX_SERVICE_KEY", TEST_SERVICE_KEY);
     t = createJellyhuntTestConvex();
+    await seedProgramConfig(t);
   });
 
   afterEach(() => {
@@ -287,7 +389,16 @@ describe("refreshProfileInLeaderboards", () => {
 
   it("updates username across all scopes", async () => {
     const { missionPublicId } = await seedCampaignAndMission(t);
+    await seedPublicProfile(t, "rename_user", "Old Name");
     await insertAndApprove(t, missionPublicId, "rename_user");
+
+    await t.run(async (ctx: any) => {
+      const config = await ctx.db
+        .query("jellyhuntProgramConfig")
+        .withIndex("by_singleton_key", (q: any) => q.eq("singletonKey", "default"))
+        .unique();
+      await ctx.db.patch(config._id, { leaderboardRevision: 10 });
+    });
 
     await t.mutation(leaderboards.refreshProfileInLeaderboards, {
       serviceKey: TEST_SERVICE_KEY,
@@ -307,5 +418,18 @@ describe("refreshProfileInLeaderboards", () => {
     for (const entry of entries) {
       expect(entry.normalizedUsername).toBe("new_name");
     }
+
+    const revisions = await t.run(async (ctx: any) => {
+      const config = await ctx.db
+        .query("jellyhuntProgramConfig")
+        .withIndex("by_singleton_key", (q: any) => q.eq("singletonKey", "default"))
+        .unique();
+      const campaign = await ctx.db
+        .query("jellyhuntCampaigns")
+        .withIndex("by_is_current", (q: any) => q.eq("isCurrent", true))
+        .unique();
+      return { allTime: config.leaderboardRevision, campaign: campaign.leaderboardRevision };
+    });
+    expect(revisions).toEqual({ allTime: 11, campaign: 2 });
   });
 });

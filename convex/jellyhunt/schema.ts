@@ -109,6 +109,7 @@ const jellyhuntCampaigns = defineTable({
     androidApp: v.optional(v.string()),
     support: v.optional(v.string()),
   }),
+  revision: v.optional(v.number()),
   catalogRevision: v.number(),
   leaderboardRevision: v.number(),
   createdAt: v.number(),
@@ -161,6 +162,7 @@ const jellyhuntMissionRevisions = defineTable({
   description: v.string(),
   instructions: v.array(v.string()),
   requirements: missionRequirements,
+  approvalMode: v.optional(approvalMode),
   reward: rewardTerms,
   place: placeSnapshot,
   missionWindow: v.object({
@@ -271,12 +273,14 @@ const jellyhuntIdempotencyRecords = defineTable({
   jellySubjectId: v.string(),
   httpMethod: v.string(),
   normalizedPath: v.string(),
-  idempotencyKey: v.string(),
   keyHash: v.string(),
   requestHash: v.string(),
   state: idempotencyRecordState,
+  leaseOwner: v.string(),
+  leaseGeneration: v.number(),
   processingExpiresAt: v.optional(v.number()),
   originalRequestId: v.string(),
+  resourcePublicId: v.optional(v.string()),
   resourceId: v.optional(v.string()),
   responseStatus: v.optional(v.number()),
   responseBodyJson: v.optional(v.string()),
@@ -286,7 +290,12 @@ const jellyhuntIdempotencyRecords = defineTable({
   finalizedAt: v.optional(v.number()),
   expiresAt: v.number(),
 })
-  .index("by_subject_method_path_key", ["jellySubjectId", "httpMethod", "normalizedPath", "idempotencyKey"])
+  .index("by_subject_method_path_key_hash", [
+    "jellySubjectId",
+    "httpMethod",
+    "normalizedPath",
+    "keyHash",
+  ])
   .index("by_expires_at", ["expiresAt"]);
 
 const jellyhuntRewardBudgets = defineTable({

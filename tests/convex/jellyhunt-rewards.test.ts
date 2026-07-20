@@ -12,6 +12,7 @@ const places = anyApi.jellyhunt.places;
 const missions = anyApi.jellyhunt.missions;
 const approvals = anyApi.jellyhunt.approvals;
 const rewards = anyApi.jellyhunt.rewards;
+const budgets = anyApi.jellyhunt.budgets;
 
 function uniqueSuffix() {
   return Math.random().toString(36).slice(2);
@@ -79,6 +80,15 @@ async function seedApprovedSubmission(t: any) {
     },
   });
 
+  await t.mutation(budgets.setBudgetAllocation, {
+    serviceKey: TEST_SERVICE_KEY, scopeType: "campaign", scopeKey: campaignPublicId,
+    allocatedAmount: "6000", expectedRevision: 0,
+  });
+  await t.mutation(budgets.setBudgetAllocation, {
+    serviceKey: TEST_SERVICE_KEY, scopeType: "mission", scopeKey: missionPublicId,
+    allocatedAmount: "6000", expectedRevision: 0,
+  });
+
   const jellyUserId = `user_${suffix}`;
   const submissionPublicId = `sub_${suffix}`;
 
@@ -123,6 +133,15 @@ async function seedApprovedSubmission(t: any) {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
+  });
+
+  await t.mutation(budgets.reserveBudgetAmount, {
+    serviceKey: TEST_SERVICE_KEY, scopeType: "campaign", scopeKey: campaignPublicId,
+    amount: "60",
+  });
+  await t.mutation(budgets.reserveBudgetAmount, {
+    serviceKey: TEST_SERVICE_KEY, scopeType: "mission", scopeKey: missionPublicId,
+    amount: "60",
   });
 
   await t.mutation(approvals.approveSubmission, {
@@ -274,6 +293,36 @@ describe("recordRewardOutcome", () => {
     });
     expect(status.status).toBe("sent");
     expect(status.transactionId).toBe("txn_unique_001");
+
+    const state = await t.run(async (ctx: any) => {
+      const submission = await ctx.db
+        .query("jellyhuntSubmissions")
+        .withIndex("by_public_id", (q: any) => q.eq("publicId", lease.snapshot.submissionPublicId))
+        .unique();
+      const reservation = await ctx.db
+        .query("jellyhuntRewardReservations")
+        .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
+        .unique();
+      const budgetRows = await ctx.db.query("jellyhuntRewardBudgets").collect();
+      const events = await ctx.db
+        .query("jellyhuntSubmissionEvents")
+        .withIndex("by_submission_sequence", (q: any) => q.eq("submissionId", submission._id))
+        .collect();
+      return { reservation, budgetRows, events };
+    });
+    expect(state.reservation.status).toBe("paid");
+    expect(state.budgetRows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ scopeType: "campaign", reservedAmount: "0", paidAmount: "60" }),
+        expect.objectContaining({ scopeType: "mission", reservedAmount: "0", paidAmount: "60" }),
+      ]),
+    );
+    expect(state.events.at(-1)).toMatchObject({
+      type: "reward.sent",
+      submissionStatus: "approved",
+      rewardStatus: "sent",
+      displayStatus: "rewarded",
+    });
   });
 
   it("records uncertain outcome", async () => {
@@ -317,6 +366,26 @@ describe("recordRewardOutcome", () => {
       intentPublicId: lease.snapshot.intentPublicId,
     });
     expect(status.status).toBe("failed");
+
+    const state = await t.run(async (ctx: any) => {
+      const submission = await ctx.db
+        .query("jellyhuntSubmissions")
+        .withIndex("by_public_id", (q: any) => q.eq("publicId", lease.snapshot.submissionPublicId))
+        .unique();
+      const reservation = await ctx.db
+        .query("jellyhuntRewardReservations")
+        .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
+        .unique();
+      const budgetRows = await ctx.db.query("jellyhuntRewardBudgets").collect();
+      return { reservation, budgetRows };
+    });
+    expect(state.reservation.status).toBe("approved_reserved");
+    expect(state.budgetRows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ scopeType: "campaign", reservedAmount: "60", paidAmount: "0" }),
+        expect.objectContaining({ scopeType: "mission", reservedAmount: "60", paidAmount: "0" }),
+      ]),
+    );
   });
 
   it("rejects sent without transaction ID", async () => {

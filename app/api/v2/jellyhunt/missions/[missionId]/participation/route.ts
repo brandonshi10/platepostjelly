@@ -1,5 +1,5 @@
-import { createV2Handler } from "@/lib/jellyhunt/v2/route-handler";
-import { notFound } from "@/lib/jellyhunt/v2/errors";
+import { createV2Handler } from "@/src/lib/jellyhunt/v2/route-handler";
+import { notFound } from "@/src/lib/jellyhunt/v2/errors";
 
 export const GET = createV2Handler(
   async () => {

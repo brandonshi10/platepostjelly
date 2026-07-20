@@ -1,0 +1,58 @@
+{
+  "description": "Jelly post verification response fixture",
+  "responses": {
+    "valid_post": {
+      "status": 200,
+      "body": {
+        "data": {
+          "id": "post_abc123",
+          "userId": "User_TestAlice",
+          "type": "photo",
+          "visibility": "public",
+          "location": {
+            "latitude": 40.7128,
+            "longitude": -74.006,
+            "accuracy": 10
+          },
+          "createdAt": "2026-01-15T12:00:00Z",
+          "deletedAt": null,
+          "moderationStatus": "approved"
+        }
+      }
+    },
+    "wrong_owner": {
+      "status": 200,
+      "body": {
+        "data": {
+          "id": "post_abc123",
+          "userId": "User_SomeoneElse",
+          "type": "photo",
+          "visibility": "public",
+          "location": null,
+          "createdAt": "2026-01-15T12:00:00Z",
+          "deletedAt": null,
+          "moderationStatus": "approved"
+        }
+      }
+    },
+    "deleted_post": {
+      "status": 200,
+      "body": {
+        "data": {
+          "id": "post_abc123",
+          "userId": "User_TestAlice",
+          "type": "photo",
+          "visibility": "public",
+          "location": null,
+          "createdAt": "2026-01-15T12:00:00Z",
+          "deletedAt": "2026-01-16T00:00:00Z",
+          "moderationStatus": "approved"
+        }
+      }
+    },
+    "not_found": {
+      "status": 404,
+      "body": { "error": "post_not_found" }
+    }
+  }
+}

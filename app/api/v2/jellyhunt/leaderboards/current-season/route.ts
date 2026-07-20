@@ -1,15 +1,32 @@
-import { createV2Handler } from "@/lib/jellyhunt/v2/route-handler";
-import { listLeaderboard, getCurrentCampaign } from "@/lib/jellyhunt/v2/repository";
-import { notFound } from "@/lib/jellyhunt/v2/errors";
+import { CurrentSeasonLeaderboardData } from "@/src/lib/jellyhunt/v2/contracts/leaderboards";
+import { leaderboardRouteResult } from "@/src/lib/jellyhunt/v2/leaderboard-route";
+import { optionalJellyViewer } from "@/src/lib/jellyhunt/v2/jelly-mission-token";
+import { isoTimestamp, resourceNotFound } from "@/src/lib/jellyhunt/v2/public-route-utils";
+import { getCurrentSeasonLeaderboardContext } from "@/src/lib/jellyhunt/v2/repository";
+import { createV2Handler } from "@/src/lib/jellyhunt/v2/route-handler";
 
 export const GET = createV2Handler(
   async (request) => {
-    const campaign = await getCurrentCampaign();
-    if (!campaign) throw notFound("current_campaign");
-    const url = new URL(request.url);
-    const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 25), 1), 100);
-    const page = await listLeaderboard(`campaign:${campaign.campaignPublicId}`, limit);
-    return { data: page };
+    await optionalJellyViewer(request, "jellyhunt:read");
+    const context = await getCurrentSeasonLeaderboardContext();
+    if (!context) throw resourceNotFound("campaign");
+    return leaderboardRouteResult(request, {
+      resource: "leaderboard:current-season",
+      scopeKey: context.scopeKey,
+      revision: context.revision,
+      buildData: (standings) =>
+        CurrentSeasonLeaderboardData.parse({
+          scope: "current_season",
+          rankingBasis: "approved_missions",
+          campaign: {
+            id: context.campaign.id,
+            title: context.campaign.title,
+            startsAt: isoTimestamp(context.campaign.startsAt),
+            endsAt: isoTimestamp(context.campaign.endsAt),
+          },
+          standings,
+        }),
+    });
   },
-  { cachePolicy: "public", maxAge: 30 },
+  { cachePolicy: "public", maxAge: 30, staleWhileRevalidate: 120, etag: true },
 );

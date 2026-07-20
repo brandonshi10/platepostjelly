@@ -1,6 +1,6 @@
 import type { Crons } from "convex/server";
 
-export function registerJellyhuntCrons(_crons: Crons<any>): void {
+export function registerJellyhuntCrons(_crons: Crons): void {
   // Reward watchdog cron intentionally omitted from this plan.
   // Production enablement requires:
   // 1. JELLYHUNT_AUTOMATIC_REWARDS_ENABLED=true in the Convex environment
