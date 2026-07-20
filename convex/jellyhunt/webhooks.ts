@@ -2,33 +2,43 @@ import { mutationGeneric } from "convex/server";
 import { v } from "convex/values";
 import { createPublicId } from "./publicIds";
 
-function sha256Hex(data: string): string {
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = ((hash << 5) - hash + char) | 0;
-  }
-  return Math.abs(hash).toString(16).padStart(8, "0");
+export async function computeHmacSignature(rawBody: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(rawBody));
+  return Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-export function verifyWebhookSignature(
+export async function computeSha256Hex(data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(data));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function verifyWebhookSignature(
   rawBody: string,
   signature: string,
-  keyId: string,
+  _keyId: string,
   currentKey: string,
   previousKey?: string,
-): boolean {
-  const expectedCurrent = computeSignature(rawBody, currentKey);
+): Promise<boolean> {
+  const expectedCurrent = await computeHmacSignature(rawBody, currentKey);
   if (constantTimeEqual(signature, expectedCurrent)) return true;
   if (previousKey) {
-    const expectedPrevious = computeSignature(rawBody, previousKey);
+    const expectedPrevious = await computeHmacSignature(rawBody, previousKey);
     if (constantTimeEqual(signature, expectedPrevious)) return true;
   }
   return false;
-}
-
-function computeSignature(rawBody: string, secret: string): string {
-  return sha256Hex(`${secret}:${rawBody}`);
 }
 
 function constantTimeEqual(a: string, b: string): boolean {
@@ -44,15 +54,15 @@ export const ingestWebhookEvent = mutationGeneric({
   args: {
     jellyEventId: v.string(),
     keyId: v.string(),
-    rawBody: v.string(),
+    bodyHash: v.string(),
     entityType: v.string(),
     entityId: v.string(),
     sequence: v.number(),
     eventType: v.string(),
+    rawBody: v.string(),
   },
   handler: async (ctx: any, args: any) => {
     const now = Date.now();
-    const bodyHash = sha256Hex(args.rawBody);
 
     const existing = await ctx.db
       .query("jellyhuntWebhookInbox")
@@ -60,7 +70,7 @@ export const ingestWebhookEvent = mutationGeneric({
       .unique();
 
     if (existing) {
-      if (existing.bodyHash === bodyHash) {
+      if (existing.bodyHash === args.bodyHash) {
         return { status: 204, duplicate: true };
       }
       return { status: 409, duplicate: false, reason: "event_id_body_mismatch" };
@@ -69,7 +79,7 @@ export const ingestWebhookEvent = mutationGeneric({
     await ctx.db.insert("jellyhuntWebhookInbox", {
       jellyEventId: args.jellyEventId,
       keyId: args.keyId,
-      bodyHash,
+      bodyHash: args.bodyHash,
       entityType: args.entityType,
       entityId: args.entityId,
       sequence: args.sequence,

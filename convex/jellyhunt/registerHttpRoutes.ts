@@ -25,9 +25,9 @@ export function registerJellyhuntHttpRoutes(http: HttpRouter): void {
         });
       }
 
-      const { verifyWebhookSignature } = await import("./webhooks");
+      const { verifyWebhookSignature, computeSha256Hex } = await import("./webhooks");
       const previousKey = process.env.JELLYHUNT_WEBHOOK_SECRET_PREVIOUS;
-      const valid = verifyWebhookSignature(rawBody, signature, keyId, currentKey, previousKey);
+      const valid = await verifyWebhookSignature(rawBody, signature, keyId, currentKey, previousKey);
       if (!valid) {
         return new Response(JSON.stringify({ error: "invalid_signature" }), {
           status: 401,
@@ -45,12 +45,13 @@ export function registerJellyhuntHttpRoutes(http: HttpRouter): void {
         });
       }
 
-      const { ingestWebhookEvent } = await import("./webhooks");
       const anyApi = (await import("convex/server")).anyApi;
+      const bodyHash = await computeSha256Hex(rawBody);
 
       const result = await ctx.runMutation(anyApi.jellyhunt.webhooks.ingestWebhookEvent, {
         jellyEventId: parsed.eventId ?? "",
         keyId,
+        bodyHash,
         rawBody,
         entityType: parsed.entityType ?? "unknown",
         entityId: parsed.entityId ?? "",
