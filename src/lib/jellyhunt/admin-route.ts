@@ -51,7 +51,7 @@ export function adminRouteFailure(error: unknown) {
   }
 
   const message = error instanceof Error ? error.message : "Admin request failed.";
-  const conflict = /already|duplicate|reused|not ready|cannot be|uncertain/i.test(message);
+  const conflict = /already|duplicate|reused|not ready|cannot be|uncertain|revision_conflict|allocation_below_committed|capacity_required/i.test(message);
   return NextResponse.json(
     { error: { code: conflict ? "admin_conflict" : "admin_request_failed", message } },
     { status: conflict ? 409 : 500 },

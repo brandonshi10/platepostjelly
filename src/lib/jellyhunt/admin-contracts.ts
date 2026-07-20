@@ -52,9 +52,25 @@ export const adminMissionInputSchema = z.object({
   { message: "Mission start must be before mission end", path: ["endsAt"] },
 );
 
+const adminBudgetAmountSchema = z.string().trim()
+  .regex(/^(?:0|[1-9]\d{0,23})(?:\.\d{1,6})?$/)
+  .transform((value) => {
+    const [whole, fraction = ""] = value.split(".");
+    const canonicalFraction = fraction.replace(/0+$/, "");
+    return canonicalFraction ? `${whole}.${canonicalFraction}` : whole;
+  });
+
+export const adminBudgetInputSchema = z.object({
+  campaignAllocatedAmount: adminBudgetAmountSchema,
+  missionAllocatedAmount: adminBudgetAmountSchema,
+  expectedCampaignRevision: z.number().int().nonnegative(),
+  expectedMissionRevision: z.number().int().nonnegative(),
+});
+
 export const createAdminMissionSchema = z.object({
   mission: adminMissionInputSchema,
   location: adminLocationInputSchema,
+  budgets: adminBudgetInputSchema.optional(),
 });
 
 export const updateAdminMissionSchema = createAdminMissionSchema.extend({

@@ -10,6 +10,7 @@ export type JellyHttpConfig = {
   baseUrl: string;
   apiToken: string;
   timeoutMs: number;
+  authorizationScheme?: "Token" | "Bearer";
 };
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -20,16 +21,37 @@ export function getJellyHttpConfig(): JellyHttpConfig {
     baseUrl: process.env.JELLY_API_BASE_URL ?? "",
     apiToken: process.env.JELLY_API_TOKEN ?? "",
     timeoutMs: DEFAULT_TIMEOUT_MS,
+    authorizationScheme: "Token",
   };
 }
 
-function buildHeaders(config: JellyHttpConfig, correlationId?: string, isPost?: boolean): Record<string, string> {
+/** Versioned Jelly partner transport used for evidence and reward intents. */
+export function getJellyPartnerHttpConfig(): JellyHttpConfig {
+  const configuredTimeout = Number(process.env.JELLY_PARTNER_TIMEOUT_MS);
+  return {
+    baseUrl: (process.env.JELLY_PARTNER_API_BASE_URL ?? "").replace(/\/$/, ""),
+    apiToken: process.env.JELLY_PARTNER_API_KEY ?? "",
+    timeoutMs:
+      Number.isFinite(configuredTimeout) && configuredTimeout >= 1_000 && configuredTimeout <= 30_000
+        ? configuredTimeout
+        : DEFAULT_TIMEOUT_MS,
+    authorizationScheme: "Bearer",
+  };
+}
+
+export function partnerTransportIsUsable(config: JellyHttpConfig): boolean {
+  if (!config.baseUrl || !config.apiToken) return false;
+  if (process.env.NODE_ENV === "production" && !config.baseUrl.startsWith("https://")) return false;
+  return /^https?:\/\//.test(config.baseUrl);
+}
+
+function buildHeaders(config: JellyHttpConfig, correlationId?: string, isPost?: boolean, extraHeaders: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = {
-    Authorization: `Token ${config.apiToken}`,
+    Authorization: `${config.authorizationScheme ?? "Token"} ${config.apiToken}`,
   };
   if (correlationId) headers["X-Correlation-Id"] = correlationId;
   if (isPost) headers["Content-Type"] = "application/json";
-  return headers;
+  return { ...headers, ...extraHeaders };
 }
 
 async function performRequest(
@@ -77,10 +99,11 @@ export async function jellyPost(
   path: string,
   payload: any,
   correlationId?: string,
+  extraHeaders?: Record<string, string>,
 ): Promise<{ status: number; body: any }> {
   return performRequest(config, path, {
     method: "POST",
-    headers: buildHeaders(config, correlationId, true),
+    headers: buildHeaders(config, correlationId, true, extraHeaders),
     body: JSON.stringify(payload),
   });
 }

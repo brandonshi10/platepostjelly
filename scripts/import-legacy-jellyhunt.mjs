@@ -78,7 +78,7 @@ async function main() {
   const client = new ConvexHttpClient(convexUrl);
 
   console.log(`Connecting to Convex deployment: ${deploymentOrigin}`);
-  const existingMissions = await client.query(anyApi.missions.listAdminMissions, {
+  const existingMissions = await client.query(anyApi.jellyhunt.admin.listAdminMissions, {
     serviceKey,
   });
   const existingSlugs = new Set(existingMissions.map((mission) => mission.slug));
@@ -101,9 +101,9 @@ async function main() {
       continue;
     }
 
-    await client.mutation(anyApi.missions.createMissionWithLocation, {
+    await client.mutation(anyApi.jellyhunt.admin.createMissionWithLocation, {
       serviceKey,
-      actor: "legacy-jellyhunt-import",
+      actorId: "legacy-jellyhunt-import",
       mission: record.mission,
       location: record.location,
     });

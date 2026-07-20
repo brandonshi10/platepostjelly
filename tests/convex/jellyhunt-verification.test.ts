@@ -177,7 +177,7 @@ describe("recordVerificationResult", () => {
     expect(submission.verificationAttempts).toBe(2);
   });
 
-  it("sets decisionStatus to approved in automatic mode when verification passes", async () => {
+  it("leaves the decision pending until canonical automatic approval commits", async () => {
     const { submissionInternalId } = await seedSubmission(t, "automatic");
 
     await t.mutation(verification.recordVerificationResult, {
@@ -192,6 +192,70 @@ describe("recordVerificationResult", () => {
     });
 
     const submission = await t.run(async (ctx: any) => ctx.db.get(submissionInternalId));
-    expect(submission.decisionStatus).toBe("approved");
+    expect(submission.decisionStatus).toBe("pending");
+    expect(submission.submissionStatus).toBe("verifying");
+  });
+  it("leases one current attempt and returns immutable mission evidence terms", async () => {
+    const { submissionInternalId } = await seedSubmission(t, "automatic");
+    const now = Date.now();
+
+    const started = await t.mutation(verification.beginSubmissionVerification, {
+      submissionInternalId,
+      now,
+    });
+
+    expect(started).toMatchObject({
+      started: true,
+      verificationAttempt: 1,
+      context: {
+        approvalMode: "automatic",
+        requirements: { place: { attachmentRequired: true } },
+      },
+    });
+    const duplicate = await t.mutation(verification.beginSubmissionVerification, {
+      submissionInternalId,
+      now: now + 1,
+    });
+    expect(duplicate).toEqual({ started: false, reason: "verification_in_progress" });
+  });
+
+  it("turns a dependency outage into review without rejecting the user", async () => {
+    const { submissionInternalId } = await seedSubmission(t, "automatic");
+    const started = await t.mutation(verification.beginSubmissionVerification, {
+      submissionInternalId,
+      now: Date.now(),
+    });
+
+    await t.mutation(verification.recordVerificationResult, {
+      submissionInternalId,
+      verificationAttempt: started.verificationAttempt,
+      verificationStatus: "unavailable",
+      outcome: "retry",
+      reasonCode: "evidence_unavailable",
+      verificationSummary: "partner_timeout",
+      now: Date.now() + 1,
+    });
+
+    const submission = await t.run(async (ctx: any) => ctx.db.get(submissionInternalId));
+    expect(submission.submissionStatus).toBe("needs_review");
+    expect(submission.decisionStatus).toBe("pending");
+    expect(submission.verificationStatus).toBe("unavailable");
+  });
+
+  it("ignores a stale worker result", async () => {
+    const { submissionInternalId } = await seedSubmission(t, "automatic");
+    const started = await t.mutation(verification.beginSubmissionVerification, {
+      submissionInternalId,
+      now: Date.now(),
+    });
+    const stale = await t.mutation(verification.recordVerificationResult, {
+      submissionInternalId,
+      verificationAttempt: started.verificationAttempt + 1,
+      verificationStatus: "complete",
+      outcome: "reject",
+      reasonCode: "owner_mismatch",
+      now: Date.now() + 1,
+    });
+    expect(stale).toEqual({ ignored: true, reason: "stale_verification_attempt" });
   });
 });

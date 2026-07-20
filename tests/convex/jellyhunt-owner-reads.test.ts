@@ -8,7 +8,7 @@ const OTHER = "OpaqueOwner_02";
 const NOW = Date.parse("2026-08-05T19:00:01Z");
 
 async function seed(t: ReturnType<typeof createJellyhuntTestConvex>) {
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx) => {
     const placeId = await ctx.db.insert("jellyhuntPlaces", {
       publicId: "plc_owner01", jellyPlaceId: "jpl_owner01", name: "Scarr's Pizza",
       address: "35 Orchard St", latitude: 40.7163, longitude: -73.9914,
@@ -82,6 +82,10 @@ async function seed(t: ReturnType<typeof createJellyhuntTestConvex>) {
     });
   });
 }
+function eventSequences(events: unknown): number[] {
+  return (events as Array<{ sequence: number }>).map((event) => event.sequence);
+}
+
 
 describe("JellyHunt v2 owner projections", () => {
   beforeEach(() => vi.stubEnv("PLATEPOST_CONVEX_SERVICE_KEY", TEST_SERVICE_KEY));
@@ -99,11 +103,29 @@ describe("JellyHunt v2 owner projections", () => {
     expect(owned).toMatchObject({
       id: "par_owner01", missionId: "mis_owner01", missionRevision: 1,
       isCurrentMissionRevision: false,
-      terms: { title: "Locked title", description: "Locked description", reward: { amount: "60" } },
+      status: "started", startedAt: NOW - 60_000,
+      submissionDeadlineAt: NOW + 86_400_000, resubmissionDeadlineAt: null,
+      attemptsUsed: 1, maxAttempts: 3,
+      terms: {
+        title: "Locked title", description: "Locked description",
+        instructions: ["Locked instruction"],
+        missionWindow: {
+          startsAt: Date.parse("2026-08-01T16:00:00Z"),
+          endsAt: Date.parse("2026-08-31T23:00:00Z"),
+        },
+        reward: { amount: "60", token: "JELLY-MY-JELLY", displayName: "Jelly-My-Jelly" },
+        place: {
+          id: "plc_owner01", jellyPlaceId: "jpl_owner01", name: "Scarr's Pizza",
+          address: "35 Orchard St", latitude: 40.7163, longitude: -73.9914,
+          timeZone: "America/New_York",
+        },
+      },
       currentControls: { acceptingSubmissions: true, reasonCode: null },
-      latestSubmissionId: "sub_owner01", canSubmit: false, nextAction: "wait_for_review",
+      latestSubmissionId: "sub_owner01", canStart: false, canSubmit: false,
+      canResubmit: false, nextAction: "wait_for_review",
+      publicMessage: "Your Jelly is waiting for review.", updatedAt: NOW - 1_000,
     });
-    expect(JSON.stringify(owned)).not.toMatch(/geofenceRadiusMeters|must-not-leak|OpaqueOwner/);
+    expect(JSON.stringify(owned)).not.toMatch(/geofenceRadiusMeters|verifiedLatitude|must-not-leak|OpaqueOwner/);
   });
 
   it("returns separated safe submission state and newest twenty timeline events ascending", async () => {
@@ -112,15 +134,66 @@ describe("JellyHunt v2 owner projections", () => {
       serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, submissionPublicId: "sub_owner01", now: NOW,
     });
     expect(detail).toMatchObject({
+      id: "sub_owner01", attempt: 1, submissionStatus: "needs_review",
       mission: { id: "mis_owner01", revision: 1, title: "Locked title" },
       jellyPost: { id: "post_owner01", watchUrl: "https://jellyjelly.com/watch/post_owner01" },
-      verification: { status: "complete", attempts: 1, reasonCode: "manual_review_required" },
+      verification: {
+        status: "complete", attempts: 1, reasonCode: "manual_review_required",
+        checkedAt: NOW - 1_500,
+      },
       decision: { status: "pending", reasonCode: null, message: null, decidedAt: null },
-      reward: { id: null, status: "not_eligible", amount: "60", transactionId: null },
-      displayStatus: "under_review", nextAction: "wait_for_review",
+      reward: {
+        id: null, status: "not_eligible", amount: "60", token: "JELLY-MY-JELLY",
+        transactionId: null, sentAt: null,
+      },
+      displayStatus: "under_review", reasonCode: "manual_review_required",
+      publicMessage: "Your Jelly is waiting for review.", canResubmit: false,
+      nextAction: "wait_for_review", submittedAt: NOW - 2_000, updatedAt: NOW - 1_000,
     });
-    expect(detail.timeline.map((event: any) => event.sequence)).toEqual([1, 2, 3]);
-    expect(JSON.stringify(detail)).not.toMatch(/internalMetadata|operator|latitude|longitude|OpaqueOwner/);
+    expect(eventSequences(detail.timeline)).toEqual([1, 2, 3]);
+    expect(detail.timeline[2]).toMatchObject({
+      submissionStatus: "needs_review", rewardStatus: "not_eligible",
+      displayStatus: "under_review", reasonCode: "manual_review_required",
+    });
+    expect(JSON.stringify(detail)).not.toMatch(/internalMetadata|operator|verifiedLatitude|verifiedLongitude|OpaqueOwner/);
+  });
+
+  it("allows a rejected owner to resubmit without a separate resubmission expiry", async () => {
+    const t = createJellyhuntTestConvex(); await seed(t);
+    await t.run(async (ctx) => {
+      const submission = await ctx.db.query("jellyhuntSubmissions")
+        .withIndex("by_public_id", (q) => q.eq("publicId", "sub_owner01"))
+        .unique();
+      if (!submission) throw new Error("submission_not_found");
+      await ctx.db.patch(submission._id, {
+        submissionStatus: "rejected",
+        decisionStatus: "rejected",
+        reasonCode: "wrong_place",
+        publicMessage: "This Jelly did not meet the mission requirements.",
+        decidedAt: NOW,
+        updatedAt: NOW,
+      });
+    });
+
+    const participation = await t.query(ownerReads.getOwnerParticipation, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, participationPublicId: "par_owner01", now: NOW,
+    });
+    const submission = await t.query(ownerReads.getOwnerSubmission, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, submissionPublicId: "sub_owner01", now: NOW,
+    });
+
+    expect(participation).toMatchObject({
+      resubmissionDeadlineAt: null,
+      attemptsUsed: 1,
+      maxAttempts: 3,
+      canResubmit: true,
+      nextAction: "submit_new_post",
+    });
+    expect(submission).toMatchObject({
+      submissionStatus: "rejected",
+      canResubmit: true,
+      nextAction: "submit_new_post",
+    });
   });
 
   it("paginates submission events DESC and user events ASC without owner enumeration", async () => {
@@ -129,16 +202,49 @@ describe("JellyHunt v2 owner projections", () => {
       serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, submissionPublicId: "sub_owner01", limit: 2,
     });
     const userPage = await t.query(ownerReads.listOwnerEvents, {
-      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, afterSequence: 1, limit: 2,
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, afterSequence: 1, limit: 1,
     });
     const foreign = await t.query(ownerReads.listOwnerSubmissionEvents, {
       serviceKey: TEST_SERVICE_KEY, jellyUserId: OTHER, submissionPublicId: "sub_owner01", limit: 2,
     });
     expect(foreign).toBeNull();
-    expect(submissionPage.events.map((event: any) => event.sequence)).toEqual([3, 2]);
-    expect(submissionPage).toMatchObject({ hasMore: true, nextBeforeSequence: 2 });
-    expect(userPage.events.map((event: any) => event.sequence)).toEqual([2, 3]);
-    expect(userPage).toMatchObject({ hasMore: false, nextAfterSequence: 3 });
+    expect(eventSequences(submissionPage.events)).toEqual([3, 2]);
+    expect(submissionPage.events[0]).toMatchObject({
+      submissionStatus: "needs_review", rewardStatus: "not_eligible",
+      displayStatus: "under_review", reasonCode: "manual_review_required",
+    });
+    expect(submissionPage).toMatchObject({
+      hasMore: true, asOfSequence: 3, nextBeforeSequence: 2,
+    });
+    const olderSubmissionPage = await t.query(ownerReads.listOwnerSubmissionEvents, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, submissionPublicId: "sub_owner01",
+      limit: 2, asOfSequence: submissionPage.asOfSequence,
+      beforeSequence: submissionPage.nextBeforeSequence,
+    });
+    expect(eventSequences(olderSubmissionPage.events)).toEqual([1]);
+    expect(olderSubmissionPage).toMatchObject({
+      hasMore: false, asOfSequence: 3, nextBeforeSequence: null,
+    });
+
+    expect(eventSequences(userPage.events)).toEqual([2]);
+    expect(userPage.events[0]).toMatchObject({
+      id: "evt_owner02", type: "jellyhunt.submission.status_changed",
+      entity: { type: "submission", id: "sub_owner01", sequence: 2 },
+      changes: {
+        participationStatus: "started", submissionStatus: "verifying",
+        rewardStatus: "not_eligible", displayStatus: "under_review",
+        reasonCode: null,
+      },
+      submissionId: "sub_owner01",
+    });
+    expect(userPage).toMatchObject({ hasMore: true, nextAfterSequence: 2 });
+    const nextUserPage = await t.query(ownerReads.listOwnerEvents, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER,
+      afterSequence: userPage.nextAfterSequence, limit: 1,
+    });
+    expect(eventSequences(nextUserPage.events)).toEqual([3]);
+    expect(nextUserPage).toMatchObject({ hasMore: false, nextAfterSequence: 3 });
+    expect(JSON.stringify(userPage)).not.toMatch(/internalMetadata|operator|OpaqueOwner/);
   });
 
   it("returns deterministic mission/submission history and current campaign summary", async () => {
@@ -147,23 +253,76 @@ describe("JellyHunt v2 owner projections", () => {
       serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01", now: NOW,
     });
     const missions = await t.query(ownerReads.listOwnerMissions, {
-      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01", limit: 20, now: NOW,
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01",
+      limit: 20, now: NOW, asOf: NOW,
     });
     const submissions = await t.query(ownerReads.listOwnerSubmissions, {
-      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01", limit: 20,
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01",
+      limit: 20, asOf: NOW,
     });
-    expect(summary).toMatchObject({ subject: { jellyUserId: OWNER }, campaign: {
-      id: "cam_owner01", statusCounts: { underReview: 1 },
-      confirmedRewards: { amount: "0" }, latestEventSequence: 3,
+    expect(summary).toEqual({ subject: { jellyUserId: OWNER }, campaign: {
+      id: "cam_owner01", status: "active",
+      statusCounts: {
+        notStarted: 0, inProgress: 0, submitted: 0, underReview: 1,
+        approvedRewardPending: 0, rewarded: 0, rejected: 0, supportNeeded: 0,
+      },
+      confirmedRewards: { amount: "0", token: "JELLY-MY-JELLY" },
+      latestEventSequence: 3, updatedAt: NOW - 1_000,
     } });
     expect(missions.items[0]).toMatchObject({
-      mission: { id: "mis_owner01", revision: 2, title: "Current title" },
-      participation: { id: "par_owner01", missionRevision: 1 },
-      latestSubmission: { id: "sub_owner01", displayStatus: "under_review" },
+      mission: {
+        id: "mis_owner01", revision: 2, title: "Current title",
+        availability: { state: "available", acceptingSubmissions: true, reasonCode: null },
+        reward: { amount: "75", token: "JELLY-MY-JELLY" },
+        display: { category: "Pizza", difficulty: "easy", neighborhood: "Lower East Side" },
+        place: { id: "plc_owner01", name: "Scarr's Pizza" },
+      },
+      participationStatus: "started",
+      participation: {
+        id: "par_owner01", missionRevision: 1, startedAt: NOW - 60_000,
+        submissionDeadlineAt: NOW + 86_400_000, resubmissionDeadlineAt: null,
+      },
+      latestSubmission: {
+        id: "sub_owner01", attempt: 1, submissionStatus: "needs_review",
+        rewardStatus: "not_eligible", displayStatus: "under_review", updatedAt: NOW - 1_000,
+      },
+      canStart: false, canSubmit: false, canResubmit: false,
+      nextAction: "wait_for_review", reasonCode: "manual_review_required",
+      publicMessage: "Your Jelly is waiting for review.", updatedAt: NOW - 1_000,
+    });
+    expect(missions).toMatchObject({
+      hasMore: false, asOf: NOW, nextUpdatedAt: null, nextMissionPublicId: null,
     });
     expect(submissions.items[0]).toMatchObject({
       id: "sub_owner01", source: "native", participationId: "par_owner01",
       mission: { id: "mis_owner01", revision: 1, title: "Locked title" },
+      jellyPost: { id: "post_owner01", watchUrl: "https://jellyjelly.com/watch/post_owner01" },
+      submissionStatus: "needs_review",
+      reward: {
+        id: null, status: "not_eligible", amount: "60", token: "JELLY-MY-JELLY",
+        transactionId: null, sentAt: null,
+      },
+      displayStatus: "under_review", reasonCode: "manual_review_required",
+      publicMessage: "Your Jelly is waiting for review.", canResubmit: false,
+      nextAction: "wait_for_review", submittedAt: NOW - 2_000, updatedAt: NOW - 1_000,
     });
+    expect(submissions).toMatchObject({
+      hasMore: false, asOf: NOW, nextUpdatedAt: null, nextSubmissionPublicId: null,
+    });
+
+    const resumedMissions = await t.query(ownerReads.listOwnerMissions, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01",
+      limit: 20, now: NOW, asOf: NOW,
+      beforeUpdatedAt: NOW - 1_000, beforeMissionPublicId: "mis_owner01",
+    });
+    const staleSnapshotSubmissions = await t.query(ownerReads.listOwnerSubmissions, {
+      serviceKey: TEST_SERVICE_KEY, jellyUserId: OWNER, campaignPublicId: "cam_owner01",
+      limit: 20, asOf: NOW - 1_500,
+    });
+    expect(resumedMissions.items).toEqual([]);
+    expect(staleSnapshotSubmissions.items).toEqual([]);
+    expect(JSON.stringify({ summary, missions, submissions })).not.toMatch(
+      /"_id"|"_creationTime"|geofenceRadiusMeters|internalMetadata|verifiedLatitude|verifiedLongitude|rawError/,
+    );
   });
 });

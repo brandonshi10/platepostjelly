@@ -4,6 +4,14 @@
     "GET /api/v1/jellyhunt/missions",
     "POST /api/v1/jellyhunt/submissions"
   ],
-  "additiveKeys": ["publicId", "revision"],
-  "malformedJsonStatus": 500
+  "additiveKeys": ["publicId", "revision", "requestId"],
+  "malformedJsonStatus": 500,
+  "frozenErrorShapes": {
+    "401": { "code": "unauthorized" },
+    "400": { "code": "invalid_submission" },
+    "409/jelly_post_reused": { "code": "jelly_post_reused" },
+    "409/mission_already_submitted": { "code": "mission_already_submitted" },
+    "500": { "code": "submission_failed" },
+    "503": { "code": "convex_not_configured|convex_service_key_not_configured|convex_request_failed|data_source_unavailable" }
+  }
 }

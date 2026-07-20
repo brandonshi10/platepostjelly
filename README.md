@@ -1,74 +1,126 @@
-# PlatePost Jellyhunt
+# PlatePost JellyHunt
 
-PlatePost Jellyhunt is designed to become the operational home for Jellyhunt missions. In the target deployment, PlatePost will host the consumer map and admin experience, while Convex will store editable missions, locations, submissions, deduplication records, review state, reward attempts, and audit history. Jelly remains the source of truth for people, Jelly posts, restaurant and location proof, balances, and the final Jelly-My-Jelly tip.
+PlatePost JellyHunt is the PlatePost-hosted mission platform for JellyJelly. PlatePost hosts the consumer map and operations dashboard; namespaced Convex records hold the editable mission catalog and workflow state; Jelly remains authoritative for identity, posts, restaurant/place evidence, trusted post location, balances, and the final `JELLY-MY-JELLY` transfer.
 
-The public experience is branded **PlatePost x JellyJelly: Human Social!**
+The public experience is branded **PlatePost x JellyJelly: Human Social!** and lives at `/human-social`.
 
-## What is in this repository
+> **Integration status:** the application, Convex model, compatibility API, and native v2 routes are implemented in this standalone repository. They have not been connected to PlatePost's shared Convex project or promoted to Production. Real Jelly mission-token, evidence, place-feed, and at-most-once reward endpoints are still required before production use.
 
-- A full-screen consumer mission map at `/human-social`; `/map` redirects there. Its street grid, pin language, masthead, slide-out navigation, theme toggle, mission drawer, Passport shell, and Editorial Map follow the original Jellyhunt experience.
-- A persistent, Jellyhunt-styled Mapbox renderer when a public token is configured, plus the matching coordinate-based fallback when it is not. Filtering updates markers without rebuilding the map.
-- Search, category and completion-state filters, browser geolocation, distance, hours, mission details, JellyJelly camera deep links, and direct iOS/Android store links.
-- A versioned mission API for the JellyJelly app.
-- An authenticated submission API for Jelly-to-PlatePost calls.
-- A protected admin dashboard for atomic mission/location edits, timezone-aware schedules, immutable proof review, approval/rejection, reward retry/reconciliation, and audit history.
-- Convex schemas and workflow functions for locations, missions, submissions, deduplication, verification, admin review, reward attempts, and audit events.
-- Mission revision numbers plus immutable submission and reward snapshots, so later admin edits cannot change the proof or payout terms for an existing attempt.
-- A 10-second timeout around every outbound Jelly verification and reward request, with conservative review/reconciliation states.
-- A local-only 16-mission fixture source for visual and interaction testing without PlatePost Convex access.
-- Contract, map-domain/UI, admin-session/time, authentication, repository, HTTP timeout, Convex validation, workflow-guard, guarded migration, app-link, and Convex security tests.
+## What is built
 
-## System boundary
+- A responsive, full-screen JellyHunt map at `/human-social`; `/map` redirects to it.
+- Visual and interaction parity with the current JellyHunt experience: neon NYC map treatment, glowing mission pins and JellyJelly HQ, mission finder, mission drawer, Dark/Wobbles themes, geolocation, distance, hours, directions, Passport, Editorial Map, and JellyJelly camera handoff.
+- Mapbox GL when a public Mapbox token is configured, with a coordinate-based local fallback when it is not.
+- iOS and Android JellyJelly store links.
+- Live current-season and all-time leaderboard tabs backed by the v2 APIs, showing most-approved counts and Jelly usernames with loading, empty, error, and retry states.
+- A protected PlatePost admin at `/admin` for creating, editing, scheduling, publishing, pausing, and archiving missions and mission locations without a code release, including optimistic-revision campaign and mission reward caps.
+- A review queue and audit trail for verification, approval/rejection, confirmed reward failures, and quarantined uncertain rewards. Uncertain-reward reconciliation intentionally remains a restricted, audited operator decision for the initial release.
+- Collision-safe `jellyhunt*` Convex tables for campaigns, places, missions and immutable revisions, participations, submissions, events, idempotency, deduplication, budgets, reward intents/attempts, profiles, approved completions, leaderboards, webhooks, and audit events.
+- A contract-guarded v1 read/admin compatibility surface plus a pre-cutover development submission route; Production v1 writes are disabled.
+- An implemented native v2 API for mission discovery, locations, participation, submission intake, owner status/history, and current-season/all-time “most approved” leaderboards with Jelly usernames.
+- Strict Jelly post preflight and evidence policy, immutable proof/reward snapshots, geofence checks, automatic/manual review routing, pre-payout revalidation, and conservative outage handling.
+- Reward dispatch and watchdog workers that are disabled by default, verify full receipts, and never automatically retry an uncertain transfer.
+- A local-only 16-mission fixture and guarded legacy migration source. Neither is a production runtime data source.
 
-| PlatePost and Convex own | Jelly owns |
+## Current status
+
+| Area | Repository status | What remains outside the repository |
+| --- | --- | --- |
+| Consumer map and live leaderboards | Implemented and fixture-tested | Live Mapbox + PlatePost development Convex browser acceptance |
+| Admin mission/review dashboard | Implemented | Connect to PlatePost development Convex and complete operator acceptance |
+| Canonical Convex model/workflows | Implemented under namespaced `jellyhunt*` tables | Merge review against PlatePost's real schema, deployment, configuration, and seed data |
+| v1 compatibility API | Reads/admin and pre-cutover write are implemented and contract-guarded; Production write returns `410 Gone` | Live development acceptance and eventual read-retirement plan |
+| Native v2 API | Route handlers, contracts, auth verification, reads, writes, status/event history, and leaderboards implemented | Jelly mission-token/JWKS, partner APIs, shared environment, and native app integration |
+| Jelly evidence integration | Strict preflight/verification clients and policy implemented; legacy exact-post fallback is conservative | Authoritative Jelly partner endpoints and agreed fixtures |
+| Jelly rewards | Intent, lease, receipt validation, pre-payout recheck, watchdog, uncertain-state quarantine, and manual operator reconciliation implemented | At-most-once Jelly service, capacity controls, funded development account, explicit production approval, and optional proof-backed reconciliation automation |
+| Production | Not deployed | Every gate in [Next Steps](docs/NEXT_STEPS.md) |
+
+## Ownership boundary
+
+| PlatePost / Convex own | Jelly owns |
 | --- | --- |
-| Mission and location configuration | Canonical Jelly user identity |
-| Publishing, pausing, scheduling, and map ordering | Jelly posts and authorship |
-| Submission intake and state | Restaurant tag or topic proof |
-| One non-rejected submission per user/mission | Trusted post geolocation proof |
-| Prevention of Jelly-post reuse | Jelly-My-Jelly balances |
-| Admin review and rejection reasons | Final tip transaction and transaction ID |
-| Reward-attempt state and reconciliation | Partner or legacy API behavior |
-| Native-facing Jellyhunt API and audit history | |
+| Campaign and editable mission configuration | Canonical Jelly user identity and username |
+| Reviewed mission place snapshots, coordinates, timezone, hours, and geofence | Canonical restaurant/place IDs and place-linked Jelly content |
+| Mission revisions and availability | Jelly posts, authorship, state, visibility, moderation, and deletion |
+| Participation, submission intake, idempotency, and deduplication | Trusted post coordinates and evidence provenance |
+| Verification outcome, manual review, completion, and resubmission policy | `JELLY-MY-JELLY` balance and recipient-wallet resolution |
+| Campaign/mission reward reservations and reward-intent state | The final at-most-once transfer and canonical transaction receipt |
+| Current-season/all-time approved-completion rankings | Public-profile eligibility and canonical display username |
+| Native-facing APIs, audit, events, and reconciliation state | Partner API availability and rate-limit behavior |
 
-Mission content must not be embedded in the PlatePost production frontend or JellyJelly clients. Published mission records come from Convex. Static catalog data in this repository is limited to a local-only 16-mission visual fixture and the guarded 16-record migration input. Fixture mode is disabled in production; published production records are loaded only from Convex.
+PlatePost stores the reviewed place snapshot needed to run a mission; it does not become the source of truth for Jelly posts, live restaurant content, a user's wallet, or a payout transaction.
 
-## Current implementation status
+This repository does not use Supabase for JellyHunt workflow state. Any legacy Supabase tables shared with other Jelly products must remain untouched until a separately reviewed, JellyHunt-specific migration/cutover is approved.
 
-| Area | Status |
-| --- | --- |
-| Consumer map and responsive mission explorer | Implemented and fixture-verified; needs live Mapbox/Convex acceptance |
-| Public mission API and authenticated user status | Implemented |
-| Authenticated submission intake | Implemented |
-| Native Mission API v2 contract | Proposed and ready for PlatePost/Jelly engineering review; not implemented yet |
-| Convex mission/location schema and workflow state | Implemented; needs deployment against the PlatePost development project |
-| Jelly verification and reward integration | Adapter code exists; production partner contracts and credentials are still required |
-| Signed admin session and private admin APIs | Implemented |
-| Admin mission and review dashboard | Implemented locally; needs live Convex and browser acceptance |
-| Production deployment | Not completed |
+## Canonical data flow
 
-See [Next steps](docs/NEXT_STEPS.md) for the exact launch blockers.
+1. A PlatePost operator creates or edits a mission and place in `/admin`.
+2. Convex stores the draft. Publishing creates an immutable mission revision; only active, in-window missions appear on the public map and mission APIs.
+3. The PlatePost map, v1 compatibility route, and v2 native routes read the same canonical records. Production clients do not contain mission constants.
+4. Jelly issues a short-lived mission token. PlatePost derives the user only from its verified `sub` claim.
+5. The app starts a revision-locked participation, publishes a Jelly post, and submits the canonical post ID with an HTTP idempotency key.
+6. PlatePost verifies exact post ownership before committing uniqueness/reservation state, then stores the immutable submission snapshot and schedules evidence verification.
+7. Jelly supplies component evidence for post state, visibility, moderation, authorship, canonical place, and trusted coordinates. PlatePost calculates the geofence result and owns the approve/reject/review decision.
+8. Approval creates one completion, updates both leaderboards, and creates one immutable reward intent.
+9. Before any transfer, PlatePost rechecks Jelly evidence. Jelly executes the transfer at most once and returns a receipt that PlatePost validates against the complete immutable tuple.
+10. Owner-only status and event APIs let the Jelly app show verification, approval, rejection, reward-pending, reward-sent, reward-failed, and reward-uncertain states without guessing.
 
-## Jellyhunt parity and scope
+Jelly outages or incomplete evidence do not reject a user. Ambiguous payout responses become `uncertain` and are never retried automatically. For the initial release, a restricted PlatePost operator may reconcile that state only after checking Jelly, and every decision is audited; server-verified reconciliation remains a recommended hardening step before automating the workflow.
 
-In local fixture mode, the PlatePost page recreates the original Jellyhunt map hierarchy and visual language with all 16 legacy pins: a full-screen branded NYC street map, JellyJelly HQ, floating masthead, nearest-cross-street chip, zoom/location controls, Dark and Wobbles themes, slide-out navigation, bottom mission drawer, search/filtering and a scrollable mission chooser, geolocation and distance, hours, directions, JellyJelly camera handoff, Passport, Editorial mission guide, and app-store links. The same UI renders the active mission inventory returned by Convex in production; production does not use the fixture catalog.
+## Routes
 
-The public page remains anonymous until Jelly and PlatePost connect signed identity. Anonymous visitors see an app handoff instead of false Passport progress; the personalized Passport renders only when authenticated user status is supplied by the server contract. The Editorial Map remains public. The live leaderboard intentionally shows a contract-required state rather than invented player data. Jelly web authentication, the Jelly Library picker/post selection, canonical profiles, and live standings remain Jelly/PlatePost integration work; completing a mission currently hands off to JellyJelly.
+### Pages and v1 compatibility
 
-The local fixture mirrors all 16 legacy stops for visual acceptance only. Production parity still depends on human-reviewing the migration catalog, importing it into development Convex as draft/manual records, and explicitly activating approved missions.
+| Method and route | Audience | Purpose |
+| --- | --- | --- |
+| `GET /human-social` | Public | Consumer map and mission explorer |
+| `GET /map` | Public | Redirect to `/human-social` |
+| `GET /admin` | PlatePost operators | Mission management, proof review, reward exceptions, and audit |
+| `POST/DELETE /api/v1/jellyhunt/admin/session` | PlatePost operators | Create or clear the signed admin session |
+| `GET/POST/PUT/PATCH /api/v1/jellyhunt/admin/missions` | PlatePost operators | List, create, edit, publish/pause/archive missions and places |
+| `GET/PATCH /api/v1/jellyhunt/admin/submissions` | PlatePost operators | Review/reverify, retry a confirmed failure, and perform audited manual uncertain-reward reconciliation |
+| `GET /api/v1/jellyhunt/admin/audit` | PlatePost operators | Read workflow audit history |
+| `GET /api/v1/jellyhunt/missions` | Public or Jelly server | Active catalog; authenticated `user_id` adds compatibility status |
+| `POST /api/v1/jellyhunt/submissions` | Jelly server | Pre-cutover/development compatibility intake; intentionally `410 Gone` in Production |
+
+v1 personalized reads and writes are server-to-server only. Never ship `JELLYHUNT_API_KEY` in a mobile app. Production v1 submission writes are intentionally retired with `410 Gone`; new native and Production writes use v2.
+
+### Native API v2
+
+All routes are under `/api/v2/jellyhunt`. The complete executable contract is [OpenAPI 3.1](openapi/jellyhunt-v2.yaml).
+
+| Method and path | Auth | Purpose |
+| --- | --- | --- |
+| `GET /campaigns/current` | Public; optional bearer | Current campaign and app configuration |
+| `GET /missions` | Public; optional bearer | Mission discovery, filters, location summaries, optional viewer state |
+| `GET /missions/{missionId}` | Public; optional bearer | Mission, place, schedule, reward, requirements, optional viewer state |
+| `GET /missions/{missionId}/jellies` | Public | Jelly posts related to the mission's canonical place |
+| `GET /places/{placeId}` | Public | Reviewed place snapshot |
+| `GET /places/{placeId}/jellies` | Public | Cursor-paginated Jelly place feed |
+| `PUT /missions/{missionId}/participation` | `jellyhunt:submit` | Idempotently start and lock a mission revision |
+| `GET /participations/{participationId}` | `jellyhunt:read`, owner only | Participation terms and deadline |
+| `POST /missions/{missionId}/submissions` | `jellyhunt:submit` | Idempotent exact-post preflight and submission intake |
+| `GET /submissions/{submissionId}` | `jellyhunt:read`, owner only | Current verification, decision, completion, and reward state |
+| `GET /submissions/{submissionId}/events` | `jellyhunt:read`, owner only | Paginated submission timeline |
+| `GET /me` | `jellyhunt:read` | Current user's JellyHunt summary |
+| `GET /me/missions` | `jellyhunt:read` | Paginated mission participation/status history |
+| `GET /me/submissions` | `jellyhunt:read` | Paginated submission history |
+| `GET /me/events` | `jellyhunt:read` | Paginated cross-submission event stream |
+| `GET /leaderboards/current-season` | Public | Most approved missions in the current campaign |
+| `GET /leaderboards/all-time` | Public | Most approved missions since this PlatePost tool's launch |
+
+Authenticated v2 routes accept a five-minute Jelly-signed bearer token with audience `platepost-jellyhunt`; they never accept caller-supplied Jelly identity. Submission creation also requires `Idempotency-Key`. Pagination cursors are signed and bound to the resource, viewer, query, and snapshot.
 
 ## Local setup
 
 ### Prerequisites
 
-- Node.js 18.18 or newer; Node.js 20 LTS is recommended.
+- Node.js 18.18+; Node.js 20 LTS is recommended.
 - pnpm 9.
-- A Convex account and developer access to the PlatePost Convex project for real-data development.
-- A public Mapbox token for the production-style map.
+- A public Mapbox token for the live renderer.
+- PlatePost developer access only when connecting a reviewed development deployment.
 
-### Install and run with fixtures
-
-This is the fastest way to inspect the consumer experience without external credentials. The non-production fixture mirrors all 16 legacy missions so map density and interactions can be compared directly; production Convex still starts empty and must be populated through the guarded, human-reviewed migration.
+### Run the consumer experience locally
 
 ```bash
 pnpm install
@@ -78,196 +130,129 @@ Create `.env.local`:
 
 ```dotenv
 JELLYHUNT_DATA_SOURCE=fixture
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=<public Mapbox token, optional locally>
 ```
 
-Then run:
+Then:
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000/human-social](http://localhost:3000/human-social). Fixture mode is intentionally disabled when `NODE_ENV=production`.
+Open [http://localhost:3000/human-social](http://localhost:3000/human-social). Fixture mode is rejected when `NODE_ENV=production`.
 
-### Run with a PlatePost Convex development deployment
+### Run with Convex
 
-Copy `.env.example` to `.env.local`, then fill in development values:
+Copy `.env.example` to `.env.local` and use either an isolated local/anonymous Convex deployment or a PlatePost development deployment that has completed the schema-merge checklist in [PlatePost Integration Status](docs/PLATEPOST_INTEGRATION.md).
 
 ```bash
 pnpm install
 pnpm convex
 ```
 
-In a second terminal:
+Run `pnpm dev` in a second terminal. Do not point this standalone schema at PlatePost's shared project until a PlatePost engineer has reviewed how `jellyhuntTables` will be merged into the real `convex/schema.ts`. Never use a Production deploy key for local integration.
 
-```bash
-pnpm dev
-```
+## Configuration
 
-`pnpm convex` runs `convex dev`, generates the local Convex client bindings, and synchronizes functions with the selected development deployment. Do not point local work at production.
+[`.env.example`](.env.example) is the names-only source of truth. Key groups are:
 
-If TypeScript reports that `convex/_generated/*` is missing, the checkout has not been generated against a Convex deployment yet. Run `pnpm convex` after PlatePost grants project access; those bindings cannot be validated against the team deployment offline.
+- **Convex connection:** `CONVEX_DEPLOYMENT`, `NEXT_PUBLIC_CONVEX_URL`, optional `CONVEX_URL`, and the server-only `PLATEPOST_CONVEX_SERVICE_KEY`.
+- **Public map:** `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`. A Vercel credential is not a Mapbox token.
+- **Admin:** `JELLYHUNT_ADMIN_USERNAME`, `JELLYHUNT_ADMIN_PASSWORD`, and `JELLYHUNT_ADMIN_SESSION_SECRET`.
+- **v1 compatibility:** server-only `JELLYHUNT_API_KEY`.
+- **v2 identity/cursors:** `JELLY_MISSION_JWKS_URL`, `JELLY_MISSION_TOKEN_ISSUER`, and `JELLYHUNT_CURSOR_SECRET`.
+- **Jelly partner API:** `JELLY_API_BASE_URL`, `JELLY_PARTNER_API_BASE_URL`, `JELLY_PARTNER_PREFLIGHT_URL`, `JELLY_PARTNER_API_KEY`, and bounded timeout.
+- **Verification/rewards:** verification scheduling, reward safety flags, webhook secrets, and the maximum mission reward.
+- **Legacy fallback/migration:** Jelly legacy and reward tokens. These are not the target production contract.
 
-For the Next.js server, configure:
+Variables used by the Next.js server belong in Vercel; variables read by Convex actions belong in the matching Convex deployment. Some partner values are needed in both because submission preflight/place-feed requests run in Next.js while verification and payout workers run in Convex. No secret belongs in a `NEXT_PUBLIC_*` variable.
 
-- `CONVEX_DEPLOYMENT`
-- `NEXT_PUBLIC_CONVEX_URL`
-- `CONVEX_URL` when a separate server-only Convex URL is desired
-- `PLATEPOST_CONVEX_SERVICE_KEY`
-- `JELLYHUNT_API_KEY`
-- `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`
-- `JELLYHUNT_ADMIN_USERNAME`, `JELLYHUNT_ADMIN_PASSWORD`, and `JELLYHUNT_ADMIN_SESSION_SECRET`
+This standalone JellyHunt app does not use UploadThing, Resend, Manus AI, or Firecrawl. If it is merged into PlatePost's main application, preserve that application's existing service configuration; do not add those credentials solely for JellyHunt. This admin reads the `JELLYHUNT_ADMIN_*` variables, not PlatePost's generic development `ADMIN_USERNAME=test` / `ADMIN_PASSWORD=test` values.
 
-In the matching Convex deployment, configure:
+### Reward safety flags
 
-- `PLATEPOST_CONVEX_SERVICE_KEY` with the same value used by the Next.js server
-- Jelly verification and reward credentials described in [Environment variables](#environment-variables)
+Automatic rewards are off unless `JELLYHUNT_AUTOMATIC_REWARDS_ENABLED=true` **and** `JELLYHUNT_ENVIRONMENT_IDENTITY` is explicitly one of `development`, `preview`, or `production`. A missing or misspelled identity fails closed. When identity is `production`, the worker also requires `JELLYHUNT_PRODUCTION_REWARDS_APPROVED=true`. New environments must start with both approval flags false.
 
-Never expose a Convex service key, Jelly credential, admin password, or reward credential through a `NEXT_PUBLIC_*` variable.
+`JELLYHUNT_VERIFICATION_AUTORUN_ENABLED` controls verification scheduling only; it does not enable payouts. The reward watchdog moves expired processing leases to `uncertain` and never schedules another transfer.
 
-### Import the legacy Jellyhunt catalog
+### Credential incident
 
-The repository includes a one-time migration catalog at `migrations/legacy-jellyhunt-missions.json` and a guarded importer. The JSON is source material for Convex only; the website and API never load it at runtime.
+A Production Convex deploy key and a Vercel credential were exposed in chat while this project was being built. Treat both as compromised:
 
-Point `CONVEX_URL` and `PLATEPOST_CONVEX_SERVICE_KEY` at the PlatePost **development** deployment, then preview the plan:
+- Rotate/revoke them in Convex and Vercel before any use.
+- Do not copy either value into `.env.local`, Vercel, Convex, logs, issues, or commits.
+- Use named developer access and fresh development credentials for integration.
+- Keep Production deployment and reward enablement as reviewed human/CI actions.
+
+No chat-supplied credential is required to run the fixture experience.
+
+## Import the legacy catalog
+
+`migrations/legacy-jellyhunt-missions.json` inventories the 16 legacy JellyHunt stops for migration. It is not loaded by the website or API.
 
 ```bash
 pnpm migrate:legacy-jellyhunt
-```
-
-After reviewing the dry-run output, apply missing drafts explicitly:
-
-```bash
 pnpm migrate:legacy-jellyhunt --apply
 ```
 
-The importer prints the target Convex origin, requires exactly 16 records, refuses any record that is not `draft` and `manual`, skips existing slugs without changing them, and calls the atomic mission/location mutation. It cannot publish a mission or initiate a reward. Addresses, coordinates, restaurant tags, the provisional 75-meter geofences, New York timezone assumptions, opening hours, copy, schedules, and reward amounts still require human approval before activation.
+The first command is a dry run. Apply only against a reviewed development deployment. Import records as draft/manual, then human-review each address, coordinate, canonical Jelly place ID, restaurant requirement, timezone, hours, geofence, schedule, reward, and budget before publishing.
 
-## Environment variables
+Legacy submission and transaction history is a separate migration. Production rewards must remain disabled until those records are imported into the same post/user/mission/reward/transaction deduplication boundary.
 
-The checked-in [`.env.example`](.env.example) contains names only and no secrets.
+## Verification
 
-### Next.js / Vercel
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `CONVEX_DEPLOYMENT` | For Convex CLI | Development deployment selector. |
-| `NEXT_PUBLIC_CONVEX_URL` | For Convex data | Public Convex deployment URL used by the app tooling. |
-| `CONVEX_URL` | Optional | Server-only override for Convex calls. |
-| `PLATEPOST_CONVEX_SERVICE_KEY` | Yes for private operations | Shared server-to-Convex credential. Must also exist in Convex. |
-| `JELLYHUNT_API_KEY` | Yes for Jelly integration | Transitional server key required by user-specific reads and submission writes. |
-| `JELLYHUNT_DATA_SOURCE` | Local development only | Set to `fixture` only for local UI work; use `convex` or leave unset in deployed environments. |
-| `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | Yes for production map | Public Mapbox browser token. |
-| `JELLYHUNT_ADMIN_USERNAME` | For protected admin | Admin login username. |
-| `JELLYHUNT_ADMIN_PASSWORD` | For protected admin | Admin login password. |
-| `JELLYHUNT_ADMIN_SESSION_SECRET` | For protected admin | Long random value used to sign HTTP-only sessions. |
-| `NEXT_PUBLIC_JELLY_IOS_APP_URL` | Optional | Override the direct JellyJelly App Store URL. |
-| `NEXT_PUBLIC_JELLY_ANDROID_APP_URL` | Optional | Override the direct JellyJelly Play Store URL. |
-
-### Convex
-
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `PLATEPOST_CONVEX_SERVICE_KEY` | Yes | Authenticates server-only Next.js calls to private Convex functions. |
-| `JELLY_API_BASE_URL` | Recommended | HTTPS base URL for the approved Jelly API environment; defaults to `https://api.jellyjelly.com`. Loopback HTTP is allowed only outside production. |
-| `JELLYHUNT_MAX_REWARD_AMOUNT` | Recommended | Server-side mission reward ceiling; defaults to `10000`. Full mission saves and activation both revalidate the current ceiling. |
-| `JELLY_PARTNER_VERIFY_URL` | Preferred | HTTPS URL for the production partner verification endpoint. |
-| `JELLY_PARTNER_REWARD_URL` | Preferred | HTTPS URL for the idempotent production reward endpoint. |
-| `JELLY_PARTNER_API_KEY` | Preferred | Server credential for the partner endpoints. |
-| `JELLY_LEGACY_API_TOKEN` | Migration only | Token used to read legacy Jelly posts; also a fallback reward credential. |
-| `JELLY_REWARD_API_TOKEN` | Migration only | Preferred dedicated legacy `/crypto/send` credential. |
-| `JELLY_REWARD_AUTH_SCHEME` | Optional | `Token` or `Bearer`; defaults to `Token` for API/legacy tokens. |
-| `JELLY_REWARD_BEARER_TOKEN` | Compatibility only | Older bearer-token fallback. Prefer `JELLY_REWARD_API_TOKEN`. |
-
-
-PlatePost currently enforces the per-mission reward ceiling above, but it does **not** yet enforce aggregate daily or campaign spend caps. Those controls are an explicit launch blocker in [Next steps](docs/NEXT_STEPS.md).
-
-This standalone Jellyhunt repository does not currently use UploadThing, Resend, Manus AI, or Firecrawl. Those services remain requirements of the main PlatePost application only if this code is merged there. The main PlatePost `ADMIN_USERNAME`/`ADMIN_PASSWORD` variables are also not read here; Jellyhunt uses the three `JELLYHUNT_ADMIN_*` variables above, and deployed credentials must not use the development value `test`.
-
-The previously shared `vck_...` value is a Vercel credential, not a Mapbox token. It must not be committed or placed in a browser-visible variable. Rotate it if it was live.
-
-## Routes
-
-| Route | Audience | Purpose |
-| --- | --- | --- |
-| `/` | Internal overview | Project boundary and links. |
-| `/human-social` | Public | Consumer mission map. |
-| `/map` | Public | Redirect to the canonical consumer map. |
-| `/admin` | PlatePost operators | Mission and review operations; production use requires protected server-backed controls. |
-| `POST/DELETE /api/v1/jellyhunt/admin/session` | PlatePost operators | Create or clear the signed admin session. |
-| `GET/POST/PUT/PATCH /api/v1/jellyhunt/admin/missions` | PlatePost operators | List, create, fully edit, and change lifecycle state. |
-| `GET/PATCH /api/v1/jellyhunt/admin/submissions` | PlatePost operators | Review, reject, reverify, reconcile uncertain outcomes, and safely retry confirmed reward failures. |
-| `GET /api/v1/jellyhunt/admin/audit` | PlatePost operators | Read workflow audit history. |
-| `GET /api/v1/jellyhunt/missions` | Public or Jelly server | Active missions; authenticated `user_id` requests also receive user status. |
-| `POST /api/v1/jellyhunt/submissions` | Jelly server | Validate and create a mission submission. |
-
-The complete contract, examples, status values, and error behavior are in [API reference](docs/API.md).
-
-## Data and workflow
-
-1. A PlatePost operator creates a location and mission in the admin.
-2. Convex stores the mission and publishes active, in-window records.
-3. The PlatePost map and JellyJelly native app read the same mission contract.
-4. Jelly sends `missionId`, canonical `jellyUserId`, `jellyPostId`, and optional claimed coordinates to PlatePost.
-5. Convex checks mission availability, blocks post reuse, enforces one non-rejected user/mission submission, and snapshots the mission revision, proof requirements, location/geofence, and reward.
-6. An internal Convex action asks Jelly to verify authorship, restaurant proof, and trusted location proof against that immutable snapshot. A verified partner result must include trusted coordinates and a non-negative distance that agrees with PlatePost's calculation.
-7. Manual missions enter review; automatic missions may advance only after complete partner verification. Missing or inconsistent location proof enters review, outside-geofence proof is rejected, and rejected proof must be reverified before approval.
-8. Approval rechecks sibling attempts, creates one reward attempt with copied snapshot terms, and calls Jelly to execute the tip. A two-minute processing watchdog moves abandoned work to reconciliation instead of retrying it.
-9. PlatePost stores only the allowlisted result, transaction ID, and safe error summary, then writes an audit event; arbitrary payout response bodies are discarded.
-
-The reward amount, recipient, post, and idempotency key are loaded from Convex by the internal workflow. They must never be accepted from a public reward request.
-
-## Testing
+Use one final verification pass after implementation or integration changes:
 
 ```bash
 pnpm test
+pnpm test:contracts
+pnpm test:convex
+pnpm validate:openapi
 pnpm lint
 pnpm build
 ```
 
-Unit tests and `pnpm build` validate the Next.js application and HTTP routes. The web TypeScript configuration intentionally excludes `convex`, so a successful Next.js build does **not** validate Convex functions; `pnpm convex` is a separate required gate.
+A Next.js build does not validate Convex independently. Run the Convex typecheck/code generation gate against an isolated or approved development deployment before release.
 
-Convex generation and deployment additionally require PlatePost access:
+## Deployment outline
 
-```bash
-pnpm convex
-```
+1. Rotate the exposed Convex and Vercel credentials.
+2. Confirm the canonical PlatePost repository/project and review the schema merge against PlatePost's existing tables.
+3. Connect a PlatePost development Convex deployment with developer access—not a pasted deploy key.
+4. Configure fresh development-only Vercel and Convex environment values with rewards disabled.
+5. Deploy Preview, import reviewed draft missions, and prove that one admin edit appears on `/human-social`, v1, and v2 without a code release.
+6. Complete Jelly mission-token, place/evidence, profile, reward, and capacity integrations.
+7. Run the complete end-to-end and rollback checklist in [Next Steps](docs/NEXT_STEPS.md).
+8. Promote to Production only after security, data migration, budget, payout, and operator approvals.
 
-Before production, also run the end-to-end checks in [Next steps](docs/NEXT_STEPS.md), including an admin edit appearing on both the public map and the API without a code deployment.
+If a web release fails, roll back Vercel. If mission/workflow state is unsafe, pause affected missions rather than deleting records. Never retry a reward in `uncertain` state until Jelly confirms whether a transfer occurred.
 
-## Deployment
+## Handoff
 
-### Convex
+### PlatePost team
 
-1. Obtain developer access to the PlatePost Convex project.
-2. Select a non-production deployment for validation.
-3. Add the Convex environment variables listed above.
-4. Run `pnpm convex` and resolve all generation or type errors.
-5. Dry-run and explicitly apply the guarded 16-record legacy importer, then review every draft location, coordinate, proof tag, schedule, and reward.
-6. Exercise submission, verification, review, reward, and audit state with test Jelly accounts.
-7. Deploy to production only after the reward contract and reconciliation policy are approved.
+PlatePost owns the deployment, Convex schema merge, environment mapping, mission import/review, admin operation, budget setup, monitoring, and Vercel hosting. Start with [Next Steps](docs/NEXT_STEPS.md) and [PlatePost Integration Status](docs/PLATEPOST_INTEGRATION.md).
 
-### Vercel / PlatePost
+### Kris / Jelly app
 
-1. Import this repository into the PlatePost Vercel team.
-2. Set the Next.js environment variables separately for Preview and Production.
-3. Keep `JELLYHUNT_DATA_SOURCE` unset or `convex`; never enable fixture mode.
-4. Add the production domain and verify `/human-social`, the API, and protected admin behavior.
-5. Promote only after the acceptance checklist passes.
+Build against the implemented v2 OpenAPI contract:
 
-Rollback the Vercel deployment first if a web release fails. For data or workflow issues, pause affected missions in Convex rather than deleting records, and do not retry rewards marked `uncertain` until Jelly confirms the transaction outcome.
+1. Obtain a short-lived Jelly mission token.
+2. Load campaign and mission/place details; do not hardcode mission data.
+3. Start a participation before opening the composer.
+4. Publish the Jelly, then submit its canonical post ID once with an idempotency key.
+5. Render the server's submission, reward, and event status; never infer payment from approval.
+6. Show current-season and all-time approved-completion leaderboards using returned usernames.
+7. Treat `uncertain` as support/reconciliation, not as a retry prompt.
 
-## Native JellyJelly handoff
-
-v1's anonymous mission catalog may be read publicly, but personalized v1 reads and all v1 writes remain transitional server-to-server surfaces. A mobile app must not ship `JELLYHUNT_API_KEY`, trust caller-supplied user IDs, or treat approval as proof of payment.
-
-The proposed v2 contract gives Kris revision-locked mission start, config/detail, place-linked Jelly content, signed user identity, idempotent submission creation, owner-only paginated status history, separate approval and reward state, polling events, and signed backend webhooks. Jelly must also provide the mission token, canonical place/evidence APIs, and at-most-once reward-intent contract. Legacy post and transaction history must enter the same deduplication boundary before direct-native production rewards.
+Jelly backend engineering must provide the mission-token/JWKS and partner APIs described in [Next Steps](docs/NEXT_STEPS.md). The mobile app must never contain a PlatePost service key, Jelly partner key, reward credential, or caller-controlled reward/identity field.
 
 ## Documentation
 
 - [API reference](docs/API.md)
+- [OpenAPI 3.1 contract](openapi/jellyhunt-v2.yaml)
 - [Architecture](docs/ARCHITECTURE.md)
+- [PlatePost integration status](docs/PLATEPOST_INTEGRATION.md)
 - [Next steps and launch gates](docs/NEXT_STEPS.md)
 - [Changelog](CHANGELOG.md)
-- [End-to-end design](docs/superpowers/specs/2026-07-15-jellyhunt-end-to-end-design.md)
 - [Native Mission API v2 design](docs/superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md)
-- [Implementation plan](docs/superpowers/plans/2026-07-15-platepost-jellyhunt.md)

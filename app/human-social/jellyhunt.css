@@ -8,7 +8,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 .hunt-marker-submitted,.hunt-marker-verifying,.hunt-marker-needs_review{--accent:#f59e0b!important}.hunt-marker-approved,.hunt-marker-reward_sent{--accent:#5777bf!important}.hunt-marker-rejected,.hunt-marker-reward_failed,.hunt-marker-reward_uncertain{--accent:#f43f5e!important}.hunt-marker-tooltip{background:rgba(20,22,48,.94);border:1px solid;border-radius:8px;color:#fff;font-size:11px;font-weight:800;left:50%;max-width:160px;overflow:hidden;padding:4px 8px;position:absolute;text-overflow:ellipsis;top:-35px;transform:translateX(-50%);white-space:nowrap}.hunt-user-marker,.hunt-fallback-user{background:#4285f4;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 10px rgba(66,133,244,.2),0 0 12px rgba(66,133,244,.7);display:block;height:17px;width:17px}.hunt-fallback-user{position:absolute;transform:translate(-50%,-50%);z-index:7}
 .hunt-map-header{align-items:flex-start;display:flex;justify-content:space-between;left:18px;pointer-events:none;position:absolute;right:18px;top:max(22px,env(safe-area-inset-top));z-index:20}.hunt-brand-lockup,.hunt-header-actions{align-items:center;display:flex;gap:11px;pointer-events:auto}.hunt-menu-button,.hunt-header-actions>button{align-items:center;backdrop-filter:blur(14px);background:rgba(22,24,52,.78);border:1px solid rgba(138,168,243,.38);border-radius:13px;color:#d3f2ff;cursor:pointer;display:flex;height:44px;justify-content:center;padding:0;width:44px}.hunt-header-actions>button[data-active=true]{border-color:var(--hunt-cyan);color:var(--hunt-cyan)}.hunt-brand-lockup>div:last-child{display:flex;flex-direction:column}.hunt-partnership{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.13em;margin-bottom:2px;text-shadow:0 0 10px rgba(0,229,255,.55);text-transform:uppercase}.hunt-brand-lockup strong,.hunt-menu-heading strong,.hunt-experience-panel>header strong{color:#fff;font-family:Ranchers,Impact,Haettenschweiler,"Arial Black",sans-serif;font-size:clamp(34px,4vw,52px);font-weight:900;letter-spacing:.035em;line-height:.86;text-shadow:0 0 18px rgba(0,229,255,.4),0 3px 10px #000}.hunt-brand-lockup small{color:#d3f2ff;font-family:"JetBrains Mono","Courier New",monospace;font-size:clamp(8px,1.1vw,12px);font-weight:700;letter-spacing:.12em;margin-top:6px;text-shadow:0 1px 5px #000;white-space:nowrap}.hunt-header-actions{gap:8px}.hunt-get-app{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:999px;box-shadow:0 0 22px rgba(0,229,255,.26);color:#081018;display:flex;font-size:11px;font-weight:900;gap:6px;min-height:42px;padding:0 15px;text-transform:uppercase}
 .hunt-cross-street{align-items:center;backdrop-filter:blur(14px);background:rgba(15,16,34,.86);border:1px solid rgba(138,168,243,.32);border-radius:999px;box-shadow:0 6px 22px rgba(0,0,0,.42);color:#e7f0ff;display:flex;font-size:12px;font-weight:800;gap:8px;left:50%;padding:9px 15px;position:absolute;text-transform:uppercase;top:170px;transform:translateX(-50%);white-space:nowrap;z-index:12}.hunt-cross-street>span{background:var(--hunt-cyan);border-radius:50%;box-shadow:0 0 9px var(--hunt-cyan);height:6px;width:6px}
-.hunt-filter-panel{background:rgba(20,23,50,.97);border:1px solid rgba(138,168,243,.3);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);display:grid;gap:11px;left:18px;padding:14px;position:absolute;top:138px;width:min(330px,calc(100vw - 36px));z-index:30}.hunt-filter-heading{align-items:center;display:flex;justify-content:space-between}.hunt-filter-heading>div{display:grid;gap:2px}.hunt-filter-heading strong{font-size:14px}.hunt-filter-heading span{color:var(--hunt-muted);font-size:10px}.hunt-filter-heading button,.hunt-detail-close{align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:50%;color:#d3f2ff;cursor:pointer;display:flex;height:30px;justify-content:center;padding:0;width:30px}.hunt-filter-search,.hunt-guide-search{align-items:center;background:rgba(0,0,0,.23);border:1px solid rgba(138,168,243,.22);border-radius:10px;color:rgba(231,240,255,.52);display:flex;gap:8px;min-height:42px;padding:0 11px}.hunt-filter-search input,.hunt-guide-search input{background:transparent;border:0;color:#fff;min-height:0;outline:0;padding:0;width:100%}.hunt-filter-search input::placeholder,.hunt-guide-search input::placeholder{color:rgba(231,240,255,.38)}.hunt-filter-selects{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}.hunt-filter-selects label{color:rgba(231,240,255,.46);display:grid;font-size:9px;gap:4px;letter-spacing:.08em;text-transform:uppercase}.hunt-filter-selects select{background:rgba(0,0,0,.22);border:1px solid rgba(138,168,243,.2);border-radius:9px;color:#e7f0ff;font-size:11px;min-height:36px;padding:0 9px}.hunt-filter-selects option{background:#171a35}.hunt-clear-filters{background:transparent;border:0;color:var(--hunt-cyan);cursor:pointer;font-size:10px;justify-self:start;padding:0}
+.hunt-filter-panel{background:rgba(20,23,50,.97);border:1px solid rgba(138,168,243,.3);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);display:grid;gap:11px;left:18px;padding:14px;position:absolute;top:138px;width:min(330px,calc(100vw - 36px));z-index:30}.hunt-filter-heading{align-items:center;display:flex;justify-content:space-between}.hunt-filter-heading>div{display:grid;gap:2px}.hunt-filter-heading strong{font-size:14px}.hunt-filter-heading span{color:var(--hunt-muted);font-size:10px}.hunt-filter-heading button,.hunt-detail-close{align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:50%;color:#d3f2ff;cursor:pointer;display:flex;height:30px;justify-content:center;padding:0;width:30px}.hunt-filter-search,.hunt-guide-search{align-items:center;background:rgba(0,0,0,.23);border:1px solid rgba(138,168,243,.22);border-radius:10px;color:rgba(231,240,255,.52);display:flex;gap:8px;min-height:42px;padding:0 11px}.hunt-filter-search input,.hunt-guide-search input{background:transparent;border:0;color:#fff;min-height:0;padding:0;width:100%}.hunt-filter-search input::placeholder,.hunt-guide-search input::placeholder{color:rgba(231,240,255,.38)}.hunt-filter-selects{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}.hunt-filter-selects label{color:rgba(231,240,255,.46);display:grid;font-size:9px;gap:4px;letter-spacing:.08em;text-transform:uppercase}.hunt-filter-selects select{background:rgba(0,0,0,.22);border:1px solid rgba(138,168,243,.2);border-radius:9px;color:#e7f0ff;font-size:11px;min-height:36px;padding:0 9px}.hunt-filter-selects option{background:#171a35}.hunt-clear-filters{background:transparent;border:0;color:var(--hunt-cyan);cursor:pointer;font-size:10px;justify-self:start;padding:0}
 .hunt-zoom-controls{bottom:185px;display:flex;flex-direction:column;gap:6px;position:absolute;right:13px;transition:bottom .18s ease;z-index:18}.hunt-zoom-controls.lifted{bottom:340px}.hunt-zoom-controls button{align-items:center;backdrop-filter:blur(12px);background:rgba(15,16,34,.87);border:1px solid rgba(138,168,243,.36);border-radius:10px;color:#d3f2ff;cursor:pointer;display:flex;height:42px;justify-content:center;padding:0;width:42px}.hunt-location-toast,.hunt-data-notice,.hunt-no-results{backdrop-filter:blur(14px);background:rgba(15,16,34,.9);border:1px solid rgba(138,168,243,.3);border-radius:12px;color:#e7f0ff;font-size:11px;left:50%;padding:10px 13px;position:absolute;top:224px;transform:translateX(-50%);z-index:18}.hunt-data-notice{display:grid;gap:2px;max-width:410px;text-align:center}.hunt-data-notice span{color:var(--hunt-muted)}.hunt-no-results{align-items:center;display:flex;flex-direction:column;gap:6px}.hunt-no-results button{background:transparent;border:0;color:var(--hunt-cyan);cursor:pointer;font-size:11px}
 
 .hunt-detail-card{background:rgba(28,31,61,.97);border:1px solid rgba(255,255,255,.11);border-radius:22px;bottom:57px;box-shadow:0 -10px 42px rgba(0,0,0,.58);color:#fff;left:12px;max-height:52vh;overflow-y:auto;padding:16px;position:absolute;right:12px;width:auto;z-index:25}.hunt-detail-close{position:absolute;right:12px;top:11px}.hunt-detail-meta{align-items:center;display:flex;gap:9px;margin-bottom:10px;padding-right:37px}.hunt-detail-meta span,.hunt-detail-meta strong{font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;letter-spacing:.15em}.hunt-detail-meta span{color:rgba(255,255,255,.4)}.hunt-detail-row{align-items:center;display:flex;gap:12px}.hunt-detail-emoji{align-items:center;background:rgba(255,255,255,.04);border:1.5px solid;border-radius:16px;display:flex;flex:0 0 58px;font-size:28px;height:58px;justify-content:center;width:58px}.hunt-detail-title{flex:1;min-width:0}.hunt-detail-title h2{color:#fff;font-size:19px;line-height:1.1;margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hunt-detail-title p{color:rgba(255,255,255,.62);font-size:12px;line-height:1.35}.hunt-reward-badge{align-items:center;background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(168,85,247,.14));border:1px solid rgba(0,229,255,.4);border-radius:999px;display:flex;font-size:13px;font-weight:900;gap:5px;padding:5px 9px}.hunt-reward-badge i{background:radial-gradient(circle at 30% 30%,#d3f2ff,#00e5ff 42%,#5777bf 88%);border-radius:50%;box-shadow:0 0 6px rgba(0,229,255,.75);height:12px;width:12px}.hunt-detail-hours{align-items:center;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;display:flex;gap:10px;margin-top:11px;min-height:37px;padding:8px 11px}.hunt-detail-hours strong{color:var(--hunt-blue);font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;letter-spacing:.12em;white-space:nowrap}.hunt-detail-hours strong[data-open=true]{color:var(--hunt-mint)}.hunt-detail-hours span{color:#e7f0ff;flex:1;font-size:12px}.hunt-detail-hours a{align-items:center;color:var(--hunt-cyan);display:flex;font-size:10px;gap:4px}.hunt-detail-mission{background:rgba(255,255,255,.04);border-left:3px solid rgba(0,229,255,.45);border-radius:3px 10px 10px 3px;color:rgba(255,255,255,.73);font-size:13px;line-height:1.42;margin-top:10px;padding:10px 12px}.hunt-detail-mission span{color:var(--hunt-cyan);display:block;font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.18em;margin-bottom:4px}.hunt-rejection{background:rgba(244,63,94,.14);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:#fff;font-size:11px;margin-top:9px;padding:9px 11px}.hunt-rejection strong{color:#ff8399}.hunt-start-mission{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:14px;box-shadow:0 0 22px rgba(0,229,255,.42);color:#081018;display:flex;font-size:14px;font-weight:900;justify-content:center;letter-spacing:.04em;margin-top:12px;min-height:48px;text-transform:uppercase}.hunt-start-submitted,.hunt-start-verifying,.hunt-start-needs_review,.hunt-start-reward_queued,.hunt-start-reward_uncertain{background:linear-gradient(135deg,#f59e0b,#c97809);box-shadow:none;color:#fff}.hunt-start-approved,.hunt-start-reward_sent{background:linear-gradient(135deg,#5777bf,#4469b8);box-shadow:none;color:#fff}.hunt-start-rejected,.hunt-start-reward_failed{background:linear-gradient(135deg,#f43f5e,#be2945);box-shadow:none;color:#fff}
@@ -31,7 +31,1220 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 
 /* final parity and accessibility pass */
 .hunt-mapbox-hq{z-index:2}.hunt-mapbox-marker[data-selected=true]{animation:hunt-pin-bob 1.8s ease-in-out infinite;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent),0 0 28px var(--accent);filter:brightness(1.13)}
-.hunt-filter-results{display:grid;gap:5px;max-height:min(235px,31vh);overflow-y:auto;padding-right:3px}.hunt-filter-results button{align-items:center;background:rgba(255,255,255,.045);border:1px solid rgba(138,168,243,.15);border-radius:10px;color:#fff;cursor:pointer;display:grid;gap:8px;grid-template-columns:30px 1fr auto;min-height:48px;padding:6px 9px;text-align:left}.hunt-filter-results button:hover,.hunt-filter-results button:focus-visible{background:rgba(0,229,255,.09);border-color:rgba(0,229,255,.42)}.hunt-filter-results button>span{font-size:19px;text-align:center}.hunt-filter-results strong{display:grid;font-size:11px;gap:2px;min-width:0}.hunt-filter-results small{color:var(--hunt-muted);font-size:8px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hunt-filter-results i{color:var(--hunt-mint);font-size:9px;font-style:normal;font-weight:900}.hunt-start-mission[data-disabled=true]{cursor:default;opacity:.92;text-align:center}.hunt-menu-panel:focus,.hunt-experience-panel:focus{outline:none}
+.hunt-filter-results{display:grid;gap:5px;max-height:min(235px,31vh);overflow-y:auto;padding-right:3px}.hunt-filter-results button{align-items:center;background:rgba(255,255,255,.045);border:1px solid rgba(138,168,243,.15);border-radius:10px;color:#fff;cursor:pointer;display:grid;gap:8px;grid-template-columns:30px 1fr auto;min-height:48px;padding:6px 9px;text-align:left}.hunt-filter-results button:hover,.hunt-filter-results button:focus-visible{background:rgba(0,229,255,.09);border-color:rgba(0,229,255,.42)}.hunt-filter-results button>span{font-size:19px;text-align:center}.hunt-filter-results strong{display:grid;font-size:11px;gap:2px;min-width:0}.hunt-filter-results small{color:var(--hunt-muted);font-size:8px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hunt-filter-results i{color:var(--hunt-mint);font-size:9px;font-style:normal;font-weight:900}.hunt-start-mission[data-disabled=true]{cursor:default;opacity:.92;text-align:center}
 .hunt-theme-wobbles .hunt-filter-results button{background:rgba(13,40,71,.045);border-color:rgba(13,40,71,.14);color:#0d2847}.hunt-theme-wobbles .hunt-detail-meta span,.hunt-theme-wobbles .hunt-detail-close{color:#274765}.hunt-theme-wobbles .hunt-detail-close{background:rgba(13,40,71,.06);border-color:rgba(13,40,71,.13)}
 @media(max-width:720px){.hunt-map-screen .hunt-header-actions>button:first-child{display:flex}.hunt-filter-results{max-height:min(220px,28vh)}}
 @media(prefers-reduced-motion:reduce){.hunt-mapbox-marker[data-selected=true],.hunt-menu-panel{animation:none}.hunt-menu-panel,.hunt-experience-panel{scroll-behavior:auto}}
+
+/* JellyHunt visual parity: July 2026 */
+.hunt-map-screen {
+  --hunt-glass: rgba(13, 17, 43, 0.88);
+  --hunt-glass-strong: rgba(15, 19, 47, 0.96);
+  --hunt-line: rgba(168, 190, 255, 0.24);
+  color-scheme: dark;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.hunt-page :where(button, a, input, select) {
+  -webkit-tap-highlight-color: rgba(0, 229, 255, 0.2);
+  touch-action: manipulation;
+}
+
+.hunt-skip-link {
+  background: var(--hunt-cyan);
+  border-radius: 0 0 10px 10px;
+  color: #041216;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  left: 18px;
+  padding: 10px 14px;
+  position: fixed;
+  text-transform: uppercase;
+  top: 0;
+  transform: translateY(-120%);
+  transition: transform 0.16s ease;
+  z-index: 200;
+}
+
+.hunt-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.hunt-mapbox {
+  background: #080b1f;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.hunt-mapbox.is-loaded {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hunt-fallback-map {
+  background:
+    radial-gradient(circle at 63% 68%, rgba(0, 229, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 18% 5%, rgba(72, 46, 202, 0.48), transparent 38%),
+    linear-gradient(118deg, #15114f 0%, #080b22 47%, #04161b 100%);
+}
+
+.hunt-fallback-map::after {
+  background:
+    linear-gradient(112deg, transparent 0 46%, rgba(0, 229, 255, 0.16) 46.2% 46.45%, transparent 46.7%),
+    linear-gradient(20deg, transparent 0 57%, rgba(98, 245, 180, 0.08) 57.2% 57.45%, transparent 57.7%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.hunt-map-loading {
+  align-items: center;
+  backdrop-filter: blur(14px);
+  background: rgba(11, 15, 39, 0.76);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 999px;
+  bottom: max(25px, env(safe-area-inset-bottom));
+  color: rgba(231, 240, 255, 0.78);
+  display: flex;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  gap: 8px;
+  left: 24px;
+  letter-spacing: 0.12em;
+  padding: 8px 12px;
+  position: absolute;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+.hunt-map-loading > span {
+  animation: hunt-loading-pulse 1.2s ease-in-out infinite;
+  background: var(--hunt-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--hunt-cyan);
+  height: 6px;
+  width: 6px;
+}
+
+@keyframes hunt-loading-pulse {
+  0%, 100% { opacity: 0.42; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.hunt-map-header {
+  left: clamp(22px, 3vw, 46px);
+  right: clamp(22px, 3vw, 46px);
+  top: max(28px, env(safe-area-inset-top));
+}
+
+.hunt-brand-lockup {
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.hunt-menu-button,
+.hunt-header-actions > button {
+  background: rgba(12, 16, 41, 0.72);
+  border-color: rgba(168, 190, 255, 0.32);
+  border-radius: 15px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+  height: 48px;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+  width: 48px;
+}
+
+.hunt-menu-button:hover,
+.hunt-header-actions > button:hover {
+  background: rgba(22, 30, 67, 0.92);
+  border-color: rgba(0, 229, 255, 0.72);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.hunt-brand-mark {
+  align-items: center;
+  background: linear-gradient(145deg, #00e5ff 0%, #62f5b4 78%);
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 50% 50% 50% 10px;
+  box-shadow: 0 0 0 6px rgba(0, 229, 255, 0.1), 0 0 34px rgba(0, 229, 255, 0.5);
+  color: #07121a;
+  display: flex;
+  flex: 0 0 58px;
+  height: 58px;
+  justify-content: center;
+  margin: 1px 3px 0 1px;
+  transform: rotate(-45deg);
+  width: 58px;
+}
+
+.hunt-brand-mark svg {
+  transform: rotate(45deg);
+}
+
+.hunt-brand-copy {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hunt-partnership {
+  color: #9deeff;
+  font-size: clamp(8px, 0.68vw, 10px);
+  letter-spacing: 0.14em;
+  margin-bottom: 5px;
+  max-width: min(48vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hunt-brand-lockup h1 {
+  color: #ffffff;
+  filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.34));
+  font-family: Ranchers, Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-size: clamp(62px, 7.3vw, 112px);
+  font-weight: 900;
+  letter-spacing: 0.025em;
+  line-height: 0.76;
+  margin: 0;
+  text-shadow: 0 5px 22px rgba(0, 0, 0, 0.75);
+  text-wrap: balance;
+}
+
+.hunt-brand-lockup small {
+  align-items: center;
+  color: rgba(225, 239, 255, 0.82);
+  display: flex;
+  font-size: clamp(8px, 0.7vw, 10px);
+  gap: 8px;
+  letter-spacing: 0.14em;
+  margin-top: 12px;
+}
+
+.hunt-brand-lockup small i {
+  background: var(--hunt-mint);
+  border-radius: 50%;
+  box-shadow: 0 0 9px var(--hunt-mint);
+  display: block;
+  height: 5px;
+  width: 5px;
+}
+
+.hunt-header-actions {
+  gap: 9px;
+}
+
+.hunt-get-app {
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  font-size: 11px;
+  min-height: 48px;
+  padding: 0 19px;
+  transition: box-shadow 0.16s ease, filter 0.16s ease, transform 0.16s ease;
+}
+
+.hunt-get-app:hover {
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.44);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.hunt-cross-street {
+  background: rgba(10, 14, 35, 0.72);
+  border-color: rgba(168, 190, 255, 0.28);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 9px 15px;
+  top: max(34px, env(safe-area-inset-top));
+}
+
+.hunt-filter-panel {
+  backdrop-filter: blur(22px) saturate(135%);
+  background: rgba(13, 17, 43, 0.93);
+  border-color: rgba(168, 190, 255, 0.26);
+  border-radius: 19px;
+  left: auto;
+  padding: 16px;
+  right: clamp(22px, 3vw, 46px);
+  top: max(88px, calc(env(safe-area-inset-top) + 76px));
+  width: min(355px, calc(100vw - 44px));
+}
+
+.hunt-filter-search,
+.hunt-guide-search {
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.hunt-filter-selects label:only-child {
+  grid-column: 1 / -1;
+}
+
+.hunt-filter-search:focus-within,
+.hunt-guide-search:focus-within {
+  background: rgba(0, 229, 255, 0.05);
+  border-color: rgba(0, 229, 255, 0.62);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+.hunt-fallback-marker,
+.hunt-mapbox-marker {
+  border-width: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 11%, transparent), 0 0 28px color-mix(in srgb, var(--accent) 68%, transparent);
+}
+
+.hunt-marker-tooltip {
+  backdrop-filter: blur(12px);
+  background: rgba(9, 13, 33, 0.9);
+  border-radius: 999px;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.04em;
+  padding: 6px 11px;
+}
+
+.hunt-hq img {
+  height: 76px;
+  width: 76px;
+}
+
+.hunt-hq strong {
+  font-size: 10px;
+  margin-top: -94px;
+}
+
+.hunt-hq-pulse {
+  height: 128px;
+  width: 128px;
+}
+
+.hunt-zoom-controls {
+  bottom: 92px;
+  right: clamp(14px, 2vw, 30px);
+}
+
+.hunt-zoom-controls.lifted {
+  bottom: clamp(365px, 45vh, 470px);
+}
+
+.hunt-zoom-controls button {
+  background: rgba(10, 14, 35, 0.78);
+  border-color: rgba(168, 190, 255, 0.3);
+  border-radius: 12px;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.hunt-zoom-controls button:hover {
+  background: rgba(22, 30, 67, 0.94);
+  border-color: rgba(0, 229, 255, 0.66);
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+.hunt-location-toast,
+.hunt-data-notice,
+.hunt-no-results {
+  backdrop-filter: blur(20px) saturate(135%);
+  background: rgba(11, 15, 39, 0.9);
+  border-color: rgba(168, 190, 255, 0.25);
+  border-radius: 16px;
+  top: 44%;
+}
+
+.hunt-data-notice,
+.hunt-no-results {
+  gap: 7px;
+  line-height: 1.4;
+  max-width: 380px;
+  padding: 16px 18px;
+}
+
+.hunt-detail-card {
+  backdrop-filter: blur(28px) saturate(145%);
+  background:
+    linear-gradient(120deg, rgba(20, 24, 58, 0.94), rgba(8, 22, 35, 0.91)),
+    rgba(13, 17, 43, 0.9);
+  border: 1px solid rgba(177, 201, 255, 0.25);
+  border-radius: 28px;
+  bottom: calc(67px + env(safe-area-inset-bottom));
+  box-shadow: 0 -18px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 229, 255, 0.04) inset;
+  left: clamp(18px, 3vw, 48px);
+  max-height: min(47vh, 430px);
+  overscroll-behavior: contain;
+  padding: 20px clamp(20px, 2.2vw, 34px) 24px;
+  right: clamp(18px, 3vw, 48px);
+  scrollbar-color: rgba(0, 229, 255, 0.45) transparent;
+}
+
+.hunt-detail-card::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.42), rgba(98, 245, 180, 0.34), transparent);
+  content: "";
+  height: 1px;
+  left: 8%;
+  pointer-events: none;
+  position: absolute;
+  right: 8%;
+  top: 0;
+}
+
+.hunt-drawer-handle {
+  background: rgba(211, 242, 255, 0.34);
+  border-radius: 999px;
+  display: block;
+  height: 3px;
+  margin: -8px auto 11px;
+  width: 52px;
+}
+
+.hunt-detail-close {
+  height: 36px;
+  right: 18px;
+  top: 16px;
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+  width: 36px;
+}
+
+.hunt-detail-close:hover {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.5);
+  transform: rotate(4deg);
+}
+
+.hunt-detail-meta {
+  border-bottom: 1px solid rgba(177, 201, 255, 0.13);
+  gap: 13px;
+  margin-bottom: 16px;
+  padding: 0 48px 12px 0;
+}
+
+.hunt-detail-meta span,
+.hunt-detail-meta strong {
+  font-size: 9px;
+  letter-spacing: 0.17em;
+}
+
+.hunt-detail-meta span {
+  color: rgba(225, 239, 255, 0.56);
+}
+
+.hunt-detail-grid {
+  align-items: stretch;
+  display: grid;
+  gap: clamp(14px, 2vw, 26px);
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.72fr);
+}
+
+.hunt-detail-venue {
+  min-width: 0;
+}
+
+.hunt-detail-row {
+  gap: 17px;
+}
+
+.hunt-detail-emoji {
+  background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.025));
+  border-radius: 22px;
+  box-shadow: 0 0 24px color-mix(in srgb, currentColor 18%, transparent);
+  flex-basis: 80px;
+  font-size: 38px;
+  height: 80px;
+  width: 80px;
+}
+
+.hunt-detail-title h2 {
+  font-size: clamp(27px, 2.4vw, 38px);
+  letter-spacing: -0.025em;
+  line-height: 0.98;
+  margin-bottom: 9px;
+  overflow: visible;
+  text-overflow: clip;
+  text-wrap: balance;
+  white-space: normal;
+}
+
+.hunt-detail-title p {
+  font-size: clamp(11px, 1vw, 14px);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.hunt-reward-badge {
+  align-items: flex-end;
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.34);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 86px;
+  padding: 9px 11px;
+}
+
+.hunt-reward-badge small {
+  color: rgba(211, 242, 255, 0.52);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.15em;
+}
+
+.hunt-reward-badge strong {
+  align-items: center;
+  display: flex;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.hunt-reward-badge em {
+  color: rgba(211, 242, 255, 0.62);
+  font-size: 8px;
+  font-style: normal;
+  margin-left: 2px;
+}
+
+.hunt-detail-hours {
+  background: rgba(0, 0, 0, 0.16);
+  border-color: rgba(177, 201, 255, 0.1);
+  border-radius: 13px;
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 10px 13px;
+}
+
+.hunt-detail-hours a {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hunt-detail-mission {
+  align-content: center;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(98, 245, 180, 0.04));
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-left: 3px solid rgba(0, 229, 255, 0.72);
+  border-radius: 4px 16px 16px 4px;
+  display: grid;
+  margin: 0;
+  min-height: 138px;
+  padding: 18px 20px;
+}
+
+.hunt-detail-mission span {
+  margin-bottom: 9px;
+}
+
+.hunt-detail-mission p {
+  color: rgba(244, 248, 255, 0.86);
+  font-size: clamp(13px, 1.15vw, 16px);
+  line-height: 1.45;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.hunt-start-mission {
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 17px;
+  box-shadow: 0 0 34px rgba(0, 229, 255, 0.36), 0 12px 34px rgba(0, 0, 0, 0.28);
+  font-size: clamp(17px, 1.6vw, 23px);
+  letter-spacing: 0.08em;
+  margin-top: 17px;
+  min-height: 68px;
+  position: relative;
+  transition: box-shadow 0.18s ease, filter 0.18s ease, transform 0.18s ease;
+}
+
+.hunt-start-mission:not([data-disabled="true"]):hover {
+  box-shadow: 0 0 48px rgba(0, 229, 255, 0.55), 0 14px 38px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.hunt-start-mission:not([data-disabled="true"]):active {
+  transform: translateY(0) scale(0.995);
+}
+
+.hunt-theme-toggle {
+  backdrop-filter: blur(18px);
+  background: rgba(13, 17, 43, 0.88);
+  border-color: rgba(177, 201, 255, 0.25);
+}
+
+.hunt-theme-toggle button {
+  min-height: 32px;
+  transition: background-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
+}
+
+.hunt-menu-panel,
+.hunt-experience-panel {
+  overscroll-behavior: contain;
+}
+
+.hunt-menu-panel {
+  background:
+    radial-gradient(circle at 20% 8%, rgba(0, 229, 255, 0.1), transparent 28%),
+    #11142e;
+  border-color: rgba(177, 201, 255, 0.2);
+  box-shadow: 32px 0 80px rgba(0, 0, 0, 0.5);
+  width: min(360px, 88vw);
+}
+
+.hunt-menu-panel nav button {
+  transition: background-color 0.16s ease, color 0.16s ease, padding-left 0.16s ease;
+}
+
+.hunt-menu-panel nav button:hover,
+.hunt-menu-panel nav button[data-active="true"] {
+  padding-left: 29px;
+}
+
+.hunt-menu-panel:focus-visible,
+.hunt-experience-panel:focus-visible {
+  outline: 3px solid rgba(0, 229, 255, 0.8);
+  outline-offset: -3px;
+}
+
+.hunt-panel-intro h1,
+.hunt-coming-view h1,
+.hunt-how-grid h2 {
+  text-wrap: balance;
+}
+
+.hunt-panel-intro p,
+.hunt-coming-view p,
+.hunt-how-grid p {
+  text-wrap: pretty;
+}
+
+.hunt-leaderboard-view {
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 48px 24px 84px;
+}
+
+.hunt-leaderboard-intro h1 {
+  max-width: 760px;
+}
+
+.hunt-leaderboard-tabs {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(177, 201, 255, 0.2);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+  margin: 30px 0 18px;
+  padding: 4px;
+}
+
+.hunt-leaderboard-tabs button {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(231, 240, 255, 0.6);
+  cursor: pointer;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  min-height: 40px;
+  padding: 0 18px;
+  text-transform: uppercase;
+}
+
+.hunt-leaderboard-tabs button[data-active="true"] {
+  background: linear-gradient(135deg, var(--hunt-cyan), var(--hunt-mint));
+  box-shadow: 0 0 22px rgba(0, 229, 255, 0.28);
+  color: #06121a;
+}
+
+.hunt-leaderboard-board {
+  min-height: 320px;
+  position: relative;
+}
+
+.hunt-leaderboard-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hunt-leaderboard-list li {
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgba(0, 229, 255, 0.075), transparent 42%),
+    rgba(255, 255, 255, 0.038);
+  border: 1px solid rgba(177, 201, 255, 0.17);
+  border-radius: 15px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 70px minmax(0, 1fr) 128px;
+  min-height: 76px;
+  overflow: hidden;
+  padding: 10px 18px;
+  position: relative;
+}
+
+.hunt-leaderboard-list li::before {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--hunt-cyan) 0 5px,
+    var(--hunt-mint) 5px 10px,
+    transparent 10px 15px
+  );
+  content: "";
+  inset: 0 auto 0 0;
+  opacity: 0.74;
+  position: absolute;
+  width: 5px;
+}
+
+.hunt-leaderboard-list li[data-podium="true"] {
+  background:
+    radial-gradient(circle at 12% 50%, rgba(0, 229, 255, 0.15), transparent 32%),
+    linear-gradient(90deg, rgba(87, 119, 191, 0.16), rgba(255, 255, 255, 0.045));
+  border-color: rgba(0, 229, 255, 0.34);
+}
+
+.hunt-leaderboard-rank {
+  color: var(--hunt-cyan);
+  font-family: Ranchers, Impact, sans-serif;
+  font-size: 34px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 0 16px rgba(0, 229, 255, 0.36);
+}
+
+.hunt-leaderboard-list strong {
+  color: #f8f9ff;
+  font-size: clamp(17px, 2.6vw, 24px);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hunt-leaderboard-score {
+  color: #fff;
+  display: grid;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: right;
+}
+
+.hunt-leaderboard-score small {
+  color: var(--hunt-mint);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+.hunt-leaderboard-message {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px dashed rgba(177, 201, 255, 0.24);
+  border-radius: 18px;
+  color: var(--hunt-muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 310px;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.hunt-leaderboard-message svg {
+  color: var(--hunt-cyan);
+  margin-bottom: 14px;
+}
+
+.hunt-leaderboard-message strong {
+  color: #fff;
+  font-size: 21px;
+}
+
+.hunt-leaderboard-message p {
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+.hunt-leaderboard-message button {
+  background: linear-gradient(135deg, var(--hunt-cyan), var(--hunt-mint));
+  border: 0;
+  border-radius: 11px;
+  color: #07131b;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  margin-top: 20px;
+  min-height: 42px;
+  padding: 0 17px;
+  text-transform: uppercase;
+}
+
+.hunt-leaderboard-loading {
+  display: grid;
+  gap: 8px;
+}
+
+.hunt-leaderboard-loading span {
+  color: var(--hunt-cyan);
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.hunt-leaderboard-loading i {
+  animation: hunt-ranking-pulse 1.35s ease-in-out infinite alternate;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(0, 229, 255, 0.13), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(177, 201, 255, 0.12);
+  border-radius: 15px;
+  display: block;
+  height: 76px;
+}
+
+.hunt-leaderboard-loading i:nth-of-type(2) { animation-delay: 0.08s; }
+.hunt-leaderboard-loading i:nth-of-type(3) { animation-delay: 0.16s; }
+.hunt-leaderboard-loading i:nth-of-type(4) { animation-delay: 0.24s; }
+.hunt-leaderboard-loading i:nth-of-type(5) { animation-delay: 0.32s; }
+
+@keyframes hunt-ranking-pulse {
+  from { opacity: 0.42; }
+  to { opacity: 0.88; }
+}
+
+.hunt-leaderboard-note {
+  color: rgba(231, 240, 255, 0.46);
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  margin-top: 16px;
+}
+
+@media (max-width: 720px) {
+  .hunt-leaderboard-view {
+    padding: 34px 14px 68px;
+  }
+
+  .hunt-leaderboard-tabs {
+    display: flex;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .hunt-leaderboard-tabs button {
+    flex: 1;
+    padding: 0 9px;
+  }
+
+  .hunt-leaderboard-list li {
+    gap: 10px;
+    grid-template-columns: 48px minmax(0, 1fr) 82px;
+    min-height: 68px;
+    padding: 8px 11px 8px 13px;
+  }
+
+  .hunt-leaderboard-rank {
+    font-size: 27px;
+  }
+
+  .hunt-leaderboard-list strong {
+    font-size: 16px;
+  }
+
+  .hunt-leaderboard-score {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hunt-leaderboard-loading i {
+    animation: none;
+  }
+}
+.hunt-theme-wobbles {
+  --hunt-glass: rgba(255, 253, 247, 0.88);
+  --hunt-glass-strong: rgba(255, 253, 247, 0.96);
+  --hunt-line: rgba(13, 40, 71, 0.18);
+  color-scheme: light;
+}
+
+.hunt-theme-wobbles .hunt-brand-mark {
+  background: linear-gradient(145deg, #ffffff 0%, #6fe9d0 100%);
+  border-color: #0d2847;
+  box-shadow: 0 0 0 6px rgba(0, 120, 168, 0.08), 0 0 28px rgba(0, 120, 168, 0.24);
+  color: #0d2847;
+}
+
+.hunt-theme-wobbles .hunt-brand-lockup h1,
+.hunt-theme-wobbles .hunt-brand-lockup small,
+.hunt-theme-wobbles .hunt-partnership {
+  color: #0d2847;
+  filter: none;
+  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
+}
+
+.hunt-theme-wobbles .hunt-map-loading,
+.hunt-theme-wobbles .hunt-detail-card {
+  background: rgba(255, 253, 247, 0.94);
+  border-color: rgba(13, 40, 71, 0.18);
+  color: #0d2847;
+}
+
+.hunt-theme-wobbles .hunt-detail-card::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 120, 168, 0.42), rgba(0, 167, 131, 0.34), transparent);
+}
+
+.hunt-theme-wobbles .hunt-detail-meta span,
+.hunt-theme-wobbles .hunt-reward-badge small,
+.hunt-theme-wobbles .hunt-reward-badge em {
+  color: rgba(13, 40, 71, 0.62);
+}
+
+.hunt-theme-wobbles .hunt-detail-mission {
+  background: linear-gradient(135deg, rgba(0, 120, 168, 0.07), rgba(0, 167, 131, 0.05));
+  border-color: rgba(0, 120, 168, 0.2);
+  border-left-color: #0078a8;
+}
+
+.hunt-theme-wobbles .hunt-detail-mission p {
+  color: rgba(13, 40, 71, 0.82);
+}
+
+@media (min-width: 768px) {
+  .hunt-fallback-marker,
+  .hunt-mapbox-marker {
+    height: 70px;
+    width: 70px;
+  }
+
+  .hunt-mapbox-marker-anchor {
+    height: 78px;
+    width: 78px;
+  }
+
+  .hunt-fallback-marker > span,
+  .hunt-mapbox-marker > span {
+    font-size: 31px;
+  }
+}
+
+@media (max-width: 920px) {
+  .hunt-brand-lockup h1 {
+    font-size: clamp(48px, 8vw, 74px);
+  }
+
+  .hunt-brand-mark {
+    flex-basis: 50px;
+    height: 50px;
+    width: 50px;
+  }
+
+  .hunt-detail-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .hunt-map-header {
+    left: 12px;
+    right: 12px;
+    top: max(13px, env(safe-area-inset-top));
+  }
+
+  .hunt-brand-lockup {
+    gap: 8px;
+    max-width: calc(100% - 52px);
+    min-width: 0;
+  }
+
+  .hunt-brand-copy {
+    max-width: calc(100vw - 154px);
+    min-width: 0;
+  }
+
+  .hunt-header-actions {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .hunt-header-actions > button:last-child {
+    display: none;
+  }
+
+  .hunt-map-screen .hunt-header-actions > button:first-child {
+    display: flex;
+  }
+
+  .hunt-menu-button {
+    border-radius: 12px;
+    height: 42px;
+    width: 42px;
+  }
+
+  .hunt-brand-mark {
+    border-width: 1.5px;
+    flex-basis: 42px;
+    height: 42px;
+    margin-right: 1px;
+    width: 42px;
+  }
+
+  .hunt-brand-mark svg {
+    height: 19px;
+    width: 19px;
+  }
+
+  .hunt-partnership {
+    font-size: 6.5px;
+    letter-spacing: 0.095em;
+    margin-bottom: 3px;
+    max-width: calc(100vw - 154px);
+  }
+
+  .hunt-brand-lockup h1 {
+    font-size: clamp(35px, 11vw, 46px);
+    line-height: 0.78;
+  }
+
+  .hunt-brand-lockup small {
+    font-size: 6.5px;
+    gap: 5px;
+    letter-spacing: 0.09em;
+    margin-top: 7px;
+  }
+
+  .hunt-brand-lockup small span {
+    display: none;
+  }
+
+  .hunt-header-actions > button {
+    height: 42px;
+    width: 42px;
+  }
+
+  .hunt-cross-street {
+    font-size: 8px;
+    max-width: calc(100vw - 104px);
+    padding: 8px 11px;
+    top: calc(max(13px, env(safe-area-inset-top)) + 96px);
+  }
+
+  .hunt-filter-panel {
+    left: 10px;
+    right: 10px;
+    top: calc(max(13px, env(safe-area-inset-top)) + 91px);
+    width: auto;
+  }
+
+  .hunt-map-loading {
+    bottom: calc(62px + env(safe-area-inset-bottom));
+    font-size: 7px;
+    left: 12px;
+  }
+
+  .hunt-hq img {
+    height: 58px;
+    width: 58px;
+  }
+
+  .hunt-hq strong {
+    margin-top: -72px;
+  }
+
+  .hunt-hq-pulse {
+    height: 96px;
+    width: 96px;
+  }
+
+  .hunt-zoom-controls {
+    bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+
+  .hunt-zoom-controls.lifted {
+    display: none;
+  }
+
+  .hunt-detail-card {
+    border-radius: 23px;
+    bottom: calc(60px + env(safe-area-inset-bottom));
+    left: 8px;
+    max-height: min(67vh, 560px);
+    padding: 17px 14px 15px;
+    right: 8px;
+  }
+
+  .hunt-drawer-handle {
+    margin-bottom: 9px;
+  }
+
+  .hunt-detail-close {
+    height: 32px;
+    right: 12px;
+    top: 12px;
+    width: 32px;
+  }
+
+  .hunt-detail-meta {
+    margin-bottom: 12px;
+    padding: 0 38px 9px 0;
+  }
+
+  .hunt-detail-meta span,
+  .hunt-detail-meta strong {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .hunt-detail-grid {
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+
+  .hunt-detail-row {
+    gap: 10px;
+  }
+
+  .hunt-detail-emoji {
+    border-radius: 16px;
+    flex-basis: 54px;
+    font-size: 27px;
+    height: 54px;
+    width: 54px;
+  }
+
+  .hunt-detail-title h2 {
+    font-size: clamp(20px, 6.8vw, 27px);
+    margin-bottom: 5px;
+  }
+
+  .hunt-detail-title p {
+    font-size: 9px;
+    line-height: 1.3;
+  }
+
+  .hunt-reward-badge {
+    border-radius: 11px;
+    min-width: 68px;
+    padding: 7px 8px;
+  }
+
+  .hunt-reward-badge strong {
+    font-size: 14px;
+  }
+
+  .hunt-detail-hours {
+    gap: 6px 9px;
+    margin-top: 10px;
+    min-height: 38px;
+    padding: 8px 9px;
+  }
+
+  .hunt-detail-hours strong {
+    font-size: 7px;
+  }
+
+  .hunt-detail-hours span {
+    font-size: 10px;
+  }
+
+  .hunt-detail-mission {
+    min-height: 0;
+    padding: 11px 13px;
+  }
+
+  .hunt-detail-mission span {
+    font-size: 7px;
+    margin-bottom: 4px;
+  }
+
+  .hunt-detail-mission p {
+    font-size: 11px;
+    line-height: 1.38;
+  }
+
+  .hunt-start-mission {
+    border-radius: 14px;
+    font-size: 15px;
+    margin-top: 10px;
+    min-height: 54px;
+  }
+
+  .hunt-theme-toggle {
+    bottom: max(11px, env(safe-area-inset-bottom));
+  }
+
+  .hunt-theme-toggle button {
+    padding: 7px 12px;
+  }
+
+  .hunt-location-toast,
+  .hunt-data-notice,
+  .hunt-no-results {
+    top: 39%;
+  }
+}
+
+@media (max-width: 390px), (max-height: 690px) and (max-width: 720px) {
+  .hunt-brand-mark {
+    display: none;
+  }
+
+  .hunt-partnership {
+    max-width: calc(100vw - 108px);
+  }
+
+  .hunt-detail-card {
+    max-height: 70vh;
+  }
+
+  .hunt-detail-emoji {
+    flex-basis: 46px;
+    font-size: 23px;
+    height: 46px;
+    width: 46px;
+  }
+
+  .hunt-detail-title h2 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hunt-mapbox,
+  .hunt-menu-button,
+  .hunt-header-actions > button,
+  .hunt-get-app,
+  .hunt-zoom-controls button,
+  .hunt-detail-close,
+  .hunt-start-mission,
+  .hunt-theme-toggle button,
+  .hunt-menu-panel nav button,
+  .hunt-skip-link {
+    transition-duration: 0.01ms;
+  }
+
+  .hunt-map-loading > span {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .hunt-brand-mark,
+  .hunt-start-mission,
+  .hunt-theme-toggle button[data-active="true"] {
+    border: 2px solid ButtonText;
+  }
+}

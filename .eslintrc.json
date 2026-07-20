@@ -3,7 +3,7 @@
   "ignorePatterns": [".next/", "node_modules/", "convex/_generated/", "next-env.d.ts"],
   "overrides": [
     {
-      "files": ["convex/**/*.ts"],
+      "files": ["convex/**/*.ts", "tests/convex/**/*.ts"],
       "rules": {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]

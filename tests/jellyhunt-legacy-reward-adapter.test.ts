@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import sentFixture from "./contracts/jelly-partner-v1/reward-intent-attempt-sent.201.json";
 import {
   buildRewardAttempt,
   parseRewardAttemptResponse,
@@ -29,16 +30,7 @@ describe("legacy reward adapter contract compatibility", () => {
   });
 
   it("parses the 201 sent fixture correctly", () => {
-    const fixtureBody = {
-      rewardIntent: {
-        id: "rwd_01HXREWARD0000002",
-        status: "sent",
-        transactionId: "txn_01HXTRANSACTION002",
-        transactionHash: null,
-      },
-      attempt: { number: 1, status: "sent", final: true },
-    };
-    const outcome = parseRewardAttemptResponse(201, fixtureBody);
+    const outcome = parseRewardAttemptResponse(sentFixture.status, sentFixture.body);
     expect(outcome.status).toBe("sent");
     if (outcome.status === "sent") {
       expect(outcome.transactionId).toBe("txn_01HXTRANSACTION002");

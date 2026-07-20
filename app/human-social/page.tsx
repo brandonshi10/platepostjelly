@@ -27,8 +27,8 @@ export default async function HumanSocialPage() {
   } catch (error) {
     dataError =
       error instanceof JellyhuntDataError
-        ? "Connect a PlatePost Convex deployment, or enable the local fixture source for development."
-        : "Mission data could not be loaded.";
+        ? "Mission updates are taking a quick break. Refresh this page in a moment."
+        : "This map could not load its missions. Refresh this page to try again.";
   }
 
   return (

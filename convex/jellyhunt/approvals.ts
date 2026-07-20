@@ -1,4 +1,4 @@
-import { mutationGeneric, queryGeneric } from "convex/server";
+import { mutationGeneric } from "convex/server";
 import { v } from "convex/values";
 import { createPublicId, assertPublicId } from "./publicIds";
 import { recordAuditEvent } from "./audit";

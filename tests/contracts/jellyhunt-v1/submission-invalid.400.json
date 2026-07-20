@@ -1,0 +1,12 @@
+{
+  "status": 400,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": {
+    "error": {
+      "code": "invalid_submission",
+      "message": "The submission payload is invalid."
+    }
+  }
+}

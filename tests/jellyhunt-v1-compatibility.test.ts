@@ -6,12 +6,6 @@ describe("frozen JellyHunt v1 contract", () => {
   it("freezes legacy fields and statuses while permitting additive public IDs", async () => {
     const fixture = await import("./contracts/jellyhunt-v1/missions-anonymous.200.json");
     expect(manifest.version).toBe("jellyhunt-v1-frozen-2026-07-16");
-    // NOTE: projected against fixture.default.body rather than the whole fixture envelope.
-    // Projecting the whole envelope is impossible to satisfy: fixture.default.legacyProjection
-    // is itself a property of fixture.default, so projectLegacyV1(fixture.default) would need
-    // to equal a strict sub-part of its own input, which no finite (non-circular) JSON value
-    // can do. Projecting just the response body is the satisfiable, intent-preserving form of
-    // this check (see task-1-report.md for the full analysis).
     expect(projectLegacyV1(fixture.default.body)).toEqual(fixture.default.legacyProjection);
   });
 
@@ -23,6 +17,53 @@ describe("frozen JellyHunt v1 contract", () => {
         code: "submission_failed",
         message: "The submission could not be completed.",
       },
+    });
+  });
+
+  it("freezes 409 jelly_post_reused conflict shape", async () => {
+    const fixture = await import("./contracts/jellyhunt-v1/submission-conflict-post-reused.409.json");
+    expect(fixture.default.status).toBe(409);
+    expect(fixture.default.body).toEqual({
+      error: {
+        code: "jelly_post_reused",
+        message: "This Jelly post has already been used for a mission.",
+      },
+    });
+  });
+
+  it("freezes 409 mission_already_submitted conflict shape", async () => {
+    const fixture = await import("./contracts/jellyhunt-v1/submission-conflict-already-submitted.409.json");
+    expect(fixture.default.status).toBe(409);
+    expect(fixture.default.body).toEqual({
+      error: {
+        code: "mission_already_submitted",
+        message: "This user has already submitted this mission.",
+      },
+    });
+  });
+
+  it("freezes 401 unauthorized shape", async () => {
+    const fixture = await import("./contracts/jellyhunt-v1/submission-unauthorized.401.json");
+    expect(fixture.default.status).toBe(401);
+    expect(fixture.default.body.error.code).toBe("unauthorized");
+  });
+
+  it("freezes 400 invalid_submission shape", async () => {
+    const fixture = await import("./contracts/jellyhunt-v1/submission-invalid.400.json");
+    expect(fixture.default.status).toBe(400);
+    expect(fixture.default.body.error.code).toBe("invalid_submission");
+  });
+
+  it("freezes 503 unavailable shape", async () => {
+    const fixture = await import("./contracts/jellyhunt-v1/missions-unavailable.503.json");
+    expect(fixture.default.status).toBe(503);
+    expect(fixture.default.body.error.code).toBe("convex_not_configured");
+  });
+
+  it("permits requestId as an additive key", () => {
+    expect(manifest.additiveKeys).toContain("requestId");
+    expect(projectLegacyV1({ apiVersion: "1.0", requestId: "req_123" })).toEqual({
+      apiVersion: "1.0",
     });
   });
 });

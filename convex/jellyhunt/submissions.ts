@@ -1,4 +1,4 @@
-import { mutationGeneric, queryGeneric } from "convex/server";
+import { anyApi, mutationGeneric, queryGeneric, type FunctionReference } from "convex/server";
 import { v } from "convex/values";
 import { createPublicId, assertPublicId } from "./publicIds";
 import { recordAuditEvent } from "./audit";
@@ -89,6 +89,14 @@ async function toPublicSubmission(ctx: any, submission: any) {
 const PREFLIGHT_MAX_AGE_MS = 60_000;
 const PREFLIGHT_FUTURE_TOLERANCE_MS = 5_000;
 const REVIEW_DEADLINE_MS = 72 * 60 * 60 * 1000;
+const verifySubmissionEvidenceInternal = anyApi.jellyhunt.verification.verifySubmissionEvidence as FunctionReference<
+  "action",
+  "internal"
+>;
+
+function verificationAutorunEnabled(): boolean {
+  return process.env.JELLYHUNT_VERIFICATION_AUTORUN_ENABLED !== "false";
+}
 
 const intakeLeaseIdentityValidators = {
   recordId: v.id("jellyhuntIdempotencyRecords"),
@@ -172,7 +180,7 @@ export const prepareSubmissionIntake = mutationGeneric({
 export const commitSubmissionIntake = mutationGeneric({
   args: {
     serviceKey: v.string(), ...intakeLeaseIdentityValidators,
-    missionPublicId: v.string(), participationPublicId: v.string(), missionRevision: v.number(), jellyPostId: v.string(),
+    missionPublicId: v.string(), participationPublicId: v.string(), missionRevision: v.number(), expectedAttempt: v.number(), jellyPostId: v.string(),
     preflight: v.object({
       jellyPostId: v.string(), canonicalOwnerUserId: v.string(), ownershipStatus: v.literal("matched"), checkedAt: v.number(),
     }),
@@ -244,6 +252,9 @@ export const commitSubmissionIntake = mutationGeneric({
 
     parseCanonicalRewardAmount(lockedRevision.reward.amount);
     const attempt = participation.attemptsUsed + 1;
+    if (!Number.isInteger(args.expectedAttempt) || args.expectedAttempt < 1 || attempt !== args.expectedAttempt) {
+      throw new Error("submission_attempt_changed");
+    }
     const dedupeKey = `${participation.publicId}:attempt:${attempt}`;
     if (await ctx.db.query("jellyhuntSubmissions").withIndex("by_dedupe_key", (q: any) => q.eq("dedupeKey", dedupeKey)).first()) {
       throw new Error("mission_already_submitted");
@@ -286,6 +297,12 @@ export const commitSubmissionIntake = mutationGeneric({
       responseHeadersJson: args.responseHeadersJson, locationHeader: args.locationHeader,
       resourceId: submissionPublicId, campaignEndsAt: campaign.endsAt, now: args.now,
     });
+    if (verificationAutorunEnabled()) {
+      await ctx.scheduler.runAfter(0, verifySubmissionEvidenceInternal, {
+        submissionInternalId: submissionId,
+        correlationId: idempotencyRecord.originalRequestId,
+      });
+    }
     return { status: "completed", submissionPublicId, attempt };
   },
 });
@@ -460,6 +477,11 @@ export const createSubmission = mutationGeneric({
       entityId: submissionId,
       nextState: { publicId, submissionStatus: "submitted", jellyPostId },
     });
+    if (verificationAutorunEnabled()) {
+      await ctx.scheduler.runAfter(0, verifySubmissionEvidenceInternal, {
+        submissionInternalId: submissionId,
+      });
+    }
 
     return { submissionPublicId: publicId };
   },

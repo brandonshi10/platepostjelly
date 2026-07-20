@@ -1,0 +1,12 @@
+{
+  "status": 409,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": {
+    "error": {
+      "code": "jelly_post_reused",
+      "message": "This Jelly post has already been used for a mission."
+    }
+  }
+}

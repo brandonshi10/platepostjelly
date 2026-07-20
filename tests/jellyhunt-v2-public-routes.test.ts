@@ -110,7 +110,10 @@ describe("JellyHunt v2 public discovery routes", () => {
     vi.clearAllMocks();
     auth.optionalJellyViewer.mockResolvedValue(null);
     repository.getCurrentCampaign.mockResolvedValue(campaign);
-    const { revision: _revision, source: _source, updatedAt: _placeUpdatedAt, ...missionPlace } = mission.place;
+    const { revision, source, updatedAt, ...missionPlace } = mission.place;
+    void revision;
+    void source;
+    void updatedAt;
     repository.getMission.mockResolvedValue({ ...mission, place: missionPlace });
     repository.getPlace.mockResolvedValue(mission.place);
     repository.listMissions.mockResolvedValue({

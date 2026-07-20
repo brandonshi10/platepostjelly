@@ -169,6 +169,15 @@ const jellyhuntMissionRevisions = defineTable({
     startsAt: v.optional(v.number()),
     endsAt: v.optional(v.number()),
   }),
+  legacyDisplay: v.optional(
+    v.object({
+      restaurantTag: v.string(),
+      hours: v.array(v.string()),
+      venueType: v.optional(v.string()),
+      showtimes: v.optional(v.array(v.string())),
+      websiteUrl: v.optional(v.string()),
+    }),
+  ),
   createdBy: v.optional(v.string()),
   createdAt: v.number(),
 })
@@ -250,6 +259,7 @@ const jellyhuntSubmissions = defineTable({
   .index("by_submission_status", ["submissionStatus"])
   .index("by_reward_status", ["rewardStatus"])
   .index("by_user_updated", ["jellyUserId", "updatedAt"])
+  .index("by_campaign_updated", ["campaignId", "updatedAt"])
   .index("by_updated_at", ["updatedAt"]);
 
 const jellyhuntSubmissionEvents = defineTable({

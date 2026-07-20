@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { sampleMissionsResponse } from "../src/lib/jellyhunt/sample-data";
 
 const source = readFileSync("app/human-social/jellyhunt-explorer.tsx", "utf8");
+const styles = readFileSync("app/human-social/jellyhunt.css", "utf8");
 
 describe("consumer map UI safety", () => {
   it("renders admin-managed marker content as text, never HTML", () => {
@@ -36,6 +37,43 @@ describe("consumer map UI safety", () => {
     expect(source).not.toContain("hunt-sidebar");
   });
 
+  it("keeps the fallback map visible until the live map is ready", () => {
+    expect(source).toContain("!mapboxActive || !mapLoaded");
+    expect(source).toContain("Loading live map…");
+    expect(source).toContain('className={`hunt-mapbox${mapLoaded ? " is-loaded" : ""}`}');
+    expect(styles).toContain(".hunt-mapbox.is-loaded");
+  });
+
+  it("exposes the map, filters, pins, and theme controls to keyboard users", () => {
+    expect(source).toContain('href="#jellyhunt-map"');
+    expect(source).toContain('id="jellyhunt-map"');
+    expect(source).toContain('aria-controls="hunt-filters"');
+    expect(source).toContain('id="hunt-filters"');
+    expect(source).toContain('aria-pressed={mission.id === selectedMission?.id}');
+    expect(source).toContain('type="search"');
+    expect(source).toContain('name="missionSearch"');
+    expect(source).toContain('role="group"');
+    expect(source).toContain('aria-pressed={theme === "dark"}');
+  });
+
+  it("restores the original masthead and full-width mission drawer hierarchy", () => {
+    expect(source).toContain("hunt-brand-mark");
+    expect(source).toContain("PlatePost x JellyJelly: Human Social!");
+    expect(source).toContain("<h1>JELLYHUNT</h1>");
+    expect(source).toContain("hunt-drawer-handle");
+    expect(source).toContain("hunt-detail-grid");
+    expect(source).toContain("hunt-detail-venue");
+  });
+
+  it("renders live most-approved rankings for the current season and all time", () => {
+    expect(source).toContain("/api/v2/jellyhunt/leaderboards/current-season?limit=25");
+    expect(source).toContain("/api/v2/jellyhunt/leaderboards/all-time?limit=25");
+    expect(source).toContain("Current season");
+    expect(source).toContain("All time");
+    expect(source).toContain("standing.username");
+    expect(source).toContain("standing.approvedMissionCount");
+    expect(source).not.toContain("The city leaderboard is getting ready.");
+  });
   it("previews the complete 16-mission legacy map in local fixture mode", () => {
     expect(sampleMissionsResponse.missions).toHaveLength(16);
     expect(sampleMissionsResponse.missions.map((mission) => mission.location.name)).toEqual(

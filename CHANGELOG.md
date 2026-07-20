@@ -1,135 +1,99 @@
 # Changelog
 
-All notable changes to PlatePost Jellyhunt are recorded here. The project has not yet completed its first production release.
+All notable changes to PlatePost JellyHunt are recorded here. The project has not completed its first production release.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added (Tasks 1-4: Foundation Modules)
+### Added
 
-- Asymmetric JWT mission token validation via JWKS with RS256/ES256/EdDSA, audience/issuer/lifetime checks, and optional viewer support (`src/lib/jellyhunt/v2/jelly-mission-token.ts`).
-- Exhaustive display state derivation from submission + reward status including post-payment moderation (`src/lib/jellyhunt/v2/status.ts`).
-- HMAC-SHA256 sealed cursors with binding validation and expiry (`src/lib/jellyhunt/v2/cursor.ts`).
-- Cache header utilities and semantic weak ETags (`src/lib/jellyhunt/v2/cache.ts`).
-- Idempotency key extraction and canonical request hashing (`src/lib/jellyhunt/v2/idempotency.ts`).
-- Zod contract schemas for all v2 API resources (`src/lib/jellyhunt/v2/contracts/`).
-- Idempotent participation start with one-active-per-user/mission enforcement, revision locking, and 24h deadline (`convex/jellyhunt/participations.ts`).
-- Append-only submission event allocation with per-user sequencing and idempotent dedup (`convex/jellyhunt/events.ts`).
-- Durable HTTP idempotency records with lease acquisition, completion, expiry, and stale-lease reclaim (`convex/jellyhunt/idempotency.ts`).
-- Atomic submission intake with global post uniqueness, user/mission dedup, revision validation, and reward reservation creation (`convex/jellyhunt/submissions.ts`).
-- Reward budget management with scope-typed allocation, reservation, and release (`convex/jellyhunt/budgets.ts`).
-- Jelly partner HTTP transport with timeout and correlation ID support (`convex/jellyhunt/jellyHttpClient.ts`).
-- Submission evidence verification action with Haversine distance computation and automatic/manual approval routing (`convex/jellyhunt/verification.ts`).
-- Public profile upsert/sync with eligibility derivation and Jelly API bridge (`convex/jellyhunt/profiles.ts`).
-- Owner-scoped projection queries for participation terms, submission detail with timeline, paginated events, campaign summary, and mission/submission history (`convex/jellyhunt/ownerReads.ts`).
-- Jelly partner contract fixtures for profiles and mission evidence (`tests/contracts/jelly-partner-v1/`).
-- 33 v2 primitive tests, 13 participation tests, 5 event tests, 6 idempotency tests, 7 submission tests, 6 budget tests, 6 profile tests, 5 verification tests, 4 owner reads tests. All 324 tests passing.
+#### PlatePost-hosted consumer and admin experiences
 
-### Added (Tasks 5-7: Native Workflows)
+- Added the **PlatePost x JellyJelly: Human Social!** consumer experience at `/human-social` and a `/map` redirect.
+- Recreated the current JellyHunt visual hierarchy and interactions: full-screen NYC map, neon roads and labels, glowing mission pins, JellyJelly HQ, cross-street chip, mission finder, bottom mission drawer, Dark/Wobbles themes, geolocation, distance, hours, directions, and Jelly camera handoff.
+- Added Mapbox GL rendering with a matching coordinate-based local fallback and graceful missing-token behavior.
+- Added search and category/completion filters, Passport and Editorial Map surfaces, responsive/mobile behavior, accessibility controls, reduced-motion support, and direct JellyJelly iOS/Android links.
+- Added live current-season/all-time “most approved” leaderboard tabs backed by v2, including Jelly usernames and loading, empty, error, and retry states.
+- Added a signed-session PlatePost admin at `/admin` for mission/place creation and editing, scheduling, lifecycle controls, optimistic-revision campaign/mission reward caps, proof review, reward exceptions, and audit history.
+- Added a local-only 16-mission visual fixture plus a guarded, dry-run-first migration catalog. Fixture mode cannot run in Production.
 
-- Submission approval, pre-payment reversal, and post-payment moderation mutations with idempotent decision replay and double-completion guards (`convex/jellyhunt/approvals.ts`).
-- Indexed leaderboard queries by scope (all-time, per-campaign) with pagination and profile refresh (`convex/jellyhunt/leaderboards.ts`).
-- Pure reward-attempt builders, response parsers, and receipt validators (`convex/jellyhunt/rewardContracts.ts`).
-- Transport abstraction for reward execution and status lookup (`convex/jellyhunt/jellyRewardClient.ts`).
-- Reward lease lifecycle (queued to sent/uncertain/failed) with env-flag kill switch (`convex/jellyhunt/rewards.ts`).
-- Webhook signature verification with current + previous key overlap and event dedup by ID + body hash (`convex/jellyhunt/webhooks.ts`).
-- HTTP route registration for `/jellyhunt/webhooks/rewards` and root entrypoints (`convex/http.ts`, `convex/crons.ts`).
-- v2 HTTP API layer: typed errors, response envelope, route handler wrapper, and Convex repository (`src/lib/jellyhunt/v2/`).
-- 17 Next.js App Router route files under `app/api/v2/jellyhunt/` for campaigns, missions, participations, submissions, leaderboards, and rewards. Campaigns/current and leaderboard routes are fully functional; others are stubs pending earlier Convex modules.
-- 41 new tests across approvals (11), leaderboards (5), rewards (15), webhooks (6), and legacy adapter (4). All 60 tests passing.
+#### Canonical Convex ownership
 
-### Added (Tasks 1-4: Foundation)
+- Added collision-safe `jellyhunt*` tables and indexes for program configuration, campaigns, reviewed places, missions, immutable mission revisions, participations, submissions, events, HTTP idempotency, legacy dedupe, reward budgets/reservations/intents/attempts, webhook inbox/delivery, audit history, public profiles, approved completions, and leaderboard entries/events.
+- Added draft mission creation/editing, immutable publishing, lifecycle transitions, catalog revisions, schedule checks, and service-key authorization.
+- Added revision-locked participation start with one active participation per user/mission and a bounded completion window.
+- Added owner-visible resubmission controls after rejection under the locked mission revision, original submission window, and configured maximum-attempt limit; no separate participation-expiry worker or resubmission hold is used in this release.
+- Added atomic submission intake with exact-post ownership preflight, global Jelly-post uniqueness, user/mission dedupe, immutable proof/reward snapshots, reservation creation, and durable HTTP idempotency replay.
+- Added append-only owner event streams and owner-scoped participation, mission, submission, and timeline projections.
+- Added campaign/mission reward reservation accounting and transitions for approval, rejection, payment, and reversal.
+- Added approved-completion materialization and current-season/all-time “most approved” leaderboards using eligible Jelly usernames.
 
-- PlatePost-hosted consumer experience branded **PlatePost x JellyJelly: Human Social!** at `/human-social`.
-- `/map` redirect to the canonical consumer route.
-- Mapbox GL mission map with a coordinate-based fallback for local development and graceful degradation.
-- Original Jellyhunt full-screen visual system in local fixture mode: NYC street grid, all 16 legacy status-aware pins, JellyJelly HQ, floating masthead, cross-street chip, zoom/location controls, Dark/Wobbles themes, slide-out menu, and bottom mission drawer. Production renders the active Convex inventory.
-- Responsive Passport progress shell, Editorial mission guide, privacy-safe leaderboard contract state, and how-to-play view.
-- Mission markers and details with search, category/status filters, geolocation, distance, timezone-aware hours, overnight-hours support, directions, and JellyJelly camera deep links.
-- Direct JellyJelly iOS and Android store links with environment overrides.
-- Versioned `GET /api/v1/jellyhunt/missions` endpoint.
-- Authenticated user-specific mission status via the optional `user_id` query.
-- Authenticated `POST /api/v1/jellyhunt/submissions` endpoint with Zod validation.
-- Explicit local fixture mode that is unavailable in production.
-- Schema-validated and inventoried one-time migration data for the 16 legacy Jellyhunt missions; it still requires human content approval and is not imported by the runtime.
-- Guarded legacy importer with dry-run default, explicit `--apply`, existing-slug skips, and hard enforcement of draft/manual records.
-- Convex tables and indexes for locations, missions, submissions, reward attempts, and audit events.
-- Monotonic mission revisions and immutable submission snapshots for proof terms, place/geofence, approval mode, and reward terms.
-- Immutable reward-attempt snapshots so mission edits cannot alter a queued, reconciled, or retried payout.
-- Editable mission fields for lifecycle, scheduling, approval mode, restaurant tag, reward, category, difficulty, emoji, neighborhood, price, hours, showtimes, sort order, venue website, and location/geofence data.
-- Convex-side validation for IANA timezones, hours/showtimes, geofence limits, reward ceilings, website URLs, schedules, and automatic-mission partner requirements.
-- Submission deduplication for exact retries, one non-rejected user/mission completion, and global Jelly-post reuse prevention.
-- Internal Convex verification workflow that loads the user, post, mission, restaurant tag, location, and geofence from stored records.
-- A 10-second timeout for every outbound Jelly verification and reward call.
-- Preferred Jelly partner verification mode and conservative legacy `GET /v3/jelly/<postId>` fallback.
-- Manual and automatic approval paths, admin review mutations, rejection reasons, verification retry, and audit events.
-- Signed 12-hour HTTP-only admin sessions with SameSite=Strict cookies and same-origin mutation checks.
-- Protected admin HTTP routes for mission/location create/read/update, lifecycle controls, submission review, safe retries, and audit history. Operational records are paused or archived rather than deleted.
-- Protected admin dashboard with atomic mission/location editing, lifecycle controls, timezone-aware schedule inputs, immutable proof snapshots, claimed/verified GPS and distance, Jelly post links, audit activity, reward exceptions, and logout.
-- Explicit uncertain-reward reconciliation that requires either a confirmed Jelly transaction ID or a confirmed failure reason before the state can change.
-- Internal reward workflow that derives recipient, post, token, amount, and idempotency key from Convex.
-- Preferred idempotent partner reward mode and migration-only legacy `POST /crypto/send` support.
-- Scheme-aware legacy reward authentication with a dedicated `JELLY_REWARD_API_TOKEN`, `Token` default, and backward-compatible bearer fallback.
-- Reward states for queued, processing, sent, confirmed failed, and uncertain outcomes.
-- Safe retry rule that permits retrying only confirmed failed rewards.
-- Server-only Convex repository and shared mission-contract mapping.
-- Fail-closed Jelly server key and Convex service-key checks.
-- Contract, domain, map UI, admin-session/time, authentication, repository, HTTP timeout, Convex validation, workflow-guard, guarded migration, app-link, and Convex security tests.
-- Non-interactive ESLint configuration and a `pnpm lint` command that fails on warnings.
-- End-to-end architecture design and implementation plan.
-- Proposed PlatePost ↔ JellyJelly Native Mission API v2 contract covering signed identity, revision-locked mission participation, campaigns, mission/place detail, place-linked Jelly feeds, durable HTTP idempotency, separate approval/reward states, owner history, budgets/reservation watchdogs, evidence-only partner verification, reward intents with guarded attempts, polling, and signed webhooks.
-- Independent API-contract reviews and corrections for personalized cache isolation, privacy-safe dedupe errors, full payout-receipt tuple validation, bidirectional webhook inbox/outbox behavior, legacy v1 state mapping, and a mandatory legacy submission/transaction cutover fence before automatic v2 rewards.
-- Complete setup, API, architecture, deployment, ownership, security, migration, and launch documentation.
+#### APIs
+
+- Added and contract-tested the v1 compatibility routes for mission discovery, user status, submissions, admin sessions, mission operations, submission review, and audit history.
+- Added request IDs and privacy-safe v1 error handling while retaining the stable `mission_already_submitted` and `jelly_post_reused` conflict codes.
+- Implemented the OpenAPI 3.1 native v2 surface under `/api/v2/jellyhunt`:
+  - current campaign;
+  - mission list/detail and place-detail projections;
+  - mission/place-linked Jelly feeds;
+  - participation start/detail;
+  - idempotent submission creation and owner-only submission detail/events;
+  - `/me` summary, missions, submissions, and event history;
+  - current-season and all-time leaderboards.
+- Added five-minute Jelly mission-token verification using remote JWKS, fixed audience `platepost-jellyhunt`, issuer checks, `jellyhunt:read` / `jellyhunt:submit` scopes, and token-derived identity.
+- Added signed, expiring pagination cursors bound to resource, query, snapshot, and owner when applicable.
+- Added public/private cache policies, semantic ETags, stable success/error envelopes, status projection, and privacy-safe `submission_conflict` handling for v2.
+
+#### Jelly evidence and reward workflows
+
+- Added exact Jelly post preflight with an authoritative partner path and conservative exact-post legacy fallback.
+- Added component evidence parsing and policy checks for exact post, author, participant eligibility, post state/type/duration, visibility, moderation/deletion, publication window, canonical place, trusted coordinates, geofence accuracy, and distance consistency.
+- Added leased verification work, automatic/manual routing, stale-attempt protection, and conservative `needs_review` behavior for incomplete or unavailable evidence. Generic topics or client-writable metadata cannot auto-approve a mission.
+- Added canonical approval, rejection, pre-payment reversal, and post-payment moderation behavior with sibling-attempt and double-completion protection.
+- Added immutable reward intent/attempt contracts, full receipt-tuple validation, partner lookup, and server-generated idempotency headers.
+- Added a pre-payout Jelly evidence recheck; authoritative ineligibility confirms no transfer and reverses the completion, while unavailable evidence fails safely without paying.
+- Added scheduled reward dispatch and a processing watchdog. Automatic rewards are off by default; Production has a second explicit approval gate.
+- Added safe worker-result storage that discards arbitrary upstream payout bodies and retains only allowlisted state, validated transaction receipt fields, and audit data. The initial release keeps uncertain reconciliation as a restricted, audited operator workflow.
+- Added signed reward-webhook ingestion with current/previous secret overlap and event/body deduplication.
+
+#### Documentation and tests
+
+- Added OpenAPI schemas, v1/v2 compatibility fixtures, Jelly partner fixtures, implementation/design records, and focused tests for routes, contracts, map behavior, Convex workflows, evidence policy, owner privacy, rewards, and admin compatibility.
+- Added complete setup, environment, security, deployment, ownership, native-app handoff, and launch-gate documentation.
 
 ### Changed
 
-- Made Convex the intended production source of truth for missions and mission-specific locations.
-- Removed production dependence on frontend mission constants; static mission data is restricted to explicit non-production fixture mode.
-- Defined PlatePost as owner of mission operations, submission state, deduplication, review, reward orchestration, and audit history.
-- Defined Jelly as owner of canonical users, Jelly posts, restaurant/location proof, balances, and final tip transactions.
-- Kept anonymous mission discovery public while requiring server authentication for user status and all submission writes.
-- Normalized duplicate user/mission and reused-post conflicts to stable `409 mission_already_submitted` and `409 jelly_post_reused` responses.
-- Standardized the native-facing contract as API version `1.0`.
-- Passed a caller-derived current time rounded to the minute into the deterministic public Convex mission query, followed by an exact visibility recheck in Next.js.
-- Standardized operating hours as seven Monday-to-Sunday values using `HH:MM-HH:MM` or `closed`.
-- Expanded submission states to include verification, manual review, reward processing, failure, and reconciliation.
-- Reworked Mapbox into a persistent Jellyhunt-branded map with production HQ/selected-pin treatments, marker diffing, full failure cleanup, and a scrollable mission chooser for dense locations.
-- Made camera handoff state-aware, added complete reward-state filtering, preserved Passport stamps through reward reconciliation, and added truthful anonymous Passport/app handoff.
-- Added dialog focus trapping, Escape/focus restoration, mobile filter access, Wobbles contrast fixes, reduced-motion handling, and the original Ranchers/Outfit/JetBrains/Quicksand type system.
-- Replaced blur-heavy mission finder, detail drawer, and theme-toggle surfaces with stable near-opaque, non-blurred treatments to prevent black compositing regions on mobile and desktop browsers.
-- Revalidated the complete mission, including the current reward ceiling and partner-verification requirement, whenever an operator activates it.
+- Moved the intended JellyHunt production source of truth from Supabase/frontend constants to PlatePost's namespaced Convex records.
+- Unified production mission discovery around the same published mission/place records; static mission content is restricted to local fixture and guarded migration inputs.
+- Made mission edits operational: publishing a new revision updates the map and APIs without a frontend or mobile release while preserving locked terms for existing participants/submissions.
+- Defined PlatePost as owner of mission configuration and workflow decisions, while Jelly remains authoritative for users, usernames, posts, place evidence, trusted location, balances, and final transfers.
+- Separated verification, decision/completion, and reward states so clients do not treat approval as payment.
+- Reworked the public map toward the current JellyHunt desktop/mobile appearance and removed blur-heavy surfaces that produced browser compositing artifacts.
+- Kept v1 reads as a compatibility surface while making v2 the direct-native target for Kris/Jelly engineering; v1 submission writes are pre-cutover/development-only and return `410 Gone` in Production.
+- Changed all-time leaderboard semantics to begin with this PlatePost tool's launch/import boundary; current season is scoped to the active campaign.
+- Recorded the initial-release operating decisions: uncertain rewards remain a restricted, audited manual reconciliation workflow; participation rows are not expired by a background sweeper; rejected users may resubmit within the existing mission attempt/window rules.
 
 ### Security
 
-- Verification and reward functions are internal Convex actions; callers provide only a stored submission or reward-attempt ID.
-- Reward amount and recipient are never accepted as action arguments from the browser or public API.
-- All externally callable non-public Convex queries and mutations require `PLATEPOST_CONVEX_SERVICE_KEY`; scheduled verification/reward functions use Convex internal actions.
-- Missing API secrets fail closed instead of disabling authentication.
-- Jelly credentials and payout credentials remain Convex server environment variables.
-- Ambiguous legacy reward outcomes become `reward_uncertain` and are never automatically retried.
-- Verified partner decisions now require trusted coordinates and a non-negative distance that agrees with PlatePost's calculation; missing or inconsistent evidence enters review.
-- Credential-bearing Jelly endpoints require HTTPS outside non-production loopback development.
-- Rejected proof must be reverified before approval, and sibling checks prevent multiple live or rewarded attempts for one user and mission.
-- A two-minute reward-processing watchdog moves abandoned work to reconciliation instead of resending or remaining stuck.
-- Raw upstream payout response bodies are discarded; only allowlisted status, transaction ID, and safe error fields are retained.
-- Production fixture fallback is disabled.
-- The example environment file contains no project deployment, credential, or secret values.
-- Development log files are ignored so local paths and preview details are not accidentally committed.
+- All non-public Convex operations require `PLATEPOST_CONVEX_SERVICE_KEY`; public clients cannot call workflow mutations directly.
+- Native identity is derived from a verified Jelly token subject, never from a body/query user ID.
+- Reward recipient, wallet, amount, token, and idempotency identity are server-derived from immutable Convex records.
+- Credential-bearing non-loopback Jelly endpoints require HTTPS.
+- Jelly dependency outages do not reject users, and incomplete/untrusted evidence cannot auto-approve.
+- A reward in `uncertain` state is never automatically retried.
+- Automatic reward dispatch requires `JELLYHUNT_AUTOMATIC_REWARDS_ENABLED=true` and an explicit `JELLYHUNT_ENVIRONMENT_IDENTITY=development|preview|production`; missing or misspelled identities fail closed, and Production additionally requires `JELLYHUNT_PRODUCTION_REWARDS_APPROVED=true`.
+- Production fixture fallback is disabled and no production credential is included in source control.
+- Production Convex and Vercel credentials exposed through chat are explicitly treated as compromised and must be rotated before use.
 
-### Known gaps before production
+### Integration required before Production
 
-- Visual and discovery-map parity is implemented against the local 16-mission fixture, including the Passport and Editorial Map shells; production still needs live Mapbox/Convex acceptance. Signed personal progress, Jelly Library/post selection, canonical profile data, and live leaderboard standings still require the Jelly identity/progress contract.
-- Jelly and PlatePost must decide whether those account/content surfaces remain native-only, become later PlatePost phases, or are retired.
-- The 16 legacy missions still require an approved production import; the matching 16-mission local fixture is visual test data only.
-
-- PlatePost Convex developer access is still required for code generation, deployment, seeding, and live workflow validation.
-- Jelly and PlatePost must finalize canonical place/content and component-evidence partner contracts; legacy topics/`xdata` remain non-authoritative.
-- Jelly must provide the reviewed reward-intent/attempt, lookup, full-tuple receipt, and capacity contracts.
-- The protected admin UI must pass live create/edit/publish/review/reward browser acceptance against development Convex.
-- Admin login rate limiting, failed-login monitoring, and Vercel WAF/platform protection are not implemented in the application.
-- v1 duplicate/reused-post conflicts retain their stable `409` codes; proposed v2 uses generic `submission_conflict` to avoid cross-user disclosure. Remaining v1 business-rule and malformed-JSON errors still need final HTTP normalization.
-- The transitional shared Jelly API key must be replaced before direct native-app requests.
-- Production Mapbox, Vercel, Convex, and Jelly environment values are not configured in source control.
-- Legacy submissions and transactions have not yet been imported/reconciled into the v2 deduplication boundary; production automatic v2 rewards remain blocked.
-- No production deployment or real reward test has been completed.
+- PlatePost has not yet reviewed/merged this standalone `jellyhunt*` schema into its canonical application or connected a shared development Convex deployment.
+- The 16 legacy missions require human review and draft import; legacy submissions and payout receipts require a separate dedupe-safe cutover.
+- Jelly must supply the mission-token endpoint/JWKS and authoritative place-feed, exact-post preflight, component evidence, profile eligibility, reward-intent/lookup, and reward-capacity contracts.
+- Manual uncertain-reward reconciliation is accepted for the initial release and must remain restricted to trained operators with audit review. A server-verified Jelly receipt/confirmed-no-transfer gate remains recommended before this workflow is automated.
+- Campaign/mission budget allocations and any required daily/user/capacity limits must be configured and accepted with development data.
+- The PlatePost admin, public map, v1, and v2 flows require live development and browser acceptance.
+- Admin login rate limiting/WAF policy, monitoring, alerts, retention, support, rollback, and pause runbooks require operator ownership.
+- Production Mapbox, Convex, Vercel, and Jelly settings are not configured in source control.
+- No production payout or Production deployment has been performed.

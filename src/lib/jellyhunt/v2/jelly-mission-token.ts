@@ -86,11 +86,12 @@ async function verifyToken(token: string, scope?: JellyScope): Promise<JellyView
     throw unauthorized();
   }
 
-  const { sub, sid, jti, iat, exp, scope: scopeClaim } = payload as Record<string, unknown>;
+  const { sub, session_id: sessionIdClaim, jti, iat, exp, scope: scopeClaim } =
+    payload as Record<string, unknown>;
   const now = Math.floor(Date.now() / 1000);
   if (
     !isNonEmptyUnpaddedClaim(sub) ||
-    !isNonEmptyUnpaddedClaim(sid) ||
+    !isNonEmptyUnpaddedClaim(sessionIdClaim) ||
     !isNonEmptyUnpaddedClaim(jti) ||
     typeof iat !== "number" ||
     !Number.isInteger(iat) ||
@@ -108,7 +109,7 @@ async function verifyToken(token: string, scope?: JellyScope): Promise<JellyView
 
   return {
     jellyUserId: sub,
-    sessionId: sid,
+    sessionId: sessionIdClaim,
     tokenId: jti,
     scopes,
   };

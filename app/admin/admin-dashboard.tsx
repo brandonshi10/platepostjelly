@@ -27,6 +27,26 @@ type LocationRecord = {
   timeZone: string;
 };
 
+type BudgetSnapshot = {
+  allocatedAmount: string;
+  reservedAmount: string;
+  paidAmount: string;
+  releasedAmount: string;
+  remainingAmount: string;
+  revision: number;
+};
+
+type MissionBudgets = {
+  campaign: BudgetSnapshot;
+  mission: BudgetSnapshot;
+  capacityStatus: "funded" | "unfunded" | "insufficient";
+};
+
+type AdminBudgetContext = {
+  campaignId: string;
+  campaign: BudgetSnapshot;
+};
+
 type MissionRecord = {
   _id: string;
   slug: string;
@@ -36,6 +56,7 @@ type MissionRecord = {
   approvalMode: "manual" | "automatic";
   restaurantTag: string;
   rewardAmount: number;
+  budgets: MissionBudgets;
   category: string;
   difficulty: "easy" | "medium" | "hard" | "legendary";
   emoji: string;
@@ -95,6 +116,10 @@ type Draft = {
   approvalMode: MissionRecord["approvalMode"];
   restaurantTag: string;
   rewardAmount: string;
+  campaignBudgetAllocation: string;
+  missionBudgetAllocation: string;
+  expectedCampaignBudgetRevision: string;
+  expectedMissionBudgetRevision: string;
   category: string;
   difficulty: MissionRecord["difficulty"];
   emoji: string;
@@ -118,7 +143,7 @@ type Draft = {
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-function emptyDraft(): Draft {
+function emptyDraft(budgetContext?: AdminBudgetContext | null): Draft {
   return {
     missionId: "",
     locationId: "",
@@ -129,6 +154,10 @@ function emptyDraft(): Draft {
     approvalMode: "manual",
     restaurantTag: "",
     rewardAmount: "100",
+    campaignBudgetAllocation: budgetContext?.campaign.allocatedAmount ?? "0",
+    missionBudgetAllocation: "0",
+    expectedCampaignBudgetRevision: String(budgetContext?.campaign.revision ?? 0),
+    expectedMissionBudgetRevision: "0",
     category: "Food",
     difficulty: "easy",
     emoji: "🍽️",
@@ -164,6 +193,10 @@ function toDraft(mission: MissionRecord): Draft {
     approvalMode: mission.approvalMode,
     restaurantTag: mission.restaurantTag,
     rewardAmount: String(mission.rewardAmount),
+    campaignBudgetAllocation: mission.budgets.campaign.allocatedAmount,
+    missionBudgetAllocation: mission.budgets.mission.allocatedAmount,
+    expectedCampaignBudgetRevision: String(mission.budgets.campaign.revision),
+    expectedMissionBudgetRevision: String(mission.budgets.mission.revision),
     category: mission.category,
     difficulty: mission.difficulty,
     emoji: mission.emoji,
@@ -203,6 +236,7 @@ const stateLabel = (status: string) => status.replaceAll("_", " ");
 
 export function AdminDashboard({ username }: { username: string }) {
   const [missions, setMissions] = useState<MissionRecord[]>([]);
+  const [budgetContext, setBudgetContext] = useState<AdminBudgetContext | null>(null);
   const [submissions, setSubmissions] = useState<SubmissionRecord[]>([]);
   const [events, setEvents] = useState<AuditRecord[]>([]);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
@@ -218,11 +252,19 @@ export function AdminDashboard({ username }: { username: string }) {
     setLoading(true);
     try {
       const [missionData, submissionData, auditData] = await Promise.all([
-        requestJson<{ missions: MissionRecord[] }>("/api/v1/jellyhunt/admin/missions"),
+        requestJson<{ missions: MissionRecord[]; budgetContext: AdminBudgetContext | null }>("/api/v1/jellyhunt/admin/missions"),
         requestJson<{ submissions: SubmissionRecord[] }>("/api/v1/jellyhunt/admin/submissions?status=all"),
         requestJson<{ events: AuditRecord[] }>("/api/v1/jellyhunt/admin/audit").catch(() => ({ events: [] })),
       ]);
       setMissions(missionData.missions);
+      setBudgetContext(missionData.budgetContext);
+      setDraft((current) => current.missionId ? current : {
+        ...current,
+        campaignBudgetAllocation: missionData.budgetContext?.campaign.allocatedAmount ?? "0",
+        expectedCampaignBudgetRevision: String(
+          missionData.budgetContext?.campaign.revision ?? 0,
+        ),
+      });
       setSubmissions(submissionData.submissions);
       setEvents(auditData.events);
     } catch (error) {
@@ -246,6 +288,10 @@ export function AdminDashboard({ username }: { username: string }) {
 
   function set<Key extends keyof Draft>(key: Key, value: Draft[Key]) {
     setDraft((current) => ({ ...current, [key]: value }));
+  }
+
+  function startNewMission() {
+    setDraft(emptyDraft(budgetContext));
   }
 
   function payload() {
@@ -272,6 +318,12 @@ export function AdminDashboard({ username }: { username: string }) {
         startsAt: parseMissionDateTime(draft.startsAt, draft.timeZone),
         endsAt: parseMissionDateTime(draft.endsAt, draft.timeZone),
       },
+      budgets: {
+        campaignAllocatedAmount: draft.campaignBudgetAllocation,
+        missionAllocatedAmount: draft.missionBudgetAllocation,
+        expectedCampaignRevision: Number(draft.expectedCampaignBudgetRevision),
+        expectedMissionRevision: Number(draft.expectedMissionBudgetRevision),
+      },
       location: {
         name: draft.locationName,
         address: draft.address || undefined,
@@ -297,7 +349,7 @@ export function AdminDashboard({ username }: { username: string }) {
         }),
       });
       setNotice({ type: "success", text: draft.missionId ? "Mission changes saved." : "Mission created." });
-      setDraft(emptyDraft());
+      setDraft(emptyDraft(budgetContext));
       await load();
     } catch (error) {
       setNotice({ type: "error", text: error instanceof Error ? error.message : "Mission could not be saved." });
@@ -386,7 +438,7 @@ export function AdminDashboard({ username }: { username: string }) {
           <section className="admin-list-panel">
             <div className="admin-panel-head">
               <div><span>Mission library</span><strong>Choose a mission to edit</strong></div>
-              <button type="button" onClick={() => setDraft(emptyDraft())}><Plus size={15} /> New</button>
+              <button type="button" onClick={startNewMission}><Plus size={15} /> New</button>
             </div>
             {loading ? <div className="admin-empty">Loading missions…</div> : missions.length ? (
               <div className="admin-mission-stack">
@@ -399,7 +451,7 @@ export function AdminDashboard({ username }: { username: string }) {
                     </button>
                     <div className="admin-ticket-foot">
                       <span className={`admin-state ${mission.status}`}>{stateLabel(mission.status)}</span>
-                      <span>{mission.rewardAmount} JELLY</span>
+                      <span>{mission.rewardAmount} JELLY · {stateLabel(mission.budgets.capacityStatus)}</span>
                       <select aria-label={`Change ${mission.title} status`} value={mission.status} onChange={(event) => void changeStatus(mission._id, event.target.value as MissionRecord["status"])}>
                         <option value="draft">Draft</option><option value="active">Live</option>
                         <option value="paused">Paused</option><option value="archived">Archived</option>
@@ -409,14 +461,14 @@ export function AdminDashboard({ username }: { username: string }) {
                 ))}
               </div>
             ) : (
-              <div className="admin-empty"><MapPin size={25} /><strong>No missions yet</strong><span>Create the first mission and leave it as a draft until it is ready.</span><button onClick={() => setDraft(emptyDraft())}>Create mission</button></div>
+              <div className="admin-empty"><MapPin size={25} /><strong>No missions yet</strong><span>Create the first mission and leave it as a draft until it is ready.</span><button onClick={startNewMission}>Create mission</button></div>
             )}
           </section>
 
           <form className="admin-editor" onSubmit={(event) => void saveMission(event)}>
             <div className="admin-panel-head">
               <div><span>{draft.missionId ? "Edit mission" : "New mission"}</span><strong>{draft.title || "Untitled mission"}</strong></div>
-              {draft.missionId ? <button type="button" onClick={() => setDraft(emptyDraft())}><X size={15} /> Close</button> : null}
+              {draft.missionId ? <button type="button" onClick={startNewMission}><X size={15} /> Close</button> : null}
             </div>
 
             <fieldset>
@@ -463,11 +515,20 @@ export function AdminDashboard({ username }: { username: string }) {
             <fieldset>
               <legend>Reward and publishing</legend>
               <div className="admin-form-grid compact">
-                <label>Reward amount<input required type="number" min="1" value={draft.rewardAmount} onChange={(event) => set("rewardAmount", event.target.value)} /></label>
+                <label>Reward per approval<input required type="number" min="1" value={draft.rewardAmount} onChange={(event) => set("rewardAmount", event.target.value)} /></label>
                 <label>Approval<select value={draft.approvalMode} onChange={(event) => set("approvalMode", event.target.value as Draft["approvalMode"])}><option value="manual">Manual review</option><option value="automatic">Automatic after verification</option></select></label>
+                <label>Campaign reward cap<input required inputMode="decimal" value={draft.campaignBudgetAllocation} onChange={(event) => set("campaignBudgetAllocation", event.target.value)} /></label>
+                <label>Mission reward cap<input required inputMode="decimal" value={draft.missionBudgetAllocation} onChange={(event) => set("missionBudgetAllocation", event.target.value)} /></label>
                 <label>Map state<select value={draft.status} onChange={(event) => set("status", event.target.value as Draft["status"])}><option value="draft">Draft</option><option value="active">Live</option><option value="paused">Paused</option><option value="archived">Archived</option></select></label>
                 <label>Sort order<input required type="number" min="0" value={draft.sortOrder} onChange={(event) => set("sortOrder", event.target.value)} /></label>
                 <label className="wide">Website URL<input type="url" value={draft.websiteUrl} onChange={(event) => set("websiteUrl", event.target.value)} /></label>
+                <div className="admin-budget-summary wide" data-status={draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.capacityStatus : "unfunded"}>
+                  <strong>{draft.missionId ? `Funding ${stateLabel(missions.find((mission) => mission._id === draft.missionId)?.budgets.capacityStatus ?? "unfunded")}` : "Set funding before going live"}</strong>
+                  <span>
+                    Campaign remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.campaign.remainingAmount ?? "0" : budgetContext?.campaign.remainingAmount ?? "0"} JELLY · Mission remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.mission.remainingAmount ?? "0" : "0"} JELLY
+                  </span>
+                  <small>Caps are explicit maximum commitments. They cannot be reduced below amounts already reserved or paid. A live mission must have room for at least one reward in both caps.</small>
+                </div>
               </div>
             </fieldset>
 
@@ -511,11 +572,11 @@ export function AdminDashboard({ username }: { username: string }) {
                   <div className="admin-review-actions">
                     {submission.status === "needs_review" ? <>
                       <button className="approve" onClick={() => void review(submission._id, "approve")}><Check size={15} /> Approve + {submission.rewardAmountSnapshot ?? submission.mission?.rewardAmount ?? "?"} JELLY</button>
-                      <label>Reason to reject<input value={reasons[submission._id] ?? ""} onChange={(event) => setReasons((current) => ({ ...current, [submission._id]: event.target.value }))} /></label>
+                      <label>Internal rejection note<input value={reasons[submission._id] ?? ""} onChange={(event) => setReasons((current) => ({ ...current, [submission._id]: event.target.value }))} /></label>
                       <button className="reject" disabled={!reasons[submission._id]?.trim()} onClick={() => void review(submission._id, "reject")}><X size={15} /> Reject</button>
                     </> : null}
-                    {submission.status === "rejected" ? <span className="admin-caution">Rejected proof must be verified again before it can be approved.</span> : null}
-                    {["submitted", "verifying", "needs_review", "rejected"].includes(submission.status) ? <button onClick={() => void review(submission._id, "retry_verification")}><RotateCcw size={15} /> Verify again</button> : null}
+                    {submission.status === "rejected" ? <span className="admin-caution">Rejected proof is final. The Jelly user must submit a new eligible post.</span> : null}
+                    {["submitted", "needs_review"].includes(submission.status) ? <button onClick={() => void review(submission._id, "retry_verification")}><RotateCcw size={15} /> Verify again</button> : null}
                     {submission.status === "reward_failed" ? <button onClick={() => void review(submission._id, "retry_reward")}><RefreshCw size={15} /> Retry confirmed failure</button> : null}
                     {submission.status === "reward_uncertain" ? <div className="admin-reconcile"><span className="admin-caution">Reconcile with Jelly before allowing any retry.</span><label>Jelly transaction ID<input value={transactionIds[submission._id] ?? ""} onChange={(event) => setTransactionIds((current) => ({ ...current, [submission._id]: event.target.value }))} /></label><button disabled={!transactionIds[submission._id]?.trim()} onClick={() => void review(submission._id, "reconcile_reward_sent")}><Check size={15} /> Mark sent</button><label>Confirmed failure reason<input value={reasons[submission._id] ?? ""} onChange={(event) => setReasons((current) => ({ ...current, [submission._id]: event.target.value }))} /></label><button disabled={!reasons[submission._id]?.trim()} onClick={() => void review(submission._id, "reconcile_reward_failed")}><X size={15} /> Mark failed</button></div> : null}
                     {submission.rewardTransactionId ? <span className="admin-transaction">Transaction {submission.rewardTransactionId}</span> : null}
