@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "rate_limited",
+    "message": "Too many requests. Try again shortly.",
+    "requestId": "req_01HXREQUESTERR429",
+    "retryable": true,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR429",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

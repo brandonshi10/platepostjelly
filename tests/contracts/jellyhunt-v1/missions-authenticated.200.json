@@ -1,0 +1,1283 @@
+{
+  "status": 200,
+  "headers": {
+    "cache-control": "private, no-store",
+    "content-type": "application/json"
+  },
+  "body": {
+    "apiVersion": "1.0",
+    "generatedAt": "2026-07-16T00:00:00.000Z",
+    "missions": [
+      {
+        "id": "fixture_mission_1",
+        "slug": "scarrs-pizza",
+        "title": "Scarr's Pizza",
+        "description": "Order one slice. Film the cheese pull. Caption with one word.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 60,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "scarrs-pizza",
+        "category": "Pizza",
+        "difficulty": "easy",
+        "emoji": "🍕",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-00:00",
+          "12:00-00:00",
+          "12:00-23:00"
+        ],
+        "sortOrder": 0,
+        "location": {
+          "id": "fixture_location_1",
+          "name": "Scarr's Pizza",
+          "address": "35 Orchard St",
+          "latitude": 40.7163,
+          "longitude": -73.9914,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_2",
+        "slug": "limprimerie",
+        "title": "L'Imprimerie",
+        "description": "Order a kouign-amann. Show the layers on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 50,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "limprimerie",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00"
+        ],
+        "sortOrder": 1,
+        "location": {
+          "id": "fixture_location_2",
+          "name": "L'Imprimerie",
+          "address": "139 Eldridge St",
+          "latitude": 40.7186,
+          "longitude": -73.9923,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_3",
+        "slug": "trapizzino",
+        "title": "Trapizzino",
+        "description": "Order any trapizzino. Take one bite, then show the inside on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 55,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "trapizzino",
+        "category": "Roman Sandwich",
+        "difficulty": "easy",
+        "emoji": "🥪",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-22:00"
+        ],
+        "sortOrder": 2,
+        "location": {
+          "id": "fixture_location_3",
+          "name": "Trapizzino",
+          "address": "144 Orchard St",
+          "latitude": 40.7201,
+          "longitude": -73.9893,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_4",
+        "slug": "the-good-company",
+        "title": "The Good Company",
+        "description": "Try on a sticker or pin. Pose in the doorway.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 70,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "the-good-company",
+        "category": "Streetwear",
+        "difficulty": "easy",
+        "emoji": "🎯",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "12:00-18:00"
+        ],
+        "sortOrder": 3,
+        "location": {
+          "id": "fixture_location_4",
+          "name": "The Good Company",
+          "address": "11 Orchard St",
+          "latitude": 40.7155,
+          "longitude": -73.9908,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_5",
+        "slug": "conbud",
+        "title": "ConBud",
+        "description": "Talk to a budtender. Post the most NYC thing they say.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 80,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "conbud",
+        "category": "Cannabis",
+        "difficulty": "medium",
+        "emoji": "🌿",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-23:00",
+          "10:00-23:00",
+          "10:00-22:00"
+        ],
+        "sortOrder": 4,
+        "location": {
+          "id": "fixture_location_5",
+          "name": "ConBud",
+          "address": "85 Delancey St",
+          "latitude": 40.7188,
+          "longitude": -73.9907,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_6",
+        "slug": "economy-candy",
+        "title": "Economy Candy",
+        "description": "Buy a candy older than you. Rate it on first bite.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 20,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "economy-candy",
+        "category": "Candy",
+        "difficulty": "easy",
+        "emoji": "🍬",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "10:00-18:00",
+          "10:00-18:00"
+        ],
+        "sortOrder": 5,
+        "location": {
+          "id": "fixture_location_6",
+          "name": "Economy Candy",
+          "address": "108 Rivington St",
+          "latitude": 40.7195,
+          "longitude": -73.9883,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_7",
+        "slug": "russ-and-daughters-cafe",
+        "title": "Russ & Daughters Cafe",
+        "description": "Order a bagel + lox board. Caption your first bite with a NYC tip.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 75,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "russ-and-daughters-cafe",
+        "category": "Appetizing",
+        "difficulty": "easy",
+        "emoji": "🥯",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00"
+        ],
+        "sortOrder": 6,
+        "location": {
+          "id": "fixture_location_7",
+          "name": "Russ & Daughters Cafe",
+          "address": "127 Orchard St",
+          "latitude": 40.7203,
+          "longitude": -73.9893,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_8",
+        "slug": "cafe-integral",
+        "title": "Cafe Integral",
+        "description": "Order a Nicaraguan single-origin. Take it to Elizabeth St Garden.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 30,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "cafe-integral",
+        "category": "Coffee",
+        "difficulty": "easy",
+        "emoji": "☕",
+        "neighborhood": "Nolita",
+        "price": "$",
+        "hours": [
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "08:00-18:00",
+          "08:00-18:00"
+        ],
+        "sortOrder": 7,
+        "location": {
+          "id": "fixture_location_8",
+          "name": "Cafe Integral",
+          "address": "149 Elizabeth St",
+          "latitude": 40.7218,
+          "longitude": -73.9954,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_9",
+        "slug": "the-pastry-box",
+        "title": "The Pastry Box",
+        "description": "Get the chocolate chip cookie. Break it on camera. Don't drop a chip.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 40,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "the-pastry-box",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🍪",
+        "neighborhood": "East Village",
+        "price": "$",
+        "hours": [
+          "closed",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00"
+        ],
+        "sortOrder": 8,
+        "location": {
+          "id": "fixture_location_9",
+          "name": "The Pastry Box",
+          "address": "515 E 12th St",
+          "latitude": 40.7287,
+          "longitude": -73.9819,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_10",
+        "slug": "librae-bakery",
+        "title": "Librae Bakery",
+        "description": "Get the pistachio rose croissant. One photo before, one after.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 50,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "librae-bakery",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "neighborhood": "East Village",
+        "price": "$$",
+        "hours": [
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00"
+        ],
+        "sortOrder": 9,
+        "location": {
+          "id": "fixture_location_10",
+          "name": "Librae Bakery",
+          "address": "35 Cooper Sq",
+          "latitude": 40.7281,
+          "longitude": -73.9909,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_11",
+        "slug": "hester-street-fair",
+        "title": "Hester Street Fair",
+        "description": "Find the smallest vendor. Buy something. Share their handle.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 65,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "hester-street-fair",
+        "category": "Market",
+        "difficulty": "medium",
+        "emoji": "🎪",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "closed",
+          "closed",
+          "closed",
+          "closed",
+          "closed",
+          "11:00-18:00",
+          "11:00-18:00"
+        ],
+        "sortOrder": 10,
+        "location": {
+          "id": "fixture_location_11",
+          "name": "Hester Street Fair",
+          "address": "Hester & Essex St",
+          "latitude": 40.7165,
+          "longitude": -73.9905,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_12",
+        "slug": "morgensterns",
+        "title": "Morgenstern's",
+        "description": "Order a flavor you can't pronounce. Hold the cone steady on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 45,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "morgensterns",
+        "category": "Ice Cream",
+        "difficulty": "easy",
+        "emoji": "🍦",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-00:00",
+          "12:00-00:00",
+          "12:00-23:00"
+        ],
+        "sortOrder": 11,
+        "location": {
+          "id": "fixture_location_12",
+          "name": "Morgenstern's",
+          "address": "88 W Houston St",
+          "latitude": 40.7259,
+          "longitude": -73.9994,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_13",
+        "slug": "ssam-bar-bang-bar",
+        "title": "Ssam Bar / Bang Bar",
+        "description": "Order a spicy rice cake. Rate the heat 1-10 on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 90,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "ssam-bar-bang-bar",
+        "category": "Korean",
+        "difficulty": "hard",
+        "emoji": "🍜",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "closed",
+          "17:00-23:00",
+          "17:00-23:00",
+          "17:00-23:00",
+          "17:00-00:00",
+          "17:00-00:00",
+          "17:00-23:00"
+        ],
+        "sortOrder": 12,
+        "location": {
+          "id": "fixture_location_13",
+          "name": "Ssam Bar / Bang Bar",
+          "address": "171 Stanton St",
+          "latitude": 40.722,
+          "longitude": -73.9851,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_14",
+        "slug": "dimes",
+        "title": "Dimes",
+        "description": "Order the daily special. Caption it with what 'Dimes Square' means to you.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 85,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "dimes",
+        "category": "Restaurant",
+        "difficulty": "easy",
+        "emoji": "🥗",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-23:00",
+          "08:00-23:00",
+          "08:00-22:00"
+        ],
+        "sortOrder": 13,
+        "location": {
+          "id": "fixture_location_14",
+          "name": "Dimes",
+          "address": "49 Canal St",
+          "latitude": 40.7148,
+          "longitude": -73.992,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_15",
+        "slug": "beverlys",
+        "title": "Beverly's",
+        "description": "Order the cocktail named after an artist. Find the artist's work in the room.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 100,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "beverlys",
+        "category": "Bar / Gallery",
+        "difficulty": "hard",
+        "emoji": "🍸",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "closed",
+          "closed",
+          "18:00-02:00",
+          "18:00-02:00",
+          "18:00-04:00",
+          "18:00-04:00",
+          "18:00-00:00"
+        ],
+        "sortOrder": 14,
+        "location": {
+          "id": "fixture_location_15",
+          "name": "Beverly's",
+          "address": "3 Essex St",
+          "latitude": 40.7138,
+          "longitude": -73.9914,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_16",
+        "slug": "comedy-cellar",
+        "title": "Comedy Cellar",
+        "description": "Catch a set, post a clip from outside the awning + tag a comedian.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 110,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "comedy-cellar",
+        "category": "Comedy Club",
+        "difficulty": "hard",
+        "emoji": "🎤",
+        "neighborhood": "Greenwich Village",
+        "price": "$$",
+        "hours": [
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-01:00",
+          "18:00-01:00",
+          "18:00-23:30"
+        ],
+        "venueType": "shows",
+        "showtimes": [
+          "19:30",
+          "21:00",
+          "22:45"
+        ],
+        "sortOrder": 15,
+        "location": {
+          "id": "fixture_location_16",
+          "name": "Comedy Cellar",
+          "address": "117 MacDougal St",
+          "latitude": 40.7301,
+          "longitude": -74.0006,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      }
+    ],
+    "userStatus": [
+      {
+        "missionId": "fixture_mission_1",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_2",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_3",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_4",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_5",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_6",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_7",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_8",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_9",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_10",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_11",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_12",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_13",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_14",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_15",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_16",
+        "status": "not_started"
+      }
+    ]
+  },
+  "legacyProjection": {
+    "apiVersion": "1.0",
+    "generatedAt": "2026-07-16T00:00:00.000Z",
+    "missions": [
+      {
+        "id": "fixture_mission_1",
+        "slug": "scarrs-pizza",
+        "title": "Scarr's Pizza",
+        "description": "Order one slice. Film the cheese pull. Caption with one word.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 60,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "scarrs-pizza",
+        "category": "Pizza",
+        "difficulty": "easy",
+        "emoji": "🍕",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-00:00",
+          "12:00-00:00",
+          "12:00-23:00"
+        ],
+        "sortOrder": 0,
+        "location": {
+          "id": "fixture_location_1",
+          "name": "Scarr's Pizza",
+          "address": "35 Orchard St",
+          "latitude": 40.7163,
+          "longitude": -73.9914,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_2",
+        "slug": "limprimerie",
+        "title": "L'Imprimerie",
+        "description": "Order a kouign-amann. Show the layers on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 50,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "limprimerie",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00"
+        ],
+        "sortOrder": 1,
+        "location": {
+          "id": "fixture_location_2",
+          "name": "L'Imprimerie",
+          "address": "139 Eldridge St",
+          "latitude": 40.7186,
+          "longitude": -73.9923,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_3",
+        "slug": "trapizzino",
+        "title": "Trapizzino",
+        "description": "Order any trapizzino. Take one bite, then show the inside on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 55,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "trapizzino",
+        "category": "Roman Sandwich",
+        "difficulty": "easy",
+        "emoji": "🥪",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-22:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-22:00"
+        ],
+        "sortOrder": 2,
+        "location": {
+          "id": "fixture_location_3",
+          "name": "Trapizzino",
+          "address": "144 Orchard St",
+          "latitude": 40.7201,
+          "longitude": -73.9893,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_4",
+        "slug": "the-good-company",
+        "title": "The Good Company",
+        "description": "Try on a sticker or pin. Pose in the doorway.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 70,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "the-good-company",
+        "category": "Streetwear",
+        "difficulty": "easy",
+        "emoji": "🎯",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "11:00-19:00",
+          "12:00-18:00"
+        ],
+        "sortOrder": 3,
+        "location": {
+          "id": "fixture_location_4",
+          "name": "The Good Company",
+          "address": "11 Orchard St",
+          "latitude": 40.7155,
+          "longitude": -73.9908,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_5",
+        "slug": "conbud",
+        "title": "ConBud",
+        "description": "Talk to a budtender. Post the most NYC thing they say.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 80,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "conbud",
+        "category": "Cannabis",
+        "difficulty": "medium",
+        "emoji": "🌿",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-22:00",
+          "09:00-23:00",
+          "10:00-23:00",
+          "10:00-22:00"
+        ],
+        "sortOrder": 4,
+        "location": {
+          "id": "fixture_location_5",
+          "name": "ConBud",
+          "address": "85 Delancey St",
+          "latitude": 40.7188,
+          "longitude": -73.9907,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_6",
+        "slug": "economy-candy",
+        "title": "Economy Candy",
+        "description": "Buy a candy older than you. Rate it on first bite.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 20,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "economy-candy",
+        "category": "Candy",
+        "difficulty": "easy",
+        "emoji": "🍬",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "09:00-18:00",
+          "10:00-18:00",
+          "10:00-18:00"
+        ],
+        "sortOrder": 5,
+        "location": {
+          "id": "fixture_location_6",
+          "name": "Economy Candy",
+          "address": "108 Rivington St",
+          "latitude": 40.7195,
+          "longitude": -73.9883,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_7",
+        "slug": "russ-and-daughters-cafe",
+        "title": "Russ & Daughters Cafe",
+        "description": "Order a bagel + lox board. Caption your first bite with a NYC tip.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 75,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "russ-and-daughters-cafe",
+        "category": "Appetizing",
+        "difficulty": "easy",
+        "emoji": "🥯",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00",
+          "08:00-16:00"
+        ],
+        "sortOrder": 6,
+        "location": {
+          "id": "fixture_location_7",
+          "name": "Russ & Daughters Cafe",
+          "address": "127 Orchard St",
+          "latitude": 40.7203,
+          "longitude": -73.9893,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_8",
+        "slug": "cafe-integral",
+        "title": "Cafe Integral",
+        "description": "Order a Nicaraguan single-origin. Take it to Elizabeth St Garden.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 30,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "cafe-integral",
+        "category": "Coffee",
+        "difficulty": "easy",
+        "emoji": "☕",
+        "neighborhood": "Nolita",
+        "price": "$",
+        "hours": [
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "07:30-18:00",
+          "08:00-18:00",
+          "08:00-18:00"
+        ],
+        "sortOrder": 7,
+        "location": {
+          "id": "fixture_location_8",
+          "name": "Cafe Integral",
+          "address": "149 Elizabeth St",
+          "latitude": 40.7218,
+          "longitude": -73.9954,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_9",
+        "slug": "the-pastry-box",
+        "title": "The Pastry Box",
+        "description": "Get the chocolate chip cookie. Break it on camera. Don't drop a chip.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 40,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "the-pastry-box",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🍪",
+        "neighborhood": "East Village",
+        "price": "$",
+        "hours": [
+          "closed",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00",
+          "08:00-18:00"
+        ],
+        "sortOrder": 8,
+        "location": {
+          "id": "fixture_location_9",
+          "name": "The Pastry Box",
+          "address": "515 E 12th St",
+          "latitude": 40.7287,
+          "longitude": -73.9819,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_10",
+        "slug": "librae-bakery",
+        "title": "Librae Bakery",
+        "description": "Get the pistachio rose croissant. One photo before, one after.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 50,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "librae-bakery",
+        "category": "Bakery",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "neighborhood": "East Village",
+        "price": "$$",
+        "hours": [
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00",
+          "08:00-19:00"
+        ],
+        "sortOrder": 9,
+        "location": {
+          "id": "fixture_location_10",
+          "name": "Librae Bakery",
+          "address": "35 Cooper Sq",
+          "latitude": 40.7281,
+          "longitude": -73.9909,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_11",
+        "slug": "hester-street-fair",
+        "title": "Hester Street Fair",
+        "description": "Find the smallest vendor. Buy something. Share their handle.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 65,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "hester-street-fair",
+        "category": "Market",
+        "difficulty": "medium",
+        "emoji": "🎪",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "closed",
+          "closed",
+          "closed",
+          "closed",
+          "closed",
+          "11:00-18:00",
+          "11:00-18:00"
+        ],
+        "sortOrder": 10,
+        "location": {
+          "id": "fixture_location_11",
+          "name": "Hester Street Fair",
+          "address": "Hester & Essex St",
+          "latitude": 40.7165,
+          "longitude": -73.9905,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_12",
+        "slug": "morgensterns",
+        "title": "Morgenstern's",
+        "description": "Order a flavor you can't pronounce. Hold the cone steady on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 45,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "morgensterns",
+        "category": "Ice Cream",
+        "difficulty": "easy",
+        "emoji": "🍦",
+        "neighborhood": "Lower East Side",
+        "price": "$",
+        "hours": [
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-23:00",
+          "12:00-00:00",
+          "12:00-00:00",
+          "12:00-23:00"
+        ],
+        "sortOrder": 11,
+        "location": {
+          "id": "fixture_location_12",
+          "name": "Morgenstern's",
+          "address": "88 W Houston St",
+          "latitude": 40.7259,
+          "longitude": -73.9994,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_13",
+        "slug": "ssam-bar-bang-bar",
+        "title": "Ssam Bar / Bang Bar",
+        "description": "Order a spicy rice cake. Rate the heat 1-10 on camera.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 90,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "ssam-bar-bang-bar",
+        "category": "Korean",
+        "difficulty": "hard",
+        "emoji": "🍜",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "closed",
+          "17:00-23:00",
+          "17:00-23:00",
+          "17:00-23:00",
+          "17:00-00:00",
+          "17:00-00:00",
+          "17:00-23:00"
+        ],
+        "sortOrder": 12,
+        "location": {
+          "id": "fixture_location_13",
+          "name": "Ssam Bar / Bang Bar",
+          "address": "171 Stanton St",
+          "latitude": 40.722,
+          "longitude": -73.9851,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_14",
+        "slug": "dimes",
+        "title": "Dimes",
+        "description": "Order the daily special. Caption it with what 'Dimes Square' means to you.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 85,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "dimes",
+        "category": "Restaurant",
+        "difficulty": "easy",
+        "emoji": "🥗",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-22:00",
+          "08:00-23:00",
+          "08:00-23:00",
+          "08:00-22:00"
+        ],
+        "sortOrder": 13,
+        "location": {
+          "id": "fixture_location_14",
+          "name": "Dimes",
+          "address": "49 Canal St",
+          "latitude": 40.7148,
+          "longitude": -73.992,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_15",
+        "slug": "beverlys",
+        "title": "Beverly's",
+        "description": "Order the cocktail named after an artist. Find the artist's work in the room.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 100,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "beverlys",
+        "category": "Bar / Gallery",
+        "difficulty": "hard",
+        "emoji": "🍸",
+        "neighborhood": "Lower East Side",
+        "price": "$$",
+        "hours": [
+          "closed",
+          "closed",
+          "18:00-02:00",
+          "18:00-02:00",
+          "18:00-04:00",
+          "18:00-04:00",
+          "18:00-00:00"
+        ],
+        "sortOrder": 14,
+        "location": {
+          "id": "fixture_location_15",
+          "name": "Beverly's",
+          "address": "3 Essex St",
+          "latitude": 40.7138,
+          "longitude": -73.9914,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      },
+      {
+        "id": "fixture_mission_16",
+        "slug": "comedy-cellar",
+        "title": "Comedy Cellar",
+        "description": "Catch a set, post a clip from outside the awning + tag a comedian.",
+        "status": "active",
+        "approvalMode": "manual",
+        "rewardAmount": 110,
+        "rewardToken": "JELLY-MY-JELLY",
+        "restaurantTag": "comedy-cellar",
+        "category": "Comedy Club",
+        "difficulty": "hard",
+        "emoji": "🎤",
+        "neighborhood": "Greenwich Village",
+        "price": "$$",
+        "hours": [
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-23:30",
+          "18:00-01:00",
+          "18:00-01:00",
+          "18:00-23:30"
+        ],
+        "venueType": "shows",
+        "showtimes": [
+          "19:30",
+          "21:00",
+          "22:45"
+        ],
+        "sortOrder": 15,
+        "location": {
+          "id": "fixture_location_16",
+          "name": "Comedy Cellar",
+          "address": "117 MacDougal St",
+          "latitude": 40.7301,
+          "longitude": -74.0006,
+          "geofenceRadiusMeters": 75,
+          "timeZone": "America/New_York"
+        }
+      }
+    ],
+    "userStatus": [
+      {
+        "missionId": "fixture_mission_1",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_2",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_3",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_4",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_5",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_6",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_7",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_8",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_9",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_10",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_11",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_12",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_13",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_14",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_15",
+        "status": "not_started"
+      },
+      {
+        "missionId": "fixture_mission_16",
+        "status": "not_started"
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "version": "jelly-partner-v1-2026-07-16",
+  "source": "docs/superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md#required-jelly-partner-apis",
+  "routes": [
+    "GET /partner/v1/jellyhunt/places/{jellyPlaceId}",
+    "GET /partner/v1/jellyhunt/places/{jellyPlaceId}/jellies",
+    "POST /partner/v1/jellyhunt/posts/{postId}/preflight",
+    "POST /partner/v1/jellyhunt/submissions/verify",
+    "POST /partner/v1/jellyhunt/reward-intents/{rewardIntentId}/attempts",
+    "GET /partner/v1/jellyhunt/reward-intents/{rewardIntentId}",
+    "GET /partner/v1/jellyhunt/reward-account/capacity"
+  ],
+  "fixtures": [
+    "place-get.200.json",
+    "place-jellies.200.json",
+    "post-preflight-matched.200.json",
+    "post-preflight.404.json",
+    "submission-verify-complete.200.json",
+    "reward-intent-attempt-sent.201.json",
+    "reward-intent-lookup-pending.200.json",
+    "reward-intent-lookup.404.json",
+    "reward-account-capacity.200.json"
+  ]
+}

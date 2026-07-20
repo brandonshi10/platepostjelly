@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": "invalid_cursor",
+    "message": "The provided cursor is invalid or has expired.",
+    "requestId": "req_01HXREQUESTERR400",
+    "retryable": false,
+    "restartRequired": true,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR400",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

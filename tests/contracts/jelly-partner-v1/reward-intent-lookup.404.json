@@ -1,0 +1,11 @@
+{
+  "route": "GET /partner/v1/jellyhunt/reward-intents/{rewardIntentId}",
+  "status": 404,
+  "body": {
+    "error": {
+      "code": "reward_intent_not_found",
+      "confirmedAbsent": false,
+      "recheckAfter": "2026-08-05T19:00:10Z"
+    }
+  }
+}

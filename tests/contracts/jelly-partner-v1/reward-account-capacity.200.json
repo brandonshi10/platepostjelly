@@ -1,0 +1,13 @@
+{
+  "route": "GET /partner/v1/jellyhunt/reward-account/capacity",
+  "status": 200,
+  "body": {
+    "token": "JELLY-MY-JELLY",
+    "decimals": 6,
+    "availableAmount": "25000",
+    "perTransactionLimit": "500",
+    "dailyRemaining": "10000",
+    "enabled": true,
+    "asOf": "2026-08-05T18:55:00Z"
+  }
+}

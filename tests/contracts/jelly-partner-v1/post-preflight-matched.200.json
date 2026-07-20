@@ -1,0 +1,28 @@
+{
+  "route": "POST /partner/v1/jellyhunt/posts/{postId}/preflight",
+  "status": 200,
+  "request": {
+    "submissionId": "sub_01HXSUBMISSION0001",
+    "userId": "usr_jelly_canonical_001",
+    "authorshipPolicy": "canonical_owner"
+  },
+  "body": {
+    "preflightVersion": "1",
+    "ownershipStatus": "matched",
+    "reasonCodes": [],
+    "post": {
+      "id": "01HXJELLYPOST000002",
+      "canonicalOwnerUserId": "usr_jelly_canonical_001",
+      "eligibleParticipantIds": ["usr_jelly_canonical_001"],
+      "postType": "video",
+      "durationSeconds": 31.4,
+      "state": "processing",
+      "visibility": "public",
+      "moderationStatus": "clear",
+      "deletedAt": null,
+      "postedAt": "2026-08-05T18:30:00Z",
+      "placeId": "jpl_01HXJELLYPLACE001",
+      "observedAt": "2026-08-05T18:42:10Z"
+    }
+  }
+}

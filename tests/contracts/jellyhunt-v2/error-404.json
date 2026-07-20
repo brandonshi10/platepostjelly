@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "submission_not_found",
+    "message": "This submission does not exist.",
+    "requestId": "req_01HXREQUESTERR404",
+    "retryable": false,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR404",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

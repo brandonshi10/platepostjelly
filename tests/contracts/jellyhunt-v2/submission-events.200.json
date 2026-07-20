@@ -1,0 +1,41 @@
+{
+  "data": {
+    "events": [
+      {
+        "sequence": 3,
+        "type": "verification.needs_review",
+        "submissionStatus": "needs_review",
+        "rewardStatus": "not_eligible",
+        "displayStatus": "under_review",
+        "reasonCode": "manual_review_required",
+        "occurredAt": "2026-08-05T18:42:20Z"
+      },
+      {
+        "sequence": 2,
+        "type": "verification.started",
+        "submissionStatus": "verifying",
+        "rewardStatus": "not_eligible",
+        "displayStatus": "under_review",
+        "occurredAt": "2026-08-05T18:42:12Z"
+      },
+      {
+        "sequence": 1,
+        "type": "submission.created",
+        "submissionStatus": "submitted",
+        "rewardStatus": "not_eligible",
+        "displayStatus": "submitted",
+        "occurredAt": "2026-08-05T18:42:11Z"
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000013",
+    "generatedAt": "2026-08-05T18:42:21Z",
+    "page": {
+      "limit": 50,
+      "nextCursor": null,
+      "hasMore": false
+    }
+  }
+}

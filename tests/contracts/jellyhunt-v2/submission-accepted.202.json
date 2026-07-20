@@ -1,0 +1,33 @@
+{
+  "data": {
+    "id": "sub_01HXSUBMISSION0001",
+    "missionId": "mis_01HXMISSION000001",
+    "attempt": 1,
+    "jellyPost": {
+      "id": "01HXJELLYPOST000002",
+      "watchUrl": "https://jellyjelly.com/watch/01HXJELLYPOST000002"
+    },
+    "submissionStatus": "submitted",
+    "reward": {
+      "status": "not_eligible",
+      "amount": "60",
+      "token": "JELLY-MY-JELLY",
+      "transactionId": null
+    },
+    "displayStatus": "submitted",
+    "publicMessage": "Your Jelly was submitted and is being checked.",
+    "canResubmit": false,
+    "submittedAt": "2026-08-05T18:42:11Z",
+    "updatedAt": "2026-08-05T18:42:11Z"
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000010",
+    "generatedAt": "2026-08-05T18:42:11Z"
+  },
+  "links": {
+    "self": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001",
+    "mission": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001",
+    "events": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001/events"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "data": {
+    "id": "par_01HXPARTICIPATE01",
+    "status": "started",
+    "missionId": "mis_01HXMISSION000001",
+    "missionRevision": 7,
+    "jellyPlaceId": "jpl_01HXJELLYPLACE001",
+    "startedAt": "2026-08-05T18:10:00Z",
+    "submissionDeadlineAt": "2026-08-06T18:10:00Z",
+    "resubmissionDeadlineAt": null,
+    "canStart": false,
+    "canSubmit": true,
+    "canResubmit": false
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000008",
+    "generatedAt": "2026-08-05T18:10:00Z"
+  },
+  "links": {
+    "self": "/api/v2/jellyhunt/participations/par_01HXPARTICIPATE01"
+  }
+}

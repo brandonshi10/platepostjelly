@@ -1,0 +1,35 @@
+{
+  "data": {
+    "scope": "current_season",
+    "rankingBasis": "approved_missions",
+    "campaign": {
+      "id": "cam_01HXCAMPAIGN0000001",
+      "title": "JellyHunt NYC — Season 1",
+      "startsAt": "2026-08-01T04:00:00Z",
+      "endsAt": "2026-09-01T03:59:59Z"
+    },
+    "standings": [
+      {
+        "rank": 1,
+        "username": "ari",
+        "approvedMissionCount": 12
+      },
+      {
+        "rank": 2,
+        "username": "mika",
+        "approvedMissionCount": 10
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000018",
+    "generatedAt": "2026-08-12T20:00:00Z",
+    "leaderboardRevision": 84,
+    "page": {
+      "limit": 20,
+      "nextCursor": null,
+      "hasMore": false
+    }
+  }
+}

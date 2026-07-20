@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": "internal_error",
+    "message": "An unexpected internal error occurred.",
+    "requestId": "req_01HXREQUESTERR500",
+    "retryable": true,
+    "details": []
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUESTERR500",
+    "generatedAt": "2026-08-05T19:00:00Z"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "data": {
+    "id": "sub_01HXSUBMISSION0002",
+    "mission": {
+      "id": "mis_01HXMISSION000001",
+      "revision": 7,
+      "title": "The Scarr's Cheese Pull"
+    },
+    "attempt": 1,
+    "jellyPost": {
+      "id": "01HXJELLYPOST000003",
+      "watchUrl": "https://jellyjelly.com/watch/01HXJELLYPOST000003"
+    },
+    "submissionStatus": "rejected",
+    "verification": {
+      "status": "complete",
+      "attempts": 1,
+      "reasonCode": "post_became_ineligible_after_reward",
+      "checkedAt": "2026-08-09T12:00:00Z"
+    },
+    "decision": {
+      "status": "rejected",
+      "reasonCode": "post_became_ineligible_after_reward",
+      "message": "Reward sent; completion later removed from rankings.",
+      "decidedAt": "2026-08-09T12:00:00Z"
+    },
+    "reward": {
+      "id": "rwd_01HXREWARD0000001",
+      "status": "sent",
+      "amount": "60",
+      "token": "JELLY-MY-JELLY",
+      "transactionId": "txn_01HXTRANSACTION001",
+      "sentAt": "2026-08-06T19:00:00Z"
+    },
+    "displayStatus": "rewarded_removed_from_rankings",
+    "reasonCode": "post_became_ineligible_after_reward",
+    "publicMessage": "Reward sent; completion later removed from rankings.",
+    "canResubmit": false,
+    "nextAction": "contact_support",
+    "timeline": [
+      {
+        "sequence": 1,
+        "type": "submission.created",
+        "submissionStatus": "submitted",
+        "rewardStatus": "not_eligible",
+        "displayStatus": "submitted",
+        "occurredAt": "2026-08-05T18:42:11Z"
+      },
+      {
+        "sequence": 2,
+        "type": "decision.approved",
+        "submissionStatus": "approved",
+        "rewardStatus": "queued",
+        "displayStatus": "approved_reward_pending",
+        "occurredAt": "2026-08-05T19:00:00Z"
+      },
+      {
+        "sequence": 3,
+        "type": "reward.sent",
+        "submissionStatus": "approved",
+        "rewardStatus": "sent",
+        "displayStatus": "rewarded",
+        "occurredAt": "2026-08-06T19:00:00Z"
+      },
+      {
+        "sequence": 4,
+        "type": "submission.post_payment_moderated",
+        "submissionStatus": "rejected",
+        "rewardStatus": "sent",
+        "displayStatus": "rewarded_removed_from_rankings",
+        "reasonCode": "post_became_ineligible_after_reward",
+        "occurredAt": "2026-08-09T12:00:00Z"
+      }
+    ],
+    "submittedAt": "2026-08-05T18:42:11Z",
+    "updatedAt": "2026-08-09T12:00:00Z"
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000012",
+    "generatedAt": "2026-08-09T12:00:01Z"
+  },
+  "links": {
+    "mission": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001",
+    "events": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0002/events"
+  }
+}

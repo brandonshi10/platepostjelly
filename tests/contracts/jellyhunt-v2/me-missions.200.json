@@ -1,0 +1,105 @@
+{
+  "data": {
+    "missions": [
+      {
+        "mission": {
+          "id": "mis_01HXMISSION000001",
+          "revision": 8,
+          "title": "The Scarr's Cheese Pull",
+          "availability": {
+            "state": "available",
+            "acceptingSubmissions": true,
+            "reasonCode": null
+          },
+          "reward": { "amount": "60", "token": "JELLY-MY-JELLY" },
+          "display": {
+            "emoji": "🍕",
+            "category": "Pizza",
+            "difficulty": "easy",
+            "neighborhood": "Lower East Side"
+          },
+          "place": {
+            "id": "plc_01HXPLACE0000001",
+            "name": "Scarr's Pizza",
+            "latitude": 40.7163,
+            "longitude": -73.9914
+          }
+        },
+        "participationStatus": "started",
+        "participation": {
+          "id": "par_01HXPARTICIPATE01",
+          "missionRevision": 7,
+          "startedAt": "2026-08-05T18:10:00Z",
+          "submissionDeadlineAt": "2026-08-06T18:10:00Z",
+          "resubmissionDeadlineAt": null
+        },
+        "latestSubmission": {
+          "id": "sub_01HXSUBMISSION0001",
+          "attempt": 1,
+          "submissionStatus": "needs_review",
+          "rewardStatus": "not_eligible",
+          "displayStatus": "under_review",
+          "updatedAt": "2026-08-05T18:42:20Z"
+        },
+        "canStart": false,
+        "canSubmit": false,
+        "canResubmit": false,
+        "nextAction": "wait_for_review",
+        "reasonCode": "manual_review_required",
+        "publicMessage": "Your Jelly is waiting for review.",
+        "updatedAt": "2026-08-05T18:42:20Z",
+        "links": {
+          "mission": "/api/v2/jellyhunt/missions/mis_01HXMISSION000001",
+          "participation": "/api/v2/jellyhunt/participations/par_01HXPARTICIPATE01",
+          "latestSubmission": "/api/v2/jellyhunt/submissions/sub_01HXSUBMISSION0001"
+        }
+      },
+      {
+        "mission": {
+          "id": "mis_01HXMISSION000002",
+          "revision": 3,
+          "title": "L'Imprimerie Kouign-Amann",
+          "availability": {
+            "state": "available",
+            "acceptingSubmissions": true,
+            "reasonCode": null
+          },
+          "reward": { "amount": "50", "token": "JELLY-MY-JELLY" },
+          "display": {
+            "emoji": "🥐",
+            "category": "Bakery",
+            "difficulty": "easy",
+            "neighborhood": "Lower East Side"
+          },
+          "place": {
+            "id": "plc_01HXPLACE0000002",
+            "name": "L'Imprimerie",
+            "latitude": 40.7181,
+            "longitude": -73.9877
+          }
+        },
+        "participationStatus": "not_started",
+        "participation": null,
+        "latestSubmission": null,
+        "canStart": true,
+        "canSubmit": false,
+        "canResubmit": false,
+        "nextAction": "start_mission",
+        "reasonCode": null,
+        "publicMessage": "Visit the place and start this mission in JellyJelly.",
+        "updatedAt": "2026-07-16T19:00:00Z",
+        "links": {
+          "mission": "/api/v2/jellyhunt/missions/mis_01HXMISSION000002",
+          "participation": null,
+          "latestSubmission": null
+        }
+      }
+    ]
+  },
+  "meta": {
+    "apiVersion": "2.0",
+    "requestId": "req_01HXREQUEST000015",
+    "generatedAt": "2026-08-05T19:00:01Z",
+    "page": { "limit": 20, "nextCursor": null, "hasMore": false }
+  }
+}
