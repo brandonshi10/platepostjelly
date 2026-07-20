@@ -151,6 +151,22 @@ describe("JellyHunt v2 public discovery routes", () => {
     expect((await response.json()).error.code).toBe("campaign_not_found");
   });
 
+  it("maps an unavailable canonical Convex function to a retryable dependency error", async () => {
+    repository.getCurrentCampaign.mockRejectedValueOnce(
+      new Error("Could not find public function for 'jellyhunt/campaigns:getCurrentCampaignDiscovery'"),
+    );
+    const { GET } = await import("../app/api/v2/jellyhunt/campaigns/current/route");
+
+    const response = await GET(new Request("http://localhost/api/v2/jellyhunt/campaigns/current"));
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body.error).toMatchObject({
+      code: "dependency_unavailable",
+      retryable: true,
+    });
+  });
+
   it("returns cursor-page metadata and summary-only mission list items", async () => {
     const { GET } = await import("../app/api/v2/jellyhunt/missions/route");
     const response = await GET(

@@ -74,6 +74,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Changed all-time leaderboard semantics to begin with this PlatePost tool's launch/import boundary; current season is scoped to the active campaign.
 - Recorded the initial-release operating decisions: uncertain rewards remain a restricted, audited manual reconciliation workflow; participation rows are not expired by a background sweeper; rejected users may resubmit within the existing mission attempt/window rules.
 
+### Fixed
+
+- Public v2 discovery and leaderboard routes now return a retryable `503 dependency_unavailable` response when the shared PlatePost Convex deployment is missing or unreachable, instead of presenting the integration gap as a generic internal error.
+
 ### Security
 
 - All non-public Convex operations require `PLATEPOST_CONVEX_SERVICE_KEY`; public clients cannot call workflow mutations directly.

@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { semanticEtag } from "./cache";
-import { JellyhuntV2Error, internalError } from "./errors";
+import { dependencyUnavailable, JellyhuntV2Error, internalError } from "./errors";
 import { wrapError, wrapSuccess, type V2MetaExtras } from "./envelope";
 
 export type V2RouteContext<P extends Record<string, string> = Record<string, string>> = {
@@ -39,6 +39,41 @@ function matchesIfNoneMatch(request: Request, etag: string): boolean {
     .split(",")
     .map((candidate) => candidate.trim())
     .some((candidate) => candidate === "*" || candidate === etag);
+}
+
+const DEPENDENCY_ERROR_MARKERS = [
+  "convex_not_configured",
+  "convex_service_key_not_configured",
+  "could not find public function",
+  "could not find function",
+  "no address for function",
+  "failed to fetch",
+  "fetch failed",
+  "network error",
+  "connection error",
+  "econnrefused",
+  "enotfound",
+  "etimedout",
+] as const;
+
+function isDependencyUnavailableError(error: unknown): boolean {
+  let current: unknown = error;
+  for (let depth = 0; depth < 4 && current !== undefined && current !== null; depth += 1) {
+    if (typeof current === "string") {
+      const normalized = current.toLowerCase();
+      return DEPENDENCY_ERROR_MARKERS.some((marker) => normalized.includes(marker));
+    }
+    if (typeof current !== "object") return false;
+
+    const candidate = current as { cause?: unknown; message?: unknown; name?: unknown };
+    const normalized = [candidate.name, candidate.message]
+      .filter((value): value is string => typeof value === "string")
+      .join(" ")
+      .toLowerCase();
+    if (DEPENDENCY_ERROR_MARKERS.some((marker) => normalized.includes(marker))) return true;
+    current = candidate.cause;
+  }
+  return false;
 }
 
 function errorResponse(error: JellyhuntV2Error, requestId: string): NextResponse {
@@ -115,7 +150,10 @@ export function createV2Handler<
       if (error instanceof JellyhuntV2Error) {
         return errorResponse(error, requestId);
       }
-      return errorResponse(internalError(), requestId);
+      return errorResponse(
+        isDependencyUnavailableError(error) ? dependencyUnavailable() : internalError(),
+        requestId,
+      );
     }
   };
   return route as V2Handler<P>;
