@@ -70,6 +70,64 @@ export const getPlaceByPublicId = queryGeneric({
   },
 });
 
+const PUBLIC_WEEKDAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+] as const;
+
+function toPublicHours(hours: any[] | undefined) {
+  const grouped: Record<string, Array<{ opensAt: string; closesAt: string }>> = {};
+  for (const weekdayName of PUBLIC_WEEKDAYS) {
+    const intervals = (hours ?? [])
+      .filter((interval: any) => interval.weekday === weekdayName)
+      .map((interval: any) => ({
+        opensAt: interval.opensAt,
+        closesAt: interval.closesAt,
+      }));
+    if (intervals.length > 0) grouped[weekdayName] = intervals;
+  }
+  return grouped;
+}
+
+/** Exact public place-detail projection for the native v2 API. */
+export const getPlaceDiscovery = queryGeneric({
+  args: { placePublicId: v.string() },
+  handler: async (ctx: any, args: any) => {
+    const normalized = assertPublicId("plc", args.placePublicId);
+    const place = await ctx.db
+      .query("jellyhuntPlaces")
+      .withIndex("by_public_id", (q: any) => q.eq("publicId", normalized))
+      .unique();
+    if (!place || place.reviewStatus !== "reviewed") return null;
+
+    const sourceRevision = place.jellySourceRevision ?? 0;
+    const syncedAt = place.lastSyncedAt ?? place.updatedAt;
+    return {
+      id: place.publicId,
+      revision: sourceRevision,
+      jellyPlaceId: place.jellyPlaceId,
+      name: place.name,
+      address: place.address ?? "",
+      latitude: place.latitude,
+      longitude: place.longitude,
+      timeZone: place.timeZone,
+      hours: toPublicHours(place.hours),
+      source: {
+        system: "jelly" as const,
+        revision: sourceRevision,
+        updatedAt: new Date(place.updatedAt).toISOString(),
+        syncedAt: new Date(syncedAt).toISOString(),
+      },
+      updatedAt: new Date(place.updatedAt).toISOString(),
+    };
+  },
+});
+
 /** Admin/service-only: create a place. New places always start `reviewStatus: "draft"`. */
 export const createPlace = mutationGeneric({
   args: {

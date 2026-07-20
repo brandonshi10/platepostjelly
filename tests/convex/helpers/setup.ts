@@ -49,6 +49,14 @@ const modules: Record<string, () => Promise<unknown>> = {
   "convex/jellyhunt/leaderboards.ts": () => import("../../../convex/jellyhunt/leaderboards"),
   "convex/jellyhunt/rewards.ts": () => import("../../../convex/jellyhunt/rewards"),
   "convex/jellyhunt/webhooks.ts": () => import("../../../convex/jellyhunt/webhooks"),
+  "convex/jellyhunt/participations.ts": () => import("../../../convex/jellyhunt/participations"),
+  "convex/jellyhunt/events.ts": () => import("../../../convex/jellyhunt/events"),
+  "convex/jellyhunt/profiles.ts": () => import("../../../convex/jellyhunt/profiles"),
+  "convex/jellyhunt/verification.ts": () => import("../../../convex/jellyhunt/verification"),
+  "convex/jellyhunt/idempotency.ts": () => import("../../../convex/jellyhunt/idempotency"),
+  "convex/jellyhunt/submissions.ts": () => import("../../../convex/jellyhunt/submissions"),
+  "convex/jellyhunt/budgets.ts": () => import("../../../convex/jellyhunt/budgets"),
+  "convex/jellyhunt/ownerReads.ts": () => import("../../../convex/jellyhunt/ownerReads"),
 };
 
 export function createJellyhuntTestConvex() {

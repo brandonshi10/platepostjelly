@@ -6,6 +6,7 @@ import { recordAuditEvent } from "./audit";
 import { requireServiceKey } from "./security";
 import { loadCampaignByPublicId } from "./campaigns";
 import { loadPlaceByPublicId, toPublicPlace } from "./places";
+import { parseCanonicalRewardAmount } from "./amounts";
 
 /**
  * Draft mission CRUD, immutable publish-time revisioning, and lifecycle
@@ -40,13 +41,10 @@ export type PublishMissionCommand = {
  */
 export const MAX_REWARD_CEILING_AMOUNT = "1000";
 
-const DECIMAL_AMOUNT_PATTERN = /^\d+(\.\d{1,6})?$/;
-
 function assertValidRewardAmount(amount: string, ceilingAmount: string): void {
-  if (!DECIMAL_AMOUNT_PATTERN.test(amount)) throw new Error("invalid_reward_amount_format");
-  const value = Number(amount);
-  if (!Number.isFinite(value) || value <= 0) throw new Error("invalid_reward_amount_format");
-  if (value > Number(ceilingAmount)) throw new Error("reward_amount_exceeds_ceiling");
+  const value = parseCanonicalRewardAmount(amount);
+  const ceiling = parseCanonicalRewardAmount(ceilingAmount);
+  if (value > ceiling) throw new Error("reward_amount_exceeds_ceiling");
 }
 
 function assertStructuredRequirements(requirements: any): void {
@@ -147,6 +145,376 @@ export const getMissionByPublicId = queryGeneric({
   },
 });
 
+type DiscoveryAvailability = "upcoming" | "available" | "paused" | "ended";
+
+function discoveryAvailability(mission: any, revision: any, campaign: any, now: number): DiscoveryAvailability {
+  if (mission.status === "paused") return "paused";
+  const startsAt = revision.missionWindow.startsAt ?? campaign.startsAt;
+  const endsAt = revision.missionWindow.endsAt ?? campaign.endsAt;
+  if (now < startsAt) return "upcoming";
+  if (now > endsAt) return "ended";
+  return "available";
+}
+
+function discoveryHours(hours: any[] | undefined) {
+  const grouped: Record<string, Array<{ opensAt: string; closesAt: string }>> = {};
+  for (const weekdayName of [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ]) {
+    const intervals = (hours ?? [])
+      .filter((interval: any) => interval.weekday === weekdayName)
+      .map((interval: any) => ({
+        opensAt: interval.opensAt,
+        closesAt: interval.closesAt,
+      }));
+    if (intervals.length > 0) grouped[weekdayName] = intervals;
+  }
+  return grouped;
+}
+
+function submissionDisplay(submission: any) {
+  if (submission.submissionStatus === "submitted") {
+    return {
+      displayStatus: "submitted",
+      nextAction: "wait_for_verification",
+      publicMessage: submission.publicMessage ?? "Your Jelly was submitted for verification.",
+    };
+  }
+  if (submission.submissionStatus === "verifying") {
+    return {
+      displayStatus: "under_review",
+      nextAction: "wait_for_verification",
+      publicMessage: submission.publicMessage ?? "Your Jelly is being verified.",
+    };
+  }
+  if (submission.submissionStatus === "needs_review") {
+    return {
+      displayStatus: "under_review",
+      nextAction: "wait_for_review",
+      publicMessage: submission.publicMessage ?? "Your Jelly is waiting for review.",
+    };
+  }
+  if (submission.submissionStatus === "approved" && submission.rewardStatus === "sent") {
+    return {
+      displayStatus: "rewarded",
+      nextAction: "view_reward",
+      publicMessage: submission.publicMessage ?? "Mission approved and reward sent.",
+    };
+  }
+  if (
+    submission.submissionStatus === "approved" &&
+    (submission.rewardStatus === "failed" || submission.rewardStatus === "uncertain")
+  ) {
+    return {
+      displayStatus: "support_needed",
+      nextAction: "contact_support",
+      publicMessage: submission.publicMessage ?? "Your reward needs support.",
+    };
+  }
+  if (submission.submissionStatus === "approved") {
+    return {
+      displayStatus: "approved_reward_pending",
+      nextAction: "wait_for_reward",
+      publicMessage: submission.publicMessage ?? "Mission approved. Your reward is processing.",
+    };
+  }
+  return {
+    displayStatus: "rejected",
+    nextAction: "none",
+    publicMessage: submission.publicMessage ?? "This submission was not approved.",
+  };
+}
+
+async function discoveryViewer(
+  ctx: any,
+  mission: any,
+  jellyUserId: string,
+  availability: DiscoveryAvailability,
+  now: number,
+) {
+  const participations = await ctx.db
+    .query("jellyhuntParticipations")
+    .withIndex("by_user_mission", (q: any) =>
+      q.eq("jellyUserId", jellyUserId).eq("missionId", mission._id),
+    )
+    .collect();
+  participations.sort((left: any, right: any) => right.updatedAt - left.updatedAt);
+  const participation = participations[0] ?? null;
+
+  const submissions = await ctx.db
+    .query("jellyhuntSubmissions")
+    .withIndex("by_mission_user", (q: any) =>
+      q.eq("missionId", mission._id).eq("jellyUserId", jellyUserId),
+    )
+    .collect();
+  submissions.sort((left: any, right: any) => right.updatedAt - left.updatedAt);
+  const submission = submissions[0] ?? null;
+
+  const missionAvailable = availability === "available" && mission.acceptingSubmissions;
+  if (!participation) {
+    const canStart = missionAvailable;
+    return {
+      participated: false,
+      viewer: {
+        participationStatus: "not_started" as const,
+        participationId: null,
+        missionRevision: null,
+        submissionDeadlineAt: null,
+        resubmissionDeadlineAt: null,
+        displayStatus: "not_started",
+        submissionStatus: null,
+        rewardStatus: "not_eligible",
+        latestSubmissionId: null,
+        startedAt: null,
+        canStart,
+        canSubmit: false,
+        canResubmit: false,
+        nextAction: canStart ? "start_mission" : "none",
+        publicMessage: canStart
+          ? "Visit the place and start this mission in JellyJelly."
+          : availability === "upcoming"
+            ? "This mission is not open yet."
+            : availability === "paused"
+              ? "This mission is paused."
+              : "This mission has ended.",
+        updatedAt: null,
+      },
+    };
+  }
+
+  const beforeSubmissionDeadline = participation.submissionDeadlineAt > now;
+  const attemptsRemain = participation.attemptsUsed < participation.maxAttempts;
+  const canSubmit =
+    !submission &&
+    participation.status === "started" &&
+    missionAvailable &&
+    beforeSubmissionDeadline &&
+    attemptsRemain;
+  const resubmissionDeadlineAt =
+    participation.resubmissionDeadlineAt ?? participation.submissionDeadlineAt;
+  const canResubmit =
+    submission?.submissionStatus === "rejected" &&
+    participation.status === "started" &&
+    missionAvailable &&
+    resubmissionDeadlineAt > now &&
+    attemptsRemain;
+  const display = submission ? submissionDisplay(submission) : null;
+
+  return {
+    participated: true,
+    viewer: {
+      participationStatus: "started" as const,
+      participationId: participation.publicId,
+      missionRevision: participation.missionRevision,
+      submissionDeadlineAt: new Date(participation.submissionDeadlineAt).toISOString(),
+      resubmissionDeadlineAt:
+        participation.resubmissionDeadlineAt === undefined
+          ? null
+          : new Date(participation.resubmissionDeadlineAt).toISOString(),
+      displayStatus: display?.displayStatus ?? "in_progress",
+      submissionStatus: submission?.submissionStatus ?? null,
+      rewardStatus: submission?.rewardStatus ?? "not_eligible",
+      latestSubmissionId: submission?.publicId ?? null,
+      startedAt: new Date(participation.startedAt).toISOString(),
+      canStart: false,
+      canSubmit,
+      canResubmit,
+      nextAction: canResubmit
+        ? "submit_new_post"
+        : display?.nextAction ?? (canSubmit ? "submit_post" : "none"),
+      publicMessage:
+        display?.publicMessage ??
+        (canSubmit
+          ? "Publish your Jelly to complete this mission."
+          : availability === "paused"
+            ? "This mission is paused."
+            : "This mission participation is no longer accepting submissions."),
+      updatedAt: new Date(
+        Math.max(participation.updatedAt, submission?.updatedAt ?? 0),
+      ).toISOString(),
+    },
+  };
+}
+
+async function projectMissionDiscovery(
+  ctx: any,
+  mission: any,
+  campaign: any,
+  jellyUserId: string | undefined,
+  now: number,
+) {
+  if (mission.status === "draft" || mission.status === "archived" || mission.currentRevision < 1) {
+    return null;
+  }
+  const revision = await ctx.db
+    .query("jellyhuntMissionRevisions")
+    .withIndex("by_mission_revision", (q: any) =>
+      q.eq("missionId", mission._id).eq("revision", mission.currentRevision),
+    )
+    .unique();
+  if (!revision) return null;
+
+  const place = await ctx.db.get(revision.place.placeId);
+  if (!place || place.reviewStatus !== "reviewed") return null;
+
+  const availability = discoveryAvailability(mission, revision, campaign, now);
+  const viewerResult = jellyUserId
+    ? await discoveryViewer(ctx, mission, jellyUserId, availability, now)
+    : null;
+  if (availability === "paused" && !viewerResult?.participated) return null;
+
+  const startsAt = revision.missionWindow.startsAt ?? campaign.startsAt;
+  const endsAt = revision.missionWindow.endsAt ?? campaign.endsAt;
+  const publicPlace = {
+    id: place.publicId,
+    jellyPlaceId: revision.place.jellyPlaceId,
+    name: revision.place.name,
+    address: revision.place.address ?? "",
+    latitude: revision.place.latitude,
+    longitude: revision.place.longitude,
+    timeZone: revision.place.timeZone,
+    hours: discoveryHours(place.hours),
+  };
+  const directions =
+    "https://www.google.com/maps/dir/?api=1&destination=" +
+    revision.place.latitude +
+    "," +
+    revision.place.longitude;
+
+  return {
+    id: mission.publicId,
+    campaignId: campaign.publicId,
+    slug: mission.slug,
+    revision: revision.revision,
+    title: revision.title,
+    description: revision.description,
+    instructions: revision.instructions,
+    availability: {
+      state: availability,
+      startsAt: new Date(startsAt).toISOString(),
+      endsAt: new Date(endsAt).toISOString(),
+      acceptingSubmissions: availability === "available" && mission.acceptingSubmissions,
+      reasonCode: availability === "paused" ? "mission_paused" : null,
+    },
+    reward: revision.reward,
+    requirements: {
+      ...revision.requirements,
+      post: {
+        ...revision.requirements.post,
+        minDurationSeconds: revision.requirements.post.minDurationSeconds ?? 0,
+        maxDurationSeconds: revision.requirements.post.maxDurationSeconds ?? 300,
+      },
+    },
+    display: {
+      category: mission.category,
+      difficulty: mission.difficulty,
+      emoji: mission.emoji,
+      neighborhood: mission.neighborhood,
+      price: mission.price,
+      sortOrder: mission.sortOrder,
+    },
+    place: publicPlace,
+    ...(viewerResult ? { viewer: viewerResult.viewer } : {}),
+    links: {
+      self: "/api/v2/jellyhunt/missions/" + mission.publicId,
+      participation: viewerResult?.viewer.participationId
+        ? "/api/v2/jellyhunt/participations/" + viewerResult.viewer.participationId
+        : null,
+      jellies: "/api/v2/jellyhunt/missions/" + mission.publicId + "/jellies",
+      start:
+        "https://platepost.io/human-social/missions/" + mission.publicId + "/start",
+      directions,
+    },
+    updatedAt: new Date(mission.updatedAt).toISOString(),
+  };
+}
+
+function assertDiscoveryViewer(args: any): string | undefined {
+  if (args.jellyUserId === undefined) return undefined;
+  if (!args.serviceKey) throw new Error("service_key_required");
+  requireServiceKey(args.serviceKey);
+  const jellyUserId = args.jellyUserId.trim();
+  if (!jellyUserId) throw new Error("invalid_jelly_user_id");
+  return jellyUserId;
+}
+
+export const getMissionDiscovery = queryGeneric({
+  args: {
+    missionPublicId: v.string(),
+    serviceKey: v.optional(v.string()),
+    jellyUserId: v.optional(v.string()),
+    now: v.optional(v.number()),
+  },
+  handler: async (ctx: any, args: any) => {
+    const missionPublicId = assertPublicId("mis", args.missionPublicId);
+    const mission = await ctx.db
+      .query("jellyhuntMissions")
+      .withIndex("by_public_id", (q: any) => q.eq("publicId", missionPublicId))
+      .unique();
+    if (!mission) return null;
+    const campaign = await ctx.db.get(mission.campaignId);
+    if (!campaign) return null;
+    const jellyUserId = assertDiscoveryViewer(args);
+    return await projectMissionDiscovery(
+      ctx,
+      mission,
+      campaign,
+      jellyUserId,
+      args.now ?? Date.now(),
+    );
+  },
+});
+
+export const listMissionDiscovery = queryGeneric({
+  args: {
+    campaignPublicId: v.optional(v.string()),
+    serviceKey: v.optional(v.string()),
+    jellyUserId: v.optional(v.string()),
+    now: v.optional(v.number()),
+  },
+  handler: async (ctx: any, args: any) => {
+    const jellyUserId = assertDiscoveryViewer(args);
+    const campaign = args.campaignPublicId
+      ? await ctx.db
+          .query("jellyhuntCampaigns")
+          .withIndex("by_public_id", (q: any) =>
+            q.eq("publicId", assertPublicId("cam", args.campaignPublicId)),
+          )
+          .unique()
+      : await ctx.db
+          .query("jellyhuntCampaigns")
+          .withIndex("by_is_current", (q: any) => q.eq("isCurrent", true))
+          .unique();
+    if (!campaign) return null;
+
+    const rows = await ctx.db
+      .query("jellyhuntMissions")
+      .withIndex("by_campaign", (q: any) => q.eq("campaignId", campaign._id))
+      .collect();
+    const projected = await Promise.all(
+      rows.map((mission: any) =>
+        projectMissionDiscovery(
+          ctx,
+          mission,
+          campaign,
+          jellyUserId,
+          args.now ?? Date.now(),
+        ),
+      ),
+    );
+    return {
+      catalogRevision: campaign.catalogRevision,
+      missions: projected.filter((mission: any) => mission !== null),
+    };
+  },
+});
+
 /** Admin/service-only: create a draft mission. Draft missions never accept submissions. */
 export const createDraftMission = mutationGeneric({
   args: {
@@ -169,6 +537,10 @@ export const createDraftMission = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    assertValidRewardAmount(args.reward.amount, MAX_REWARD_CEILING_AMOUNT);
+    if (args.budgetAllocation !== undefined) {
+      parseCanonicalRewardAmount(args.budgetAllocation);
+    }
     const actorId = args.actorId.trim();
 
     const campaign = await loadCampaignByPublicId(ctx, args.campaignPublicId);
@@ -248,6 +620,12 @@ export const updateMissionDraft = mutationGeneric({
   },
   handler: async (ctx: any, args: any) => {
     requireServiceKey(args.serviceKey);
+    if (args.reward !== undefined) {
+      assertValidRewardAmount(args.reward.amount, MAX_REWARD_CEILING_AMOUNT);
+    }
+    if (args.budgetAllocation !== undefined) {
+      parseCanonicalRewardAmount(args.budgetAllocation);
+    }
     const actorId = args.actorId.trim();
     const mission = await loadMissionByPublicId(ctx, args.missionPublicId);
     if (mission.status === "archived") throw new Error("mission_archived_cannot_edit");
@@ -344,6 +722,7 @@ export const publishMissionRevision = mutationGeneric({
       description: args.content.description,
       instructions: args.content.instructions,
       requirements: args.content.requirements,
+      approvalMode: mission.approvalMode,
       reward: args.content.reward,
       place: {
         placeId: place._id,

@@ -2,7 +2,8 @@ import { mutationGeneric, queryGeneric, actionGeneric } from "convex/server";
 import { v } from "convex/values";
 import { requireServiceKey } from "./security";
 import { recordAuditEvent } from "./audit";
-import { createPublicId } from "./publicIds";
+import { transitionSubmissionBudgetsInternal } from "./budgets";
+import { appendSubmissionEventInternal } from "./events";
 import {
   type RewardIntentSnapshot,
   buildRewardAttempt,
@@ -140,7 +141,11 @@ export const recordRewardOutcome = mutationGeneric({
     requestId: v.optional(v.string()),
     intentInternalId: v.id("jellyhuntRewardIntents"),
     attemptNumber: v.number(),
-    outcomeStatus: v.string(),
+    outcomeStatus: v.union(
+      v.literal("sent"),
+      v.literal("confirmed_no_transfer"),
+      v.literal("uncertain"),
+    ),
     transactionId: v.optional(v.string()),
     transactionHash: v.optional(v.string()),
     reasonCode: v.optional(v.string()),
@@ -164,6 +169,14 @@ export const recordRewardOutcome = mutationGeneric({
     if (attempt.status !== "processing") {
       return { alreadyRecorded: true };
     }
+
+    const submission = await ctx.db.get(intent.submissionId);
+    if (!submission) throw new Error("submission_not_found");
+    const reservation = await ctx.db
+      .query("jellyhuntRewardReservations")
+      .withIndex("by_submission", (q: any) => q.eq("submissionId", intent.submissionId))
+      .unique();
+    if (!reservation) throw new Error("reward_reservation_not_found");
 
     if (args.outcomeStatus === "sent") {
       if (!args.transactionId) throw new Error("sent_requires_transaction_id");
@@ -208,23 +221,32 @@ export const recordRewardOutcome = mutationGeneric({
         updatedAt: now,
       });
 
-      const reservation = await ctx.db
-        .query("jellyhuntRewardReservations")
-        .withIndex("by_submission", (q: any) => q.eq("submissionId", intent.submissionId))
-        .unique();
-      if (reservation) {
-        await ctx.db.patch(reservation._id, { status: "paid", updatedAt: now });
+      if (reservation.status !== "processing") {
+        throw new Error("reward_reservation_state_conflict");
       }
-
-      const submission = await ctx.db.get(intent.submissionId);
-      if (submission) {
-        await ctx.db.patch(submission._id, {
-          rewardStatus: "sent",
-          rewardTransactionId: args.transactionId,
-          rewardSentAt: now,
-          updatedAt: now,
-        });
-      }
+      await transitionSubmissionBudgetsInternal(ctx, {
+        campaignId: submission.campaignId,
+        missionId: submission.missionId,
+        amount: reservation.amount,
+        transition: "paid",
+      });
+      await ctx.db.patch(reservation._id, { status: "paid", updatedAt: now });
+      await ctx.db.patch(submission._id, {
+        rewardStatus: "sent",
+        rewardTransactionId: args.transactionId,
+        rewardSentAt: now,
+        publicMessage: "Your reward was sent.",
+        updatedAt: now,
+      });
+      await appendSubmissionEventInternal(ctx, {
+        submissionPublicId: submission.publicId,
+        type: "reward.sent",
+        submissionStatus: "approved",
+        rewardStatus: "sent",
+        displayStatus: "rewarded",
+        publicMessage: "Your reward was sent.",
+        occurredAt: now,
+      });
     } else if (args.outcomeStatus === "confirmed_no_transfer") {
       await ctx.db.patch(attempt._id, {
         status: "failed",
@@ -238,21 +260,26 @@ export const recordRewardOutcome = mutationGeneric({
         updatedAt: now,
       });
 
-      const reservation = await ctx.db
-        .query("jellyhuntRewardReservations")
-        .withIndex("by_submission", (q: any) => q.eq("submissionId", intent.submissionId))
-        .unique();
-      if (reservation) {
-        await ctx.db.patch(reservation._id, { status: "released", updatedAt: now });
+      if (reservation.status !== "processing") {
+        throw new Error("reward_reservation_state_conflict");
       }
-
-      const submission = await ctx.db.get(intent.submissionId);
-      if (submission) {
-        await ctx.db.patch(submission._id, {
-          rewardStatus: "failed",
-          updatedAt: now,
-        });
-      }
+      await ctx.db.patch(reservation._id, { status: "approved_reserved", updatedAt: now });
+      await ctx.db.patch(submission._id, {
+        rewardStatus: "failed",
+        reasonCode: "reward_failed",
+        publicMessage: "Your reward needs attention. Please contact support.",
+        updatedAt: now,
+      });
+      await appendSubmissionEventInternal(ctx, {
+        submissionPublicId: submission.publicId,
+        type: "reward.failed",
+        submissionStatus: "approved",
+        rewardStatus: "failed",
+        displayStatus: "support_needed",
+        reasonCode: "reward_failed",
+        publicMessage: "Your reward needs attention. Please contact support.",
+        occurredAt: now,
+      });
     } else {
       await ctx.db.patch(attempt._id, {
         status: "uncertain",
@@ -265,21 +292,26 @@ export const recordRewardOutcome = mutationGeneric({
         updatedAt: now,
       });
 
-      const reservation = await ctx.db
-        .query("jellyhuntRewardReservations")
-        .withIndex("by_submission", (q: any) => q.eq("submissionId", intent.submissionId))
-        .unique();
-      if (reservation) {
-        await ctx.db.patch(reservation._id, { status: "uncertain", updatedAt: now });
+      if (reservation.status !== "processing") {
+        throw new Error("reward_reservation_state_conflict");
       }
-
-      const submission = await ctx.db.get(intent.submissionId);
-      if (submission) {
-        await ctx.db.patch(submission._id, {
-          rewardStatus: "uncertain",
-          updatedAt: now,
-        });
-      }
+      await ctx.db.patch(reservation._id, { status: "uncertain", updatedAt: now });
+      await ctx.db.patch(submission._id, {
+        rewardStatus: "uncertain",
+        reasonCode: "reward_reconciling",
+        publicMessage: "We are confirming your reward. Please do not retry.",
+        updatedAt: now,
+      });
+      await appendSubmissionEventInternal(ctx, {
+        submissionPublicId: submission.publicId,
+        type: "reward.uncertain",
+        submissionStatus: "approved",
+        rewardStatus: "uncertain",
+        displayStatus: "support_needed",
+        reasonCode: "reward_reconciling",
+        publicMessage: "We are confirming your reward. Please do not retry.",
+        occurredAt: now,
+      });
     }
 
     await recordAuditEvent(ctx, {

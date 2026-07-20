@@ -1,0 +1,22 @@
+{
+  "description": "Jelly user profile response fixture",
+  "responses": {
+    "active_user": {
+      "status": 200,
+      "body": {
+        "data": {
+          "user": {
+            "id": "User_TestAlice",
+            "username": "alice_jelly",
+            "displayName": "Alice",
+            "avatarUrl": "https://jelly.example/avatar/alice.png"
+          }
+        }
+      }
+    },
+    "deleted_user": {
+      "status": 404,
+      "body": { "error": "user_not_found" }
+    }
+  }
+}

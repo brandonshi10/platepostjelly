@@ -6,6 +6,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added (Tasks 1-4: Foundation Modules)
+
+- Asymmetric JWT mission token validation via JWKS with RS256/ES256/EdDSA, audience/issuer/lifetime checks, and optional viewer support (`src/lib/jellyhunt/v2/jelly-mission-token.ts`).
+- Exhaustive display state derivation from submission + reward status including post-payment moderation (`src/lib/jellyhunt/v2/status.ts`).
+- HMAC-SHA256 sealed cursors with binding validation and expiry (`src/lib/jellyhunt/v2/cursor.ts`).
+- Cache header utilities and semantic weak ETags (`src/lib/jellyhunt/v2/cache.ts`).
+- Idempotency key extraction and canonical request hashing (`src/lib/jellyhunt/v2/idempotency.ts`).
+- Zod contract schemas for all v2 API resources (`src/lib/jellyhunt/v2/contracts/`).
+- Idempotent participation start with one-active-per-user/mission enforcement, revision locking, and 24h deadline (`convex/jellyhunt/participations.ts`).
+- Append-only submission event allocation with per-user sequencing and idempotent dedup (`convex/jellyhunt/events.ts`).
+- Durable HTTP idempotency records with lease acquisition, completion, expiry, and stale-lease reclaim (`convex/jellyhunt/idempotency.ts`).
+- Atomic submission intake with global post uniqueness, user/mission dedup, revision validation, and reward reservation creation (`convex/jellyhunt/submissions.ts`).
+- Reward budget management with scope-typed allocation, reservation, and release (`convex/jellyhunt/budgets.ts`).
+- Jelly partner HTTP transport with timeout and correlation ID support (`convex/jellyhunt/jellyHttpClient.ts`).
+- Submission evidence verification action with Haversine distance computation and automatic/manual approval routing (`convex/jellyhunt/verification.ts`).
+- Public profile upsert/sync with eligibility derivation and Jelly API bridge (`convex/jellyhunt/profiles.ts`).
+- Owner-scoped projection queries for participation terms, submission detail with timeline, paginated events, campaign summary, and mission/submission history (`convex/jellyhunt/ownerReads.ts`).
+- Jelly partner contract fixtures for profiles and mission evidence (`tests/contracts/jelly-partner-v1/`).
+- 33 v2 primitive tests, 13 participation tests, 5 event tests, 6 idempotency tests, 7 submission tests, 6 budget tests, 6 profile tests, 5 verification tests, 4 owner reads tests. All 324 tests passing.
+
 ### Added (Tasks 5-7: Native Workflows)
 
 - Submission approval, pre-payment reversal, and post-payment moderation mutations with idempotent decision replay and double-completion guards (`convex/jellyhunt/approvals.ts`).

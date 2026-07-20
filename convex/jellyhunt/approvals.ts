@@ -3,6 +3,8 @@ import { v } from "convex/values";
 import { createPublicId, assertPublicId } from "./publicIds";
 import { recordAuditEvent } from "./audit";
 import { requireServiceKey } from "./security";
+import { appendSubmissionEventInternal } from "./events";
+import { transitionSubmissionBudgetsInternal } from "./budgets";
 
 export type ApproveSubmissionCommand = {
   submissionPublicId: string;
@@ -61,7 +63,7 @@ async function findCompletionByDecisionId(ctx: any, decisionId: string) {
     .unique();
 }
 
-async function incrementLeaderboard(ctx: any, scopeKey: string, jellyUserId: string, profile: any, now: number) {
+async function incrementLeaderboard(ctx: any, scopeKey: string, jellyUserId: string, profile: any | null, now: number) {
   const existing = await ctx.db
     .query("jellyhuntLeaderboardEntries")
     .withIndex("by_scope_user", (q: any) => q.eq("scopeKey", scopeKey).eq("jellyUserId", jellyUserId))
@@ -72,10 +74,10 @@ async function incrementLeaderboard(ctx: any, scopeKey: string, jellyUserId: str
     await ctx.db.patch(existing._id, {
       approvedMissionCount: newCount,
       rankSortScore: -newCount,
-      normalizedUsername: profile.normalizedUsername,
-      publicEligible: profile.publicEligible,
+      normalizedUsername: profile?.normalizedUsername ?? "",
+      publicEligible: profile?.publicEligible === true,
       scoreReachedAt: now,
-      profileRevision: profile.jellyProfileRevision,
+      profileRevision: profile?.jellyProfileRevision,
       updatedAt: now,
     });
     return { entryId: existing._id, beforeCount: existing.approvedMissionCount, afterCount: newCount };
@@ -87,10 +89,10 @@ async function incrementLeaderboard(ctx: any, scopeKey: string, jellyUserId: str
     jellyUserId,
     approvedMissionCount: 1,
     rankSortScore: -1,
-    normalizedUsername: profile.normalizedUsername,
+    normalizedUsername: profile?.normalizedUsername ?? "",
     scoreReachedAt: now,
-    publicEligible: profile.publicEligible,
-    profileRevision: profile.jellyProfileRevision,
+    publicEligible: profile?.publicEligible === true,
+    profileRevision: profile?.jellyProfileRevision,
     createdAt: now,
     updatedAt: now,
   });
@@ -158,24 +160,19 @@ async function recordLeaderboardEvent(
   });
 }
 
-async function getOrCreateProfile(ctx: any, jellyUserId: string, now: number) {
-  const existing = await ctx.db
+async function getExistingProfile(ctx: any, jellyUserId: string) {
+  const profile = await ctx.db
     .query("jellyhuntPublicProfiles")
     .withIndex("by_jelly_user_id", (q: any) => q.eq("jellyUserId", jellyUserId))
     .unique();
-  if (existing) return existing;
+  if (!profile || profile.accountState !== "active" || !profile.username.trim()) return null;
+  return profile;
+}
 
-  const profileId = await ctx.db.insert("jellyhuntPublicProfiles", {
-    jellyUserId,
-    username: jellyUserId,
-    normalizedUsername: jellyUserId.toLowerCase(),
-    accountState: "active",
-    publicEligible: true,
-    refreshedAt: now,
-    createdAt: now,
-    updatedAt: now,
-  });
-  return await ctx.db.get(profileId);
+async function campaignScopeKey(ctx: any, campaignId: any): Promise<string> {
+  const campaign = await ctx.db.get(campaignId);
+  if (!campaign) throw new Error("campaign_not_found");
+  return `campaign:${campaign.publicId}`;
 }
 
 function isCountableCompletion(source: string, config: any, approvedAt: number): boolean {
@@ -213,6 +210,14 @@ export const approveSubmission = mutationGeneric({
     if (submission.submissionStatus === "rejected") {
       throw new Error("submission_already_rejected");
     }
+    const readyForDecision =
+      submission.submissionStatus === "needs_review" ||
+      (submission.submissionStatus === "verifying" &&
+        submission.verificationStatus === "complete" &&
+        submission.approvalModeSnapshot === "automatic");
+    if (!readyForDecision) {
+      throw new Error("submission_not_ready_for_decision");
+    }
 
     const existingCompletion = await findExistingCompletion(
       ctx,
@@ -231,7 +236,7 @@ export const approveSubmission = mutationGeneric({
 
     const countsTowardLeaderboard = isCountableCompletion(submission.source, config, now);
 
-    const profile = await getOrCreateProfile(ctx, submission.jellyUserId, now);
+    const profile = await getExistingProfile(ctx, submission.jellyUserId);
 
     const completionPublicId = createPublicId("cmp");
     await ctx.db.insert("jellyhuntApprovedCompletions", {
@@ -248,30 +253,25 @@ export const approveSubmission = mutationGeneric({
       updatedAt: now,
     });
 
-    await ctx.db.patch(submission._id, {
-      submissionStatus: "approved",
-      decisionStatus: "approved",
-      approvedAt: now,
-      approvalDecisionId: args.approvalDecisionId,
-      rewardStatus: "queued",
-      rewardQueuedAt: now,
-      decidedAt: now,
-      updatedAt: now,
-    });
-
     const reservation = await ctx.db
       .query("jellyhuntRewardReservations")
       .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
       .unique();
-    if (reservation) {
-      await ctx.db.patch(reservation._id, {
-        status: "approved_reserved",
-        updatedAt: now,
-      });
+    if (
+      !reservation ||
+      (reservation.status !== "pending_verification" && reservation.status !== "resubmission_hold")
+    ) {
+      throw new Error("reward_reservation_not_ready");
     }
 
+    const existingRewardIntent = await ctx.db
+      .query("jellyhuntRewardIntents")
+      .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
+      .unique();
+    if (existingRewardIntent) throw new Error("reward_intent_conflict");
+
     const rewardIntentPublicId = createPublicId("rwd");
-    await ctx.db.insert("jellyhuntRewardIntents", {
+    const rewardIntentId = await ctx.db.insert("jellyhuntRewardIntents", {
       publicId: rewardIntentPublicId,
       submissionId: submission._id,
       missionId: submission.missionId,
@@ -287,16 +287,43 @@ export const approveSubmission = mutationGeneric({
       updatedAt: now,
     });
 
+    await ctx.db.patch(reservation._id, {
+      status: "approved_reserved",
+      updatedAt: now,
+    });
+    await ctx.db.patch(submission._id, {
+      submissionStatus: "approved",
+      decisionStatus: "approved",
+      approvedAt: now,
+      approvalDecisionId: args.approvalDecisionId,
+      rewardStatus: "queued",
+      rewardIntentId,
+      rewardQueuedAt: now,
+      decidedAt: now,
+      publicMessage: "Approved. Your reward is being prepared.",
+      updatedAt: now,
+    });
+
     if (countsTowardLeaderboard) {
-      const campaignScopeKey = `campaign:${submission.campaignId}`;
-      const campaignResult = await incrementLeaderboard(ctx, campaignScopeKey, submission.jellyUserId, profile, now);
+      const campaignScopeKeyValue = await campaignScopeKey(ctx, submission.campaignId);
+      const campaignResult = await incrementLeaderboard(ctx, campaignScopeKeyValue, submission.jellyUserId, profile, now);
       const allTimeResult = await incrementLeaderboard(ctx, "all_time", submission.jellyUserId, profile, now);
 
-      await recordLeaderboardEvent(ctx, campaignScopeKey, submission.jellyUserId, "increment", campaignResult, completionPublicId, args.requestId, now);
+      await recordLeaderboardEvent(ctx, campaignScopeKeyValue, submission.jellyUserId, "increment", campaignResult, completionPublicId, args.requestId, now);
       await recordLeaderboardEvent(ctx, "all_time", submission.jellyUserId, "increment", allTimeResult, completionPublicId, args.requestId, now);
 
       await bumpLeaderboardRevision(ctx, submission.campaignId, now);
     }
+
+    await appendSubmissionEventInternal(ctx, {
+      submissionPublicId: submission.publicId,
+      type: "decision.approved",
+      submissionStatus: "approved",
+      rewardStatus: "queued",
+      displayStatus: "approved_reward_pending",
+      publicMessage: "Approved. Your reward is being prepared.",
+      occurredAt: now,
+    });
 
     await recordAuditEvent(ctx, {
       actor: actorId,
@@ -355,7 +382,14 @@ export const reverseCompletion = mutationGeneric({
       .query("jellyhuntRewardReservations")
       .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
       .unique();
-    if (reservation && reservation.status !== "released" && reservation.status !== "paid") {
+    if (!reservation) throw new Error("reward_reservation_not_found");
+    if (reservation.status !== "released" && reservation.status !== "paid") {
+      await transitionSubmissionBudgetsInternal(ctx, {
+        campaignId: submission.campaignId,
+        missionId: submission.missionId,
+        amount: reservation.amount,
+        transition: "release",
+      });
       await ctx.db.patch(reservation._id, {
         status: "released",
         updatedAt: now,
@@ -372,21 +406,32 @@ export const reverseCompletion = mutationGeneric({
       submissionStatus: "rejected",
       decisionStatus: "rejected",
       rewardStatus: "not_eligible",
-      reasonCode: "completion_reversed",
+      reasonCode: "post_became_ineligible",
       decidedAt: now,
       updatedAt: now,
     });
 
     if (completion.countsTowardLeaderboard) {
-      const campaignScopeKey = `campaign:${completion.campaignId}`;
-      const campaignResult = await decrementLeaderboard(ctx, campaignScopeKey, completion.jellyUserId, now);
+      const campaignScopeKeyValue = await campaignScopeKey(ctx, completion.campaignId);
+      const campaignResult = await decrementLeaderboard(ctx, campaignScopeKeyValue, completion.jellyUserId, now);
       const allTimeResult = await decrementLeaderboard(ctx, "all_time", completion.jellyUserId, now);
 
-      await recordLeaderboardEvent(ctx, campaignScopeKey, completion.jellyUserId, "reversal", campaignResult, completion.publicId, args.requestId, now);
+      await recordLeaderboardEvent(ctx, campaignScopeKeyValue, completion.jellyUserId, "reversal", campaignResult, completion.publicId, args.requestId, now);
       await recordLeaderboardEvent(ctx, "all_time", completion.jellyUserId, "reversal", allTimeResult, completion.publicId, args.requestId, now);
 
       await bumpLeaderboardRevision(ctx, completion.campaignId, now);
     }
+
+    await appendSubmissionEventInternal(ctx, {
+      submissionPublicId: submission.publicId,
+      type: "approval.revoked",
+      submissionStatus: "rejected",
+      rewardStatus: "not_eligible",
+      displayStatus: "rejected",
+      reasonCode: "post_became_ineligible",
+      publicMessage: "This Jelly is no longer eligible for the mission.",
+      occurredAt: now,
+    });
 
     await recordAuditEvent(ctx, {
       actor: actorId,
@@ -444,15 +489,26 @@ export const moderateAfterPayment = mutationGeneric({
     });
 
     if (completion.countsTowardLeaderboard) {
-      const campaignScopeKey = `campaign:${completion.campaignId}`;
-      const campaignResult = await decrementLeaderboard(ctx, campaignScopeKey, completion.jellyUserId, now);
+      const campaignScopeKeyValue = await campaignScopeKey(ctx, completion.campaignId);
+      const campaignResult = await decrementLeaderboard(ctx, campaignScopeKeyValue, completion.jellyUserId, now);
       const allTimeResult = await decrementLeaderboard(ctx, "all_time", completion.jellyUserId, now);
 
-      await recordLeaderboardEvent(ctx, campaignScopeKey, completion.jellyUserId, "reversal", campaignResult, completion.publicId, args.requestId, now);
+      await recordLeaderboardEvent(ctx, campaignScopeKeyValue, completion.jellyUserId, "reversal", campaignResult, completion.publicId, args.requestId, now);
       await recordLeaderboardEvent(ctx, "all_time", completion.jellyUserId, "reversal", allTimeResult, completion.publicId, args.requestId, now);
 
       await bumpLeaderboardRevision(ctx, completion.campaignId, now);
     }
+
+    await appendSubmissionEventInternal(ctx, {
+      submissionPublicId: submission.publicId,
+      type: "approval.post_payment_removed",
+      submissionStatus: "rejected",
+      rewardStatus: "sent",
+      displayStatus: "rewarded_removed_from_rankings",
+      reasonCode: "post_became_ineligible_after_reward",
+      publicMessage: "Reward sent; completion later removed from rankings.",
+      occurredAt: now,
+    });
 
     await recordAuditEvent(ctx, {
       actor: actorId,

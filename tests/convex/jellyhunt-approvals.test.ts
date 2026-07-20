@@ -6,6 +6,7 @@ const campaigns = anyApi.jellyhunt.campaigns;
 const places = anyApi.jellyhunt.places;
 const missions = anyApi.jellyhunt.missions;
 const approvals = anyApi.jellyhunt.approvals;
+const budgets = anyApi.jellyhunt.budgets;
 
 function uniqueSuffix() {
   return Math.random().toString(36).slice(2);
@@ -108,6 +109,20 @@ async function seedCampaignAndMission(t: any) {
       missionWindow: {},
     },
   });
+  await t.mutation(budgets.setBudgetAllocation, {
+    serviceKey: TEST_SERVICE_KEY,
+    scopeType: "campaign",
+    scopeKey: campaignPublicId,
+    allocatedAmount: "6000",
+    expectedRevision: 0,
+  });
+  await t.mutation(budgets.setBudgetAllocation, {
+    serviceKey: TEST_SERVICE_KEY,
+    scopeType: "mission",
+    scopeKey: missionPublicId,
+    allocatedAmount: "6000",
+    expectedRevision: 0,
+  });
 
   return { campaignPublicId, placePublicId, missionPublicId };
 }
@@ -174,8 +189,39 @@ async function insertSubmission(t: any, missionPublicId: string, overrides: Reco
       createdAt: Date.now(),
       updatedAt: Date.now(),
       ...overrides,
-      publicId: submissionPublicId,
     });
+    const submission = await ctx.db
+      .query("jellyhuntSubmissions")
+      .withIndex("by_public_id", (q: any) => q.eq("publicId", submissionPublicId))
+      .unique();
+    await ctx.db.insert("jellyhuntRewardReservations", {
+      submissionId: submission._id,
+      campaignId: submission.campaignId,
+      missionId: submission.missionId,
+      jellyUserId,
+      amount: submission.rewardSnapshot.amount,
+      token: submission.rewardSnapshot.token,
+      status: "pending_verification",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  });
+
+  const campaignRow = await t.run(async (ctx: any) => ctx.db.get(missionRow.campaignId));
+  await t.mutation(budgets.reserveBudgetAmount, {
+    serviceKey: TEST_SERVICE_KEY,
+    scopeType: "campaign",
+    scopeKey: campaignRow.publicId,
+    campaignId: campaignRow._id,
+    amount: "60",
+  });
+  await t.mutation(budgets.reserveBudgetAmount, {
+    serviceKey: TEST_SERVICE_KEY,
+    scopeType: "mission",
+    scopeKey: missionRow.publicId,
+    campaignId: campaignRow._id,
+    missionId: missionRow._id,
+    amount: "60",
   });
 
   return { submissionPublicId, jellyUserId };
@@ -206,6 +252,49 @@ describe("approveSubmission", () => {
 
     expect(result.replay).toBe(false);
     expect(result.completionPublicId).toMatch(/^cmp_/);
+
+    const state = await t.run(async (ctx: any) => {
+      const submission = await ctx.db
+        .query("jellyhuntSubmissions")
+        .withIndex("by_public_id", (q: any) => q.eq("publicId", submissionPublicId))
+        .unique();
+      const reservation = await ctx.db
+        .query("jellyhuntRewardReservations")
+        .withIndex("by_submission", (q: any) => q.eq("submissionId", submission._id))
+        .unique();
+      const events = await ctx.db
+        .query("jellyhuntSubmissionEvents")
+        .withIndex("by_submission_sequence", (q: any) => q.eq("submissionId", submission._id))
+        .collect();
+      return { submission, reservation, events };
+    });
+
+    expect(state.submission.rewardIntentId).toBeDefined();
+    expect(state.reservation.status).toBe("approved_reserved");
+    expect(state.events.at(-1)).toMatchObject({
+      type: "decision.approved",
+      submissionStatus: "approved",
+      rewardStatus: "queued",
+      displayStatus: "approved_reward_pending",
+    });
+  });
+
+  it("rejects approval before a submission reaches review or verified decision state", async () => {
+    const { missionPublicId } = await seedCampaignAndMission(t);
+    const { submissionPublicId } = await insertSubmission(t, missionPublicId, {
+      submissionStatus: "submitted",
+      verificationStatus: "pending",
+      verificationAttempts: 0,
+    });
+
+    await expect(
+      t.mutation(approvals.approveSubmission, {
+        serviceKey: TEST_SERVICE_KEY,
+        actorId: "admin_1",
+        submissionPublicId,
+        approvalDecisionId: "decision_too_early",
+      }),
+    ).rejects.toThrow("submission_not_ready_for_decision");
   });
 
   it("replays the same decision ID + submission idempotently", async () => {
