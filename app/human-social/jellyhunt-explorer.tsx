@@ -8,6 +8,7 @@ import {
   LocateFixed,
   Map as MapIcon,
   Menu,
+  Mic2,
   Navigation,
   Play,
   Search,
@@ -47,6 +48,16 @@ type MapMarkerEntry = {
   label: HTMLSpanElement;
   tooltip: HTMLElement;
 };
+type LeaderboardScope = "current-season" | "all-time";
+type LeaderboardStanding = {
+  rank: number;
+  username: string;
+  approvedMissionCount: number;
+};
+type LeaderboardLoadState = {
+  status: "idle" | "loading" | "ready" | "error";
+  standings: LeaderboardStanding[];
+};
 
 type Props = {
   missions: JellyhuntMission[];
@@ -57,6 +68,11 @@ type Props = {
 };
 
 const EMPTY_STATUSES: UserMissionStatus[] = [];
+const LEADERBOARD_ENDPOINTS: Record<LeaderboardScope, string> = {
+  "current-season": "/api/v2/jellyhunt/leaderboards/current-season?limit=25",
+  "all-time": "/api/v2/jellyhunt/leaderboards/all-time?limit=25",
+};
+const EMPTY_LEADERBOARD: LeaderboardLoadState = { status: "idle", standings: [] };
 const HQ = { latitude: 40.7228, longitude: -73.9881 };
 const MAP_BOUNDS = {
   minLatitude: 40.711,
@@ -248,6 +264,34 @@ function projectCoordinates(coordinates: Coordinates) {
   };
 }
 
+function parseLeaderboardStandings(payload: unknown): LeaderboardStanding[] {
+  if (!payload || typeof payload !== "object") throw new Error("invalid_leaderboard");
+  const data = (payload as { data?: unknown }).data;
+  if (!data || typeof data !== "object") throw new Error("invalid_leaderboard");
+  const standings = (data as { standings?: unknown }).standings;
+  if (!Array.isArray(standings)) throw new Error("invalid_leaderboard");
+
+  return standings.map((entry) => {
+    if (!entry || typeof entry !== "object") throw new Error("invalid_leaderboard");
+    const standing = entry as Record<string, unknown>;
+    if (
+      !Number.isInteger(standing.rank) ||
+      (standing.rank as number) < 1 ||
+      typeof standing.username !== "string" ||
+      standing.username.trim().length === 0 ||
+      !Number.isInteger(standing.approvedMissionCount) ||
+      (standing.approvedMissionCount as number) < 1
+    ) {
+      throw new Error("invalid_leaderboard");
+    }
+    return {
+      rank: standing.rank as number,
+      username: standing.username.trim(),
+      approvedMissionCount: standing.approvedMissionCount as number,
+    };
+  });
+}
+
 function nearestCrossStreet(coordinates: Coordinates) {
   const eastWest = [...EAST_WEST_STREETS].sort(
     (left, right) =>
@@ -294,6 +338,12 @@ export function JellyhuntExplorer({
   const [locationMessage, setLocationMessage] = useState("");
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
+  const [leaderboardScope, setLeaderboardScope] = useState<LeaderboardScope>("current-season");
+  const [leaderboardReload, setLeaderboardReload] = useState(0);
+  const [leaderboards, setLeaderboards] = useState<Record<LeaderboardScope, LeaderboardLoadState>>({
+    "current-season": EMPTY_LEADERBOARD,
+    "all-time": EMPTY_LEADERBOARD,
+  });
 
   const categories = useMemo(
     () => [...new Set(missions.map((mission) => mission.category))].sort(),
@@ -314,12 +364,56 @@ export function JellyhuntExplorer({
     [missions, userStatus],
   );
   const overlayOpen = menuOpen || experiencePanel !== null;
+  const activeLeaderboard = leaderboards[leaderboardScope];
 
   useEffect(() => {
     if (selectedId && !filteredMissions.some((mission) => mission.id === selectedId)) {
       setSelectedId(filteredMissions[0]?.id ?? null);
     }
   }, [filteredMissions, selectedId]);
+
+  useEffect(() => {
+    if (experiencePanel !== "leaderboard") return;
+    const controller = new AbortController();
+    const scopes: LeaderboardScope[] = ["current-season", "all-time"];
+
+    setLeaderboards((current) => ({
+      "current-season": { ...current["current-season"], status: "loading" },
+      "all-time": { ...current["all-time"], status: "loading" },
+    }));
+
+    async function loadLeaderboard(scope: LeaderboardScope) {
+      try {
+        const response = await fetch(LEADERBOARD_ENDPOINTS[scope], {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
+        const standings =
+          response.status === 404
+            ? []
+            : response.ok
+              ? parseLeaderboardStandings(await response.json())
+              : (() => {
+                  throw new Error("leaderboard_unavailable");
+                })();
+        if (controller.signal.aborted) return;
+        setLeaderboards((current) => ({
+          ...current,
+          [scope]: { status: "ready", standings },
+        }));
+      } catch {
+        if (controller.signal.aborted) return;
+        setLeaderboards((current) => ({
+          ...current,
+          [scope]: { status: "error", standings: [] },
+        }));
+      }
+    }
+
+    void Promise.all(scopes.map(loadLeaderboard));
+    return () => controller.abort();
+  }, [experiencePanel, leaderboardReload]);
 
   useEffect(() => {
     if (!mapboxToken || !mapContainerRef.current || missions.length === 0) return;
@@ -376,6 +470,8 @@ export function JellyhuntExplorer({
         const hqImage = document.createElement("img");
         hqImage.src = "/wobbles/wobble_product.png";
         hqImage.alt = "";
+        hqImage.width = 72;
+        hqImage.height = 72;
         hqImage.setAttribute("aria-hidden", "true");
         const hqLabel = document.createElement("strong");
         hqLabel.textContent = "JELLYJELLY HQ";
@@ -479,6 +575,7 @@ export function JellyhuntExplorer({
     mapMarkersRef.current.forEach((entry, missionId) => {
       const selected = missionId === selectedId;
       entry.button.dataset.selected = String(selected);
+      entry.button.setAttribute("aria-pressed", String(selected));
       entry.tooltip.hidden = !selected;
     });
 
@@ -643,14 +740,17 @@ export function JellyhuntExplorer({
 
   return (
     <main className={`hunt-page hunt-map-screen hunt-theme-${theme}`}>
-      <section className="hunt-map-stage" aria-label="Jellyhunt mission map" aria-hidden={overlayOpen ? true : undefined}>
+      <a className="hunt-skip-link" href="#jellyhunt-map">Skip to Mission Map</a>
+      <section id="jellyhunt-map" className="hunt-map-stage" aria-label="Jellyhunt mission map" aria-hidden={overlayOpen ? true : undefined}>
         {mapboxActive ? (
           <div
-            className="hunt-mapbox"
+            className={`hunt-mapbox${mapLoaded ? " is-loaded" : ""}`}
             ref={mapContainerRef}
+            role="region"
             aria-label="Interactive Jellyhunt mission map"
           />
-        ) : (
+        ) : null}
+        {!mapboxActive || !mapLoaded ? (
           <div className="hunt-fallback-map" role="region" aria-label="Interactive Jellyhunt coordinate map">
             <div
               className="hunt-fallback-layer"
@@ -661,6 +761,7 @@ export function JellyhuntExplorer({
                   className={`hunt-street hunt-street-ew${street.major ? " major" : ""}${street.spine ? " spine" : ""}`}
                   key={street.label}
                   style={{ top: `${projectCoordinates({ latitude: street.latitude, longitude: HQ.longitude }).top}%` }}
+                  aria-hidden="true"
                 >
                   <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
                 </div>
@@ -670,6 +771,7 @@ export function JellyhuntExplorer({
                   className={`hunt-street hunt-street-ns${street.major ? " major" : ""}`}
                   key={street.label}
                   style={{ left: `${projectCoordinates({ latitude: HQ.latitude, longitude: street.longitude }).left}%` }}
+                  aria-hidden="true"
                 >
                   <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
                 </div>
@@ -682,7 +784,7 @@ export function JellyhuntExplorer({
                   top: `${projectCoordinates(HQ).top}%`,
                 }}
               >
-                <span className="hunt-hq-pulse" />
+                <span className="hunt-hq-pulse" aria-hidden="true" />
                 <Image src="/wobbles/wobble_product.png" alt="JellyJelly HQ" width={72} height={72} priority />
                 <strong>JELLYJELLY HQ</strong>
               </div>
@@ -704,6 +806,7 @@ export function JellyhuntExplorer({
                       type="button"
                       className={`hunt-fallback-marker hunt-marker-${missionStatus}`}
                       data-selected={mission.id === selectedMission?.id}
+                      aria-pressed={mission.id === selectedMission?.id}
                       style={{ "--accent": accent } as CSSProperties}
                       onClick={() => setSelectedId(mission.id)}
                       aria-label={`Open ${mission.title}`}
@@ -724,12 +827,18 @@ export function JellyhuntExplorer({
                     left: `${projectCoordinates(userLocation).left}%`,
                     top: `${projectCoordinates(userLocation).top}%`,
                   }}
+                  role="img"
                   aria-label="Your approximate location"
                 />
               ) : null}
             </div>
           </div>
-        )}
+        ) : null}
+        {mapboxActive && !mapLoaded ? (
+          <div className="hunt-map-loading" role="status">
+            <span aria-hidden="true" /> Loading live map…
+          </div>
+        ) : null}
 
         <header className="hunt-map-header">
           <div className="hunt-brand-lockup">
@@ -737,15 +846,19 @@ export function JellyhuntExplorer({
               className="hunt-menu-button"
               type="button"
               aria-label="Open Jellyhunt menu"
+              aria-controls="hunt-menu"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(true)}
             >
-              <Menu size={22} />
+              <Menu size={23} aria-hidden="true" />
             </button>
-            <div>
-              <span className="hunt-partnership">PlatePost × JellyJelly</span>
-              <strong>JELLYHUNT</strong>
-              <small>NYC · HUMAN SOCIAL · {Math.max(0, missions.length - completedCount)} OPEN</small>
+            <span className="hunt-brand-mark" aria-hidden="true">
+              <Mic2 size={25} strokeWidth={2.4} />
+            </span>
+            <div className="hunt-brand-copy">
+              <span className="hunt-partnership" translate="no">PlatePost x JellyJelly: Human Social!</span>
+              <h1>JELLYHUNT</h1>
+              <small><span>LOWER MANHATTAN</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
             </div>
           </div>
 
@@ -753,16 +866,18 @@ export function JellyhuntExplorer({
             <button
               type="button"
               aria-label="Find and filter missions"
+              aria-controls="hunt-filters"
+              aria-expanded={filtersOpen}
               data-active={filtersOpen}
               onClick={() => setFiltersOpen((value) => !value)}
             >
-              <SlidersHorizontal size={18} />
+              <SlidersHorizontal size={18} aria-hidden="true" />
             </button>
             <a className="hunt-get-app" href={appLinks.ios} target="_blank" rel="noreferrer">
-              Get the app <ArrowUpRight size={15} />
+              Get JellyJelly <ArrowUpRight size={15} aria-hidden="true" />
             </a>
             <button type="button" aria-label="How Jellyhunt works" onClick={() => showPanel("how")}>
-              <CircleHelp size={20} />
+              <CircleHelp size={20} aria-hidden="true" />
             </button>
           </div>
         </header>
@@ -772,20 +887,20 @@ export function JellyhuntExplorer({
         </div>
 
         {filtersOpen ? (
-          <aside className="hunt-filter-panel" aria-label="Filter missions">
+          <aside id="hunt-filters" className="hunt-filter-panel" aria-label="Filter missions">
             <div className="hunt-filter-heading">
               <div><strong>Find a mission</strong><span>{filteredMissions.length} on the map</span></div>
-              <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)}><X size={17} /></button>
+              <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)}><X size={17} aria-hidden="true" /></button>
             </div>
             <label className="hunt-filter-search">
               <Search size={16} aria-hidden="true" />
               <span className="sr-only">Search missions</span>
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Place, neighborhood, mission…" />
+              <input type="search" name="missionSearch" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Place, neighborhood, mission…" />
             </label>
             <div className="hunt-filter-selects">
               <label>
                 <span>Category</span>
-                <select value={category} onChange={(event) => setCategory(event.target.value)}>
+                <select name="missionCategory" value={category} onChange={(event) => setCategory(event.target.value)}>
                   <option value="all">All</option>
                   {categories.map((item) => <option key={item} value={item}>{item}</option>)}
                 </select>
@@ -793,7 +908,7 @@ export function JellyhuntExplorer({
               {userStatus.length ? (
                 <label>
                   <span>Status</span>
-                  <select value={status} onChange={(event) => setStatus(event.target.value)}>
+                  <select name="missionStatus" value={status} onChange={(event) => setStatus(event.target.value)}>
                     <option value="all">All</option>
                     <option value="not_started">Available</option>
                     <option value="submitted">Submitted</option>
@@ -812,7 +927,7 @@ export function JellyhuntExplorer({
             {filteredMissions.length ? (
               <nav className="hunt-filter-results" aria-label="Visible missions">
                 {filteredMissions.map((mission) => (
-                  <button key={mission.id} type="button" onClick={() => { setSelectedId(mission.id); setFiltersOpen(false); }}>
+                  <button key={mission.id} type="button" aria-pressed={mission.id === selectedMission?.id} onClick={() => { setSelectedId(mission.id); setFiltersOpen(false); }}>
                     <span aria-hidden="true">{mission.emoji}</span>
                     <strong>{mission.location.name}<small>{mission.neighborhood}</small></strong>
                     <i>+{mission.rewardAmount}</i>
@@ -829,51 +944,59 @@ export function JellyhuntExplorer({
         ) : null}
 
         <div className={`hunt-zoom-controls${selectedMission ? " lifted" : ""}`}>
-          <button type="button" aria-label="Zoom in" onClick={() => zoomMap("in")}><ZoomIn size={19} /></button>
-          <button type="button" aria-label="Zoom out" onClick={() => zoomMap("out")}><ZoomOut size={19} /></button>
-          <button type="button" aria-label="Use my location" onClick={locateUser}><LocateFixed size={18} /></button>
+          <button type="button" aria-label="Zoom in" onClick={() => zoomMap("in")}><ZoomIn size={19} aria-hidden="true" /></button>
+          <button type="button" aria-label="Zoom out" onClick={() => zoomMap("out")}><ZoomOut size={19} aria-hidden="true" /></button>
+          <button type="button" aria-label="Use my location" onClick={locateUser}><LocateFixed size={18} aria-hidden="true" /></button>
         </div>
 
         {locationMessage ? <div className="hunt-location-toast" role="status">{locationMessage}</div> : null}
         {dataError ? (
           <div className="hunt-data-notice" role="status">
-            <strong>Mission data is not connected.</strong>
+            <strong>Mission updates paused.</strong>
             <span>{dataError}</span>
           </div>
         ) : null}
         {!filteredMissions.length && !dataError ? (
           <div className="hunt-no-results">
-            <MapIcon size={22} />
+            <MapIcon size={22} aria-hidden="true" />
             <strong>{missions.length ? "No missions match." : "New missions are on the way."}</strong>
             {missions.length ? <button type="button" onClick={() => { setQuery(""); setCategory("all"); setStatus("all"); }}>Show all missions</button> : null}
           </div>
         ) : null}
 
         {selectedMission ? (
-          <article className="hunt-detail-card" aria-live="polite">
+          <article className="hunt-detail-card" aria-live="polite" aria-labelledby="hunt-mission-title">
+            <span className="hunt-drawer-handle" aria-hidden="true" />
             <button className="hunt-detail-close" type="button" onClick={() => setSelectedId(null)} aria-label="Close mission details">
-              <X size={17} />
+              <X size={18} aria-hidden="true" />
             </button>
             <div className="hunt-detail-meta">
               <span>SELECTED · {selectedDistance === null ? "NEARBY" : `${formatDistance(selectedDistance)} FROM ${userLocation ? "YOU" : "HQ"}`}</span>
-              <strong style={{ color: missionAccent(selectedMission) }}>{difficultyLabels[selectedMission.difficulty].toUpperCase()}</strong>
+              <strong style={{ color: missionAccent(selectedMission) }}>{difficultyLabels[selectedMission.difficulty].toUpperCase()} MISSION</strong>
             </div>
-            <div className="hunt-detail-row">
-              <span className="hunt-detail-emoji" style={{ borderColor: missionAccent(selectedMission) }}>{selectedMission.emoji}</span>
-              <div className="hunt-detail-title">
-                <h2>{selectedMission.location.name}</h2>
-                <p><span style={{ color: missionAccent(selectedMission) }}>○</span> {selectedMission.location.address} · {selectedMission.neighborhood}</p>
+            <div className="hunt-detail-grid">
+              <div className="hunt-detail-venue">
+                <div className="hunt-detail-row">
+                  <span className="hunt-detail-emoji" style={{ borderColor: missionAccent(selectedMission) }} aria-hidden="true">{selectedMission.emoji}</span>
+                  <div className="hunt-detail-title">
+                    <h2 id="hunt-mission-title">{selectedMission.location.name}</h2>
+                    <p><span style={{ color: missionAccent(selectedMission) }} aria-hidden="true">●</span> {selectedMission.location.address} · {selectedMission.neighborhood}</p>
+                  </div>
+                  <span className="hunt-reward-badge">
+                    <small>REWARD</small>
+                    <strong><i aria-hidden="true" /> {selectedMission.rewardAmount}<em> JMJ</em></strong>
+                  </span>
+                </div>
+                <div className="hunt-detail-hours">
+                  <strong data-open={openState === "open"}>{selectedMission.venueType === "shows" ? "• SHOWS" : openState === "open" ? "• OPEN" : "○ CLOSED"}</strong>
+                  <span>{formatHours(selectedMission)}</span>
+                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${selectedMission.location.latitude},${selectedMission.location.longitude}`} target="_blank" rel="noreferrer">Directions <Navigation size={14} aria-hidden="true" /></a>
+                </div>
               </div>
-              <span className="hunt-reward-badge"><i /> {selectedMission.rewardAmount}</span>
-            </div>
-            <div className="hunt-detail-hours">
-              <strong data-open={openState === "open"}>{selectedMission.venueType === "shows" ? "• SHOWS" : openState === "open" ? "• OPEN" : "○ CLOSED"}</strong>
-              <span>{formatHours(selectedMission)}</span>
-              <a href={`https://www.google.com/maps/dir/?api=1&destination=${selectedMission.location.latitude},${selectedMission.location.longitude}`} target="_blank" rel="noreferrer">Directions <Navigation size={13} /></a>
-            </div>
-            <div className="hunt-detail-mission">
-              <span>MISSION:</span>
-              {selectedMission.description}
+              <div className="hunt-detail-mission">
+                <span>YOUR MISSION</span>
+                <p>{selectedMission.description}</p>
+              </div>
             </div>
             {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason ? (
               <div className="hunt-rejection"><strong>Try again:</strong> {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason}</div>
@@ -894,31 +1017,32 @@ export function JellyhuntExplorer({
           </article>
         ) : null}
 
-        <div className="hunt-theme-toggle" aria-label="Map theme">
-          <button type="button" data-active={theme === "dark"} onClick={() => setTheme("dark")}>🌙 Dark</button>
-          <button type="button" data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>🌊 Wobbles</button>
+        <div className={`hunt-theme-toggle${selectedMission ? " lifted" : ""}`} role="group" aria-label="Map theme">
+          <button type="button" aria-pressed={theme === "dark"} data-active={theme === "dark"} onClick={() => setTheme("dark")}>🌙 Dark</button>
+          <button type="button" aria-pressed={theme === "wobbles"} data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>🌊 Wobbles</button>
         </div>
       </section>
 
       {menuOpen ? (
         <>
           <button className="hunt-menu-overlay" type="button" aria-label="Close Jellyhunt menu" onClick={() => setMenuOpen(false)} />
-          <aside className="hunt-menu-panel" aria-label="Jellyhunt menu" role="dialog" aria-modal="true" tabIndex={-1} ref={menuRef}>
+          <aside id="hunt-menu" className="hunt-menu-panel" aria-label="Jellyhunt menu" role="dialog" aria-modal="true" tabIndex={-1} ref={menuRef}>
             <div className="hunt-menu-heading">
               <div><span>PlatePost × JellyJelly</span><strong>JELLYHUNT</strong></div>
-              <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X size={22} /></button>
+              <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X size={22} aria-hidden="true" /></button>
             </div>
             <nav>
-              <button type="button" data-active="true" onClick={() => setMenuOpen(false)}><MapIcon size={20} /><span>Map</span></button>
-              <button type="button" onClick={() => showPanel("passport")}><Sparkles size={20} /><span>Passport</span></button>
-              <button type="button" onClick={() => showPanel("guide")}><Navigation size={20} /><span>Editorial Map</span></button>
-              <button type="button" onClick={() => showPanel("leaderboard")}><Trophy size={20} /><span>Leaderboard</span></button>
+              <button type="button" aria-pressed="true" data-active="true" onClick={() => setMenuOpen(false)}><MapIcon size={20} aria-hidden="true" /><span>Map</span></button>
+              <button type="button" onClick={() => showPanel("passport")}><Sparkles size={20} aria-hidden="true" /><span>Passport</span></button>
+              <button type="button" onClick={() => showPanel("guide")}><Navigation size={20} aria-hidden="true" /><span>Editorial Map</span></button>
+              <button type="button" onClick={() => showPanel("leaderboard")}><Trophy size={20} aria-hidden="true" /><span>Leaderboard</span></button>
+              <button type="button" onClick={() => showPanel("how")}><CircleHelp size={20} aria-hidden="true" /><span>How It Works</span></button>
             </nav>
             <div className="hunt-menu-spacer" />
             <p>PlatePost x JellyJelly: Human Social!</p>
             <div className="hunt-menu-stores">
-              <a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={17} /> iPhone</a>
-              <a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={17} /> Android</a>
+              <a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={17} aria-hidden="true" /> iPhone</a>
+              <a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={17} aria-hidden="true" /> Android</a>
             </div>
           </aside>
         </>
@@ -927,9 +1051,9 @@ export function JellyhuntExplorer({
       {experiencePanel ? (
         <section className="hunt-experience-panel" aria-label={`${experiencePanel} view`} role="dialog" aria-modal="true" tabIndex={-1} ref={panelRef}>
           <header>
-            <button type="button" aria-label="Back to map" onClick={() => setExperiencePanel(null)}><ArrowLeft size={20} /></button>
+            <button type="button" aria-label="Back to map" onClick={() => setExperiencePanel(null)}><ArrowLeft size={20} aria-hidden="true" /></button>
             <div><span>PlatePost × JellyJelly</span><strong>JELLYHUNT</strong></div>
-            <a href={appLinks.ios} target="_blank" rel="noreferrer">Get the app <ArrowUpRight size={14} /></a>
+            <a href={appLinks.ios} target="_blank" rel="noreferrer">Get JellyJelly <ArrowUpRight size={14} aria-hidden="true" /></a>
           </header>
 
           {experiencePanel === "passport" ? (
@@ -947,11 +1071,11 @@ export function JellyhuntExplorer({
               </div>
             ) : (
               <div className="hunt-coming-view hunt-passport-connect">
-                <Sparkles size={42} />
+                <Sparkles size={42} aria-hidden="true" />
                 <span>City passport</span>
                 <h1>Your passport lives in JellyJelly.</h1>
                 <p>Open JellyJelly to start a mission and keep your personal progress connected. The public PlatePost map never guesses or exposes a visitor’s account.</p>
-                <div><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} /> Open on iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} /> Open on Android</a></div>
+                <div><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} aria-hidden="true" /> Open on iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} aria-hidden="true" /> Open on Android</a></div>
               </div>
             )
           ) : null}
@@ -959,7 +1083,7 @@ export function JellyhuntExplorer({
           {experiencePanel === "guide" ? (
             <div className="hunt-guide-view">
               <div className="hunt-panel-intro"><span>Editorial map</span><h1>{missions.length} reasons to go outside.</h1><p>A living guide to local places, playful prompts, and real moments worth sharing.</p></div>
-              <label className="hunt-guide-search"><Search size={17} /><span className="sr-only">Search mission guide</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the guide" /></label>
+              <label className="hunt-guide-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search mission guide</span><input type="search" name="guideSearch" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the guide…" /></label>
               <div className="hunt-guide-grid">
                 {filteredMissions.map((mission, index) => <button key={mission.id} type="button" onClick={() => chooseMission(mission.id)}><small>STOP {String(index + 1).padStart(2, "0")} · {mission.neighborhood}</small><strong><span>{mission.emoji}</span>{mission.location.name}</strong><p>{mission.description}</p><i>+{mission.rewardAmount} JMJ</i></button>)}
               </div>
@@ -967,12 +1091,77 @@ export function JellyhuntExplorer({
           ) : null}
 
           {experiencePanel === "leaderboard" ? (
-            <div className="hunt-coming-view">
-              <Trophy size={42} />
-              <span>Leaderboard</span>
-              <h1>Real people, real city.</h1>
-              <p>The city leaderboard is getting ready. Complete missions in JellyJelly and check back for the first season.</p>
-              <div><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} /> Open on iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} /> Open on Android</a></div>
+            <div className="hunt-leaderboard-view">
+              <div className="hunt-panel-intro hunt-leaderboard-intro">
+                <span>Most approved</span>
+                <h1>Real people. Real city.</h1>
+                <p>Ranked by missions PlatePost has approved. Only public Jelly usernames appear here.</p>
+              </div>
+              <div className="hunt-leaderboard-tabs" role="tablist" aria-label="Leaderboard timeframe">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={leaderboardScope === "current-season"}
+                  data-active={leaderboardScope === "current-season"}
+                  onClick={() => setLeaderboardScope("current-season")}
+                >
+                  Current season
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={leaderboardScope === "all-time"}
+                  data-active={leaderboardScope === "all-time"}
+                  onClick={() => setLeaderboardScope("all-time")}
+                >
+                  All time
+                </button>
+              </div>
+              <section
+                className="hunt-leaderboard-board"
+                aria-live="polite"
+                aria-busy={activeLeaderboard.status === "loading"}
+              >
+                {activeLeaderboard.status === "idle" || activeLeaderboard.status === "loading" ? (
+                  <div className="hunt-leaderboard-loading" role="status">
+                    <span>Loading approved missions…</span>
+                    {[0, 1, 2, 3, 4].map((row) => <i key={row} />)}
+                  </div>
+                ) : null}
+                {activeLeaderboard.status === "error" ? (
+                  <div className="hunt-leaderboard-message" role="alert">
+                    <Trophy size={30} aria-hidden="true" />
+                    <strong>Rankings could not load.</strong>
+                    <p>PlatePost kept the map open. Try the ranking again.</p>
+                    <button type="button" onClick={() => setLeaderboardReload((value) => value + 1)}>Try again</button>
+                  </div>
+                ) : null}
+                {activeLeaderboard.status === "ready" && activeLeaderboard.standings.length === 0 ? (
+                  <div className="hunt-leaderboard-message">
+                    <Trophy size={30} aria-hidden="true" />
+                    <strong>No approved missions yet.</strong>
+                    <p>The first approved Jelly takes the top spot.</p>
+                  </div>
+                ) : null}
+                {activeLeaderboard.status === "ready" && activeLeaderboard.standings.length > 0 ? (
+                  <ol
+                    className="hunt-leaderboard-list"
+                    aria-label={(leaderboardScope === "current-season" ? "Current season" : "All time") + " most approved"}
+                  >
+                    {activeLeaderboard.standings.map((standing) => (
+                      <li key={String(standing.rank) + ":" + standing.username} data-podium={standing.rank <= 3}>
+                        <span className="hunt-leaderboard-rank">{String(standing.rank).padStart(2, "0")}</span>
+                        <strong>@{standing.username}</strong>
+                        <span className="hunt-leaderboard-score">
+                          {standing.approvedMissionCount}
+                          <small>approved</small>
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
+              </section>
+              <p className="hunt-leaderboard-note">Ties share a rank. Scores update after mission approval or reversal.</p>
             </div>
           ) : null}
 
@@ -980,11 +1169,11 @@ export function JellyhuntExplorer({
             <div className="hunt-how-view">
               <div className="hunt-panel-intro"><span>Human Social!</span><h1>Go somewhere. Meet someone. Share the moment.</h1></div>
               <div className="hunt-how-grid">
-                <article><b>01</b><MapIcon size={28} /><h2>Pick a place</h2><p>Choose a live mission on the map and check the venue details.</p></article>
-                <article><b>02</b><Sparkles size={28} /><h2>Make a Jelly</h2><p>Visit the location, complete the prompt, and post the real moment in JellyJelly.</p></article>
-                <article><b>03</b><Trophy size={28} /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the final Jelly-My-Jelly reward.</p></article>
+                <article><b>01</b><MapIcon size={28} aria-hidden="true" /><h2>Pick a place</h2><p>Choose a live mission on the map and check the venue details.</p></article>
+                <article><b>02</b><Sparkles size={28} aria-hidden="true" /><h2>Make a Jelly</h2><p>Visit the location, complete the prompt, and post the real moment in JellyJelly.</p></article>
+                <article><b>03</b><Trophy size={28} aria-hidden="true" /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the final Jelly-My-Jelly reward.</p></article>
               </div>
-              <div className="hunt-how-apps"><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} /> Get JellyJelly for iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} /> Get JellyJelly for Android</a></div>
+              <div className="hunt-how-apps"><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} aria-hidden="true" /> Get JellyJelly for iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} aria-hidden="true" /> Get JellyJelly for Android</a></div>
             </div>
           ) : null}
         </section>

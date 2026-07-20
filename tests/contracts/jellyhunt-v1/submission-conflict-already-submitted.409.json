@@ -1,0 +1,12 @@
+{
+  "status": 409,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": {
+    "error": {
+      "code": "mission_already_submitted",
+      "message": "This user has already submitted this mission."
+    }
+  }
+}

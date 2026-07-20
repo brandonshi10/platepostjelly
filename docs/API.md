@@ -1,10 +1,10 @@
 # Jellyhunt API
 
-This document describes the currently implemented v1 compatibility API. Jelly may use it for server-to-server integration and prototyping, but it is not the final direct-native production contract because its personalized calls still rely on a transitional shared key and caller-supplied identity. The proposed clean native surface is the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md).
+This document describes the implemented v1 compatibility API and the implemented native v2 API. v1 remains available for the existing Jelly server integration, but it is not the direct-native target because personalized calls use a transitional shared key and caller-supplied identity. New Jelly app work should use the v2 OpenAPI contract and short-lived Jelly-signed mission tokens after the target PlatePost/Jelly development environment is connected.
 
 ## Base URL and version
 
-All current endpoints are under:
+The v1 compatibility endpoints are under:
 
 ```text
 https://<platepost-host>/api/v1/jellyhunt
@@ -28,7 +28,7 @@ x-jellyhunt-api-key: <JELLYHUNT_API_KEY>
 
 The handler fails closed when the request header is absent, the value is wrong, or the server environment variable is not configured.
 
-This is a transitional server-to-server credential. Do not embed it in the JellyJelly iOS or Android application. Before native production, replace it with a short-lived Jelly-signed user token or proxy calls through an authenticated Jelly backend.
+This is a transitional server-to-server credential. Do not embed it in the JellyJelly iOS or Android application. New native requests use the implemented v2 routes with a short-lived Jelly-signed mission token; keep v1 behind Jelly or PlatePost server infrastructure during migration.
 
 ## Error envelope
 
@@ -39,7 +39,8 @@ HTTP errors use this shape:
   "error": {
     "code": "unauthorized",
     "message": "Valid Jelly server authentication is required."
-  }
+  },
+  "requestId": "7a8836db-1f70-4f8f-aaf9-9155ecaebda0"
 }
 ```
 
@@ -50,10 +51,11 @@ Validation responses may add `error.details`.
 | `400` | Schema-invalid fields; admin login parse errors. |
 | `401` | Missing, invalid, or unconfigured Jelly server authentication. |
 | `409` | `mission_already_submitted` or `jelly_post_reused`. |
+| `410` | `legacy_write_disabled` for v1 submission writes in Production; use v2. |
 | `500` | Unexpected submission failure. |
 | `503` | Convex is unconfigured, its service key is unconfigured, or the data source is unavailable. |
 
-Duplicate user/mission and reused-post conflicts have stable `409` codes. Remaining Convex business-rule errors can still be reported as `503 convex_request_failed`, and malformed submission JSON can reach the generic `500` path instead of the intended `400`; those cases still need normalization.
+Duplicate user/mission and reused-post conflicts retain stable `409` codes. v1 responses include a request ID in both the body and `X-Request-Id`; schema-invalid payloads use the frozen `400` envelope, configuration/transport failures use `503`, and unexpected failures use a privacy-safe `500`. The v1 contract tests remain the compatibility guard while Jelly migrates to v2.
 
 ## GET /missions
 
@@ -92,7 +94,7 @@ Do not send `user_id` without the header; that returns `401`.
   "generatedAt": "2026-07-15T20:00:00.000Z",
   "missions": [
     {
-      "id": "mission-convex-id",
+      "id": "mis_example",
       "slug": "sushi-first-bite",
       "title": "Post a Jelly at Demo Sushi",
       "description": "Order a signature plate and capture the first bite.",
@@ -117,7 +119,7 @@ Do not send `user_id` without the header; that returns `401`.
       ],
       "sortOrder": 1,
       "location": {
-        "id": "location-convex-id",
+        "id": "plc_example",
         "jellyRestaurantId": "jelly-restaurant-id",
         "name": "Demo Sushi",
         "address": "35 Orchard St, New York, NY",
@@ -130,9 +132,9 @@ Do not send `user_id` without the header; that returns `401`.
   ],
   "userStatus": [
     {
-      "missionId": "mission-convex-id",
+      "missionId": "mis_example",
       "status": "needs_review",
-      "submissionId": "submission-convex-id",
+      "submissionId": "sub_example",
       "jellyPostId": "jelly-post-id"
     }
   ]
@@ -185,6 +187,8 @@ A status record may include `rejectionReason` or `rewardTransactionId`.
 
 ## POST /submissions
 
+This compatibility write is available only before cutover and in non-Production development. When `NODE_ENV=production`, it returns `410 legacy_write_disabled` before parsing or creating a submission. Production and native clients must use the v2 participation and submission flow.
+
 Creates or returns an idempotent mission submission, then schedules Jelly verification.
 
 ### Request
@@ -197,7 +201,7 @@ x-jellyhunt-api-key: <server-key>
 
 ```json
 {
-  "missionId": "mission-convex-id",
+  "missionId": "mis_example",
   "jellyUserId": "canonical-jelly-user-id",
   "jellyPostId": "canonical-jelly-post-id",
   "latitude": 40.7164,
@@ -221,7 +225,7 @@ HTTP/1.1 201 Created
 ```json
 {
   "submission": {
-    "submissionId": "submission-convex-id",
+    "submissionId": "sub_example",
     "status": "submitted",
     "idempotent": false
   }
@@ -317,13 +321,13 @@ Create body:
 
 An update uses the same nested objects and adds root-level `missionId` and `locationId`. Optional mission fields are `venueType`, `showtimes`, `websiteUrl`, `startsAt`, and `endsAt`. The raw admin API accepts Unix-millisecond schedules; the dashboard interprets its date/time controls in the mission location's IANA timezone before conversion. The public mission API maps timestamps to ISO-8601 strings.
 
-Mission and location create/update use combined Convex mutations, so each pair of records is written atomically. Each full edit increments the mission `revision`; public v1 does not currently expose that internal revision number.
+Mission, location, and optional budget-cap changes use one Convex mutation. `GET` returns a `budgetContext` plus each mission's campaign/mission allocation, committed amounts, remaining capacity, revision, and capacity status. An optional root `budgets` object accepts canonical decimal-string `campaignAllocatedAmount` / `missionAllocatedAmount` and optimistic `expectedCampaignRevision` / `expectedMissionRevision` values. Allocations cannot fall below reserved + paid; drafts may remain unfunded, but active create/update/activation requires capacity for at least one reward. Each published edit advances the canonical mission revision; v1 keeps that revision internal.
 
 Lifecycle body:
 
 ```json
 {
-  "missionId": "mission-convex-id",
+  "missionId": "mis_example",
   "status": "paused"
 }
 ```
@@ -335,29 +339,29 @@ Lifecycle body:
 `PATCH /api/v1/jellyhunt/admin/submissions` accepts one of:
 
 ```json
-{ "action": "approve", "submissionId": "submission-convex-id" }
+{ "action": "approve", "submissionId": "sub_example" }
 ```
 
 ```json
 {
   "action": "reject",
-  "submissionId": "submission-convex-id",
+  "submissionId": "sub_example",
   "reason": "The post does not show the required restaurant."
 }
 ```
 
 ```json
-{ "action": "retry_verification", "submissionId": "submission-convex-id" }
+{ "action": "retry_verification", "submissionId": "sub_example" }
 ```
 
 ```json
-{ "action": "retry_reward", "submissionId": "submission-convex-id" }
+{ "action": "retry_reward", "submissionId": "sub_example" }
 ```
 
 ```json
 {
   "action": "reconcile_reward_sent",
-  "submissionId": "submission-convex-id",
+  "submissionId": "sub_example",
   "transactionId": "confirmed-jelly-transaction-id"
 }
 ```
@@ -365,15 +369,15 @@ Lifecycle body:
 ```json
 {
   "action": "reconcile_reward_failed",
-  "submissionId": "submission-convex-id",
+  "submissionId": "sub_example",
   "reason": "Jelly confirmed no transaction was created."
 }
 ```
 
 
-Only a `needs_review` submission can be approved or rejected directly. A rejected proof must be reverified, and approval/reverification/reward queueing is blocked when another non-rejected attempt exists for the same user and mission.
+Only a `needs_review` submission can be approved or rejected directly. Verification can be requested again only while a submission is `submitted` or `needs_review`. Rejection is final for that attempt; when `canResubmit` is true, the Jelly user starts a new attempt with a new eligible post. Approval, verification queueing, and reward queueing remain blocked when a conflicting non-rejected sibling exists for the same user and mission.
 
-The backend allows reward retry only after a confirmed `reward_failed` result. A `reward_uncertain` attempt cannot be retried. A two-minute processing watchdog also moves an abandoned worker to `reward_uncertain`. After checking Jelly, an operator must reconcile it as sent with the canonical transaction ID or as failed with a documented confirmation reason; that decision is audited.
+The backend allows reward retry only after a confirmed `reward_failed` result. A `reward_uncertain` attempt cannot be retried automatically, and a two-minute watchdog moves abandoned processing to that quarantine state. For the initial release, the reconciliation actions remain restricted operator controls: the operator checks Jelly, enters the confirmed transaction ID or no-transfer reason, and the decision is audited. Server-verified receipt/no-transfer reconciliation remains recommended before automating this workflow.
 
 ### Admin audit route
 
@@ -402,9 +406,9 @@ Admin list responses expose operational Convex records and are intentionally not
 - Do not infer an earned reward from client state; use the server status.
 - Do not expose the transitional server API key in a mobile binary.
 
-The PlatePost consumer page includes a Passport progress shell, Editorial mission guide, and privacy-safe leaderboard contract state. It does not invent authenticated player data: Jelly web auth, Jelly Library/post selection, canonical profiles, personal progress, and live leaderboard standings require signed Jelly identity and progress contracts. The current completion handoff is the JellyJelly camera deep link.
+The PlatePost consumer page includes a Passport progress shell, Editorial mission guide, and live current-season/all-time leaderboard tabs backed by the v2 “most approved” endpoints. Standings show only eligible canonical Jelly usernames; the page provides loading, empty, error, and retry states instead of invented data. Jelly Library/post selection and signed personal Passport progress remain Jelly integration work. The current completion handoff is the JellyJelly camera deep link.
 
-## v2 native API (executable contract, routes not yet implemented)
+## v2 native API (implemented; external integration pending)
 
 The clean native contract is published as an executable OpenAPI 3.1 document at
 [`openapi/jellyhunt-v2.yaml`](../openapi/jellyhunt-v2.yaml), validated by
@@ -413,10 +417,13 @@ implements the route list, schemas, auth model, and error catalog approved in
 the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md)
 and the [Leaderboard and native-integration design](superpowers/specs/2026-07-16-jellyhunt-leaderboard-native-integration-design.md).
 
-**This section documents the contract only.** No `app/api/v2/jellyhunt/*`
-route handlers exist yet; do not build a production native dependency on v2
-until a specific route is implemented and verified in the target environment.
-v1 (documented above) remains the only live compatibility surface until then.
+The corresponding `app/api/v2/jellyhunt/*` route handlers are implemented for
+every operation below, including authenticated owner reads, participation and
+submission writes, status/event history, and both leaderboards. They are ready
+for development integration, not Production: the target PlatePost Convex
+deployment, Jelly mission-token/JWKS, authoritative place/evidence APIs, and
+at-most-once reward service still need to be connected and accepted. v1 remains
+the compatibility surface during that migration.
 
 ### Base URL and auth
 
@@ -495,13 +502,13 @@ API examples (canonical place, place-indexed Jellies, post preflight,
 component verification, reward-intent attempts/lookup, reward-account
 capacity) are recorded separately in
 [`tests/contracts/jelly-partner-v1/`](../tests/contracts/jelly-partner-v1/)
-for the future partner-integration contract tests.
+for the partner-integration contract tests.
 
 ### Migration relationship to v1
 
-v1 remains the only implemented, live compatibility surface. Per the
-approved design, v1 response shapes and statuses stay frozen while v2 is
-built out route by route; `tests/jellyhunt-v1-compatibility.test.ts` guards
-that freeze. v1 is not deprecated or retired by the existence of this
-contract — only by the phased migration/cutover plan in the design
-documents, which is out of scope for this repository until a later task.
+v1 reads remain the live compatibility surface while Jelly adopts the implemented
+v2 API. `tests/jellyhunt-v1-compatibility.test.ts` guards its response shapes
+and statuses; v1 is retired only after the shared Convex deployment, native
+integration, legacy dedupe/transaction cutover, and monitored pilot complete.
+Both versions must read and write the same canonical namespaced Convex workflow
+during the transition.

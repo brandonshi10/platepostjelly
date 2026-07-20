@@ -31,37 +31,41 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const input = adminSubmissionActionSchema.parse(await request.json());
-    const actor = auth.session.username;
-    if (input.action === "retry_verification") {
+    const actorId = auth.session.username;
+
+    if (input.action === "approve") {
+      await callAdminMutation("approvals", "approveSubmission", {
+        submissionPublicId: input.submissionId,
+        approvalDecisionId: `admin-review:${input.submissionId}`,
+        actorId,
+      });
+    } else if (input.action === "reject") {
+      await callAdminMutation("submissions", "rejectSubmission", {
+        submissionPublicId: input.submissionId,
+        reason: input.reason,
+        actorId,
+      });
+    } else if (input.action === "retry_verification") {
       await callAdminMutation("submissions", "retryVerification", {
-        submissionId: input.submissionId,
-        actor,
+        submissionPublicId: input.submissionId,
+        actorId,
       });
     } else if (input.action === "retry_reward") {
       await callAdminMutation("submissions", "retryReward", {
-        submissionId: input.submissionId,
-        actor,
+        submissionPublicId: input.submissionId,
+        actorId,
       });
-    } else if (
-      input.action === "reconcile_reward_sent" ||
-      input.action === "reconcile_reward_failed"
-    ) {
+    } else {
       await callAdminMutation("submissions", "reconcileUncertainReward", {
-        submissionId: input.submissionId,
+        submissionPublicId: input.submissionId,
         outcome: input.action === "reconcile_reward_sent" ? "sent" : "failed",
         transactionId:
           input.action === "reconcile_reward_sent" ? input.transactionId : undefined,
         reason: input.action === "reconcile_reward_failed" ? input.reason : undefined,
-        actor,
-      });
-    } else {
-      await callAdminMutation("submissions", "adminReviewSubmission", {
-        submissionId: input.submissionId,
-        action: input.action,
-        reason: input.action === "reject" ? input.reason : undefined,
-        actor,
+        actorId,
       });
     }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     return adminRouteFailure(error);

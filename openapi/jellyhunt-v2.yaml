@@ -286,7 +286,10 @@ paths:
         - name: Idempotency-Key
           in: header
           required: true
-          schema: { type: string, minLength: 1 }
+          schema:
+            type: string
+            maxLength: 128
+            pattern: '^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26})$'
       requestBody:
         required: true
         content:
@@ -443,6 +446,9 @@ paths:
       security:
         - jellyMissionToken: []
       parameters:
+        - name: campaignId
+          in: query
+          schema: { type: string, pattern: '^cam_[0-9A-Za-z]+$' }
         - name: missionId
           in: query
           schema: { type: string, pattern: '^mis_[0-9A-Za-z]+$' }

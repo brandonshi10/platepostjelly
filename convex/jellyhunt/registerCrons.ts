@@ -1,13 +1,18 @@
-import type { Crons } from "convex/server";
+import { anyApi, type Crons, type FunctionReference } from "convex/server";
 
-export function registerJellyhuntCrons(_crons: Crons): void {
-  // Reward watchdog cron intentionally omitted from this plan.
-  // Production enablement requires:
-  // 1. JELLYHUNT_AUTOMATIC_REWARDS_ENABLED=true in the Convex environment
-  // 2. A reviewed cron interval agreed with PlatePost operations
-  // 3. Alerting for uncertain/stuck intents
-  //
-  // The leaseNextRewardAttempt mutation already checks the env flag and
-  // will no-op when rewards are disabled, so registering a cron here
-  // is safe but pointless until the flag is set.
+const runRewardWorker = anyApi.jellyhunt.rewards.runRewardWorker as FunctionReference<
+  "action",
+  "internal"
+>;
+const runRewardWatchdog = anyApi.jellyhunt.rewards.runRewardWatchdog as FunctionReference<
+  "action",
+  "internal"
+>;
+
+export function registerJellyhuntCrons(crons: Crons): void {
+  // Both jobs are safe to register in every environment. The dispatcher
+  // exits unless automatic rewards are explicitly enabled, and Production
+  // additionally requires a separate reviewed enablement flag.
+  crons.interval("jellyhunt reward dispatcher", { minutes: 1 }, runRewardWorker, {});
+  crons.interval("jellyhunt reward lease watchdog", { minutes: 1 }, runRewardWatchdog, {});
 }

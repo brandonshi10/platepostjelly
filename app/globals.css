@@ -1548,6 +1548,45 @@ body:has(.admin-login-page) {
   grid-column: 1 / -1;
 }
 
+.admin-budget-summary {
+  background: #f4f6ff;
+  border: 1px solid #cbd3f3;
+  border-left: 4px solid #5870d8;
+  border-radius: 7px;
+  color: #42485b;
+  display: grid;
+  font-size: 11px;
+  gap: 5px;
+  padding: 11px 12px;
+}
+
+.admin-budget-summary strong {
+  color: #2846c7;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.admin-budget-summary small {
+  color: #6b7080;
+  line-height: 1.45;
+}
+
+.admin-budget-summary[data-status="funded"] {
+  background: #edf8f2;
+  border-color: #9ed0b9;
+  border-left-color: #23815b;
+}
+
+.admin-budget-summary[data-status="funded"] strong {
+  color: #116044;
+}
+
+.admin-budget-summary[data-status="insufficient"] {
+  background: #fff7e4;
+  border-color: #e3c779;
+  border-left-color: #bd7b12;
+}
+
 .admin-editor input,
 .admin-editor select,
 .admin-editor textarea,

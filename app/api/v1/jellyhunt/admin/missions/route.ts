@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
   const auth = requireAdminSession(request);
   if ("response" in auth) return auth.response;
   try {
-    return NextResponse.json({ missions: await callAdminQuery("listAdminMissions") });
+    const [missions, budgetContext] = await Promise.all([
+      callAdminQuery("listAdminMissions"),
+      callAdminQuery("getAdminBudgetContext"),
+    ]);
+    return NextResponse.json({ missions, budgetContext });
   } catch (error) {
     return adminRouteFailure(error);
   }
@@ -35,7 +39,8 @@ export async function POST(request: NextRequest) {
     const result = await callAdminMutation("missions", "createMissionWithLocation", {
       mission: input.mission,
       location: input.location,
-      actor: auth.session.username,
+      budgets: input.budgets,
+      actorId: auth.session.username,
     });
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
@@ -54,9 +59,10 @@ export async function PUT(request: NextRequest) {
     await callAdminMutation("missions", "updateMissionWithLocation", {
       mission: input.mission,
       location: input.location,
+      budgets: input.budgets,
       missionId: input.missionId,
       locationId: input.locationId,
-      actor: auth.session.username,
+      actorId: auth.session.username,
     });
     return NextResponse.json({ ok: true });
   } catch (error) {
@@ -74,7 +80,7 @@ export async function PATCH(request: NextRequest) {
     const input = updateAdminMissionStatusSchema.parse(await request.json());
     await callAdminMutation("missions", "updateMissionStatus", {
       ...input,
-      actor: auth.session.username,
+      actorId: auth.session.username,
     });
     return NextResponse.json({ ok: true });
   } catch (error) {

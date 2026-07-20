@@ -24,7 +24,10 @@ export class JellyRewardClient {
   ): Promise<PartnerRewardOutcome> {
     try {
       const response = await this.transport.sendAttempt(rewardIntentId, request);
-      return parseRewardAttemptResponse(response.status, response.body);
+      return parseRewardAttemptResponse(response.status, response.body, {
+        intentId: rewardIntentId,
+        attemptNumber: request.attemptNumber,
+      });
     } catch {
       return { status: "uncertain", reasonCode: "transport_error" };
     }

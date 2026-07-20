@@ -43,7 +43,7 @@ describe("jellyhunt v2 primitives", () => {
     async function makeToken(overrides: Record<string, unknown> = {}, opts: { alg?: string } = {}) {
       const now = Math.floor(Date.now() / 1000);
       const payload = {
-        sid: "session-1",
+        session_id: "session-1",
         jti: "token-1",
         scope: "jellyhunt:read jellyhunt:submit",
         ...overrides,
@@ -75,7 +75,7 @@ describe("jellyhunt v2 primitives", () => {
     it("rejects an expired token", async () => {
       const { requireJellyViewer } = await import("../src/lib/jellyhunt/v2/jelly-mission-token");
       const now = Math.floor(Date.now() / 1000);
-      const jwt = new SignJWT({ sid: "s1", jti: "t1", scope: "jellyhunt:read" })
+      const jwt = new SignJWT({ session_id: "s1", jti: "t1", scope: "jellyhunt:read" })
         .setProtectedHeader({ alg: "ES256", kid: "test-key-1" })
         .setIssuedAt(now - 600)
         .setExpirationTime(now - 500)
@@ -94,7 +94,7 @@ describe("jellyhunt v2 primitives", () => {
     it("rejects wrong audience", async () => {
       const { requireJellyViewer } = await import("../src/lib/jellyhunt/v2/jelly-mission-token");
       const now = Math.floor(Date.now() / 1000);
-      const jwt = new SignJWT({ sid: "s1", jti: "t1", scope: "jellyhunt:read" })
+      const jwt = new SignJWT({ session_id: "s1", jti: "t1", scope: "jellyhunt:read" })
         .setProtectedHeader({ alg: "ES256", kid: "test-key-1" })
         .setIssuedAt(now)
         .setExpirationTime(now + 60)
@@ -124,7 +124,7 @@ describe("jellyhunt v2 primitives", () => {
     it("rejects lifetime greater than 300s", async () => {
       const { requireJellyViewer } = await import("../src/lib/jellyhunt/v2/jelly-mission-token");
       const now = Math.floor(Date.now() / 1000);
-      const jwt = new SignJWT({ sid: "s1", jti: "t1", scope: "jellyhunt:read" })
+      const jwt = new SignJWT({ session_id: "s1", jti: "t1", scope: "jellyhunt:read" })
         .setProtectedHeader({ alg: "ES256", kid: "test-key-1" })
         .setIssuedAt(now)
         .setExpirationTime(now + 600)
@@ -143,7 +143,7 @@ describe("jellyhunt v2 primitives", () => {
     it("rejects HS256 tokens", async () => {
       const { requireJellyViewer } = await import("../src/lib/jellyhunt/v2/jelly-mission-token");
       const now = Math.floor(Date.now() / 1000);
-      const jwt = new SignJWT({ sid: "s1", jti: "t1", scope: "jellyhunt:read" })
+      const jwt = new SignJWT({ session_id: "s1", jti: "t1", scope: "jellyhunt:read" })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt(now)
         .setExpirationTime(now + 60)

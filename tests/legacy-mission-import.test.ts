@@ -52,8 +52,9 @@ describe("legacy Jellyhunt mission migration", () => {
     const source = existsSync(importerPath) ? readFileSync(importerPath, "utf8") : "";
 
     expect(source).toContain("ConvexHttpClient");
-    expect(source).toContain("anyApi.missions.listAdminMissions");
-    expect(source).toContain("anyApi.missions.createMissionWithLocation");
+    expect(source).toContain("anyApi.jellyhunt.admin.listAdminMissions");
+    expect(source).toContain("anyApi.jellyhunt.admin.createMissionWithLocation");
+    expect(source).not.toContain("anyApi.missions.");
     expect(source).toContain('process.argv.includes("--apply")');
     expect(source).toContain("CONVEX_URL");
     expect(source).toContain("PLATEPOST_CONVEX_SERVICE_KEY");

@@ -203,6 +203,7 @@ function commitArgs(acquired: any, overrides: Record<string, unknown> = {}) {
     missionPublicId: "mis_atomic",
     participationPublicId: "par_atomic",
     missionRevision: 1,
+    expectedAttempt: 1,
     jellyPostId: "jelly-post-1",
     preflight: {
       jellyPostId: "jelly-post-1",
@@ -364,6 +365,7 @@ describe("atomic v2 submission intake", () => {
     ["request hash", { requestHash: "wrong-hash" }, "idempotency_request_mismatch"],
     ["resource binding", { submissionPublicId: "sub_wrong" }, "idempotency_resource_mismatch"],
     ["expired lease", { now: NOW + 60_001 }, "idempotency_lease_expired"],
+    ["attempt snapshot", { expectedAttempt: 2 }, "submission_attempt_changed"],
   ])("rejects a commit with an invalid %s without creating durable work", async (_label, overrides, error) => {
     await seedAtomicMission(t);
     const acquired = await t.mutation(submissions.prepareSubmissionIntake, prepareArgs());

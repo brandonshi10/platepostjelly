@@ -41,6 +41,14 @@ export function rateLimited(): JellyhuntV2Error {
   return new JellyhuntV2Error(429, "rate_limited", "Too many requests");
 }
 
+export function serviceUnavailable(message = "Service is temporarily unavailable"): JellyhuntV2Error {
+  return new JellyhuntV2Error(503, "service_unavailable", message);
+}
+
+export function submissionConflict(): JellyhuntV2Error {
+  return new JellyhuntV2Error(409, "submission_conflict", "A conflicting submission already exists");
+}
+
 export function internalError(): JellyhuntV2Error {
   return new JellyhuntV2Error(500, "internal_error", "An internal error occurred");
 }

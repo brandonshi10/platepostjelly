@@ -1,0 +1,12 @@
+{
+  "status": 401,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": {
+    "error": {
+      "code": "unauthorized",
+      "message": "Valid Jelly server authentication is required."
+    }
+  }
+}

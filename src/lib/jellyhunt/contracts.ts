@@ -92,7 +92,7 @@ export type UserMissionStatus = z.infer<typeof userMissionStatusSchema>;
 export type MissionsResponse = z.infer<typeof missionsResponseSchema>;
 export type SubmissionRequest = z.infer<typeof submissionRequestSchema>;
 
-const V1_ADDITIVE_KEYS = new Set(["publicId", "revision"]);
+const V1_ADDITIVE_KEYS = new Set(["publicId", "revision", "requestId"]);
 
 export function projectLegacyV1(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(projectLegacyV1);

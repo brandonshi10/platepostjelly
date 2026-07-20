@@ -57,9 +57,13 @@ const modules: Record<string, () => Promise<unknown>> = {
   "convex/jellyhunt/submissions.ts": () => import("../../../convex/jellyhunt/submissions"),
   "convex/jellyhunt/budgets.ts": () => import("../../../convex/jellyhunt/budgets"),
   "convex/jellyhunt/ownerReads.ts": () => import("../../../convex/jellyhunt/ownerReads"),
+  "convex/jellyhunt/admin.ts": () => import("../../../convex/jellyhunt/admin"),
 };
 
 export function createJellyhuntTestConvex() {
+  // Scheduled actions are exercised separately; disabling autorun keeps
+  // mutation tests deterministic and prevents background work after teardown.
+  process.env.JELLYHUNT_VERIFICATION_AUTORUN_ENABLED = "false";
   return convexTest(schema, modules);
 }
 

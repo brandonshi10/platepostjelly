@@ -22,7 +22,7 @@ export type CursorBinding = {
   queryHash: string;
   limit: number;
   scopeKey?: string;
-  snapshot: string;
+  snapshot?: string;
 };
 
 function getSecret(): string {
@@ -142,7 +142,7 @@ export async function openCursor(token: string, binding: CursorBinding): Promise
       parsed.queryHash !== binding.queryHash ||
       parsed.limit !== binding.limit ||
       parsed.scopeKey !== binding.scopeKey ||
-      parsed.snapshot !== binding.snapshot ||
+      (binding.snapshot !== undefined && parsed.snapshot !== binding.snapshot) ||
       parsed.expiresAt <= Date.now()
     ) {
       throw invalidCursor();
