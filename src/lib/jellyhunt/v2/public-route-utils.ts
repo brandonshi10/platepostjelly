@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { JellyhuntV2Error } from "./errors";
+import { dependencyUnavailable, JellyhuntV2Error } from "./errors";
 import type { V2RouteContext } from "./route-handler";
+
+export { dependencyUnavailable };
 
 export function invalidRequest(message = "The request is invalid."): JellyhuntV2Error {
   return new JellyhuntV2Error(400, "invalid_request", message);
@@ -15,14 +17,6 @@ export function resourceNotFound(
     place: "This place does not exist.",
   };
   return new JellyhuntV2Error(404, `${resource}_not_found`, labels[resource]);
-}
-
-export function dependencyUnavailable(): JellyhuntV2Error {
-  return new JellyhuntV2Error(
-    503,
-    "dependency_unavailable",
-    "A required dependency is temporarily unavailable.",
-  );
 }
 
 export function dependencyInvalidResponse(): JellyhuntV2Error {

@@ -45,6 +45,14 @@ export function serviceUnavailable(message = "Service is temporarily unavailable
   return new JellyhuntV2Error(503, "service_unavailable", message);
 }
 
+export function dependencyUnavailable(): JellyhuntV2Error {
+  return new JellyhuntV2Error(
+    503,
+    "dependency_unavailable",
+    "A required dependency is temporarily unavailable.",
+  );
+}
+
 export function submissionConflict(): JellyhuntV2Error {
   return new JellyhuntV2Error(409, "submission_conflict", "A conflicting submission already exists");
 }
