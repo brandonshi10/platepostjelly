@@ -6,7 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
+### Added (Tasks 5-7: Native Workflows)
+
+- Submission approval, pre-payment reversal, and post-payment moderation mutations with idempotent decision replay and double-completion guards (`convex/jellyhunt/approvals.ts`).
+- Indexed leaderboard queries by scope (all-time, per-campaign) with pagination and profile refresh (`convex/jellyhunt/leaderboards.ts`).
+- Pure reward-attempt builders, response parsers, and receipt validators (`convex/jellyhunt/rewardContracts.ts`).
+- Transport abstraction for reward execution and status lookup (`convex/jellyhunt/jellyRewardClient.ts`).
+- Reward lease lifecycle (queued to sent/uncertain/failed) with env-flag kill switch (`convex/jellyhunt/rewards.ts`).
+- Webhook signature verification with current + previous key overlap and event dedup by ID + body hash (`convex/jellyhunt/webhooks.ts`).
+- HTTP route registration for `/jellyhunt/webhooks/rewards` and root entrypoints (`convex/http.ts`, `convex/crons.ts`).
+- v2 HTTP API layer: typed errors, response envelope, route handler wrapper, and Convex repository (`src/lib/jellyhunt/v2/`).
+- 17 Next.js App Router route files under `app/api/v2/jellyhunt/` for campaigns, missions, participations, submissions, leaderboards, and rewards. Campaigns/current and leaderboard routes are fully functional; others are stubs pending earlier Convex modules.
+- 41 new tests across approvals (11), leaderboards (5), rewards (15), webhooks (6), and legacy adapter (4). All 60 tests passing.
+
+### Added (Tasks 1-4: Foundation)
 
 - PlatePost-hosted consumer experience branded **PlatePost x JellyJelly: Human Social!** at `/human-social`.
 - `/map` redirect to the canonical consumer route.

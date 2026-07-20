@@ -45,6 +45,10 @@ const modules: Record<string, () => Promise<unknown>> = {
   "convex/jellyhunt/places.ts": () => import("../../../convex/jellyhunt/places"),
   "convex/jellyhunt/missions.ts": () => import("../../../convex/jellyhunt/missions"),
   "convex/jellyhunt/audit.ts": () => import("../../../convex/jellyhunt/audit"),
+  "convex/jellyhunt/approvals.ts": () => import("../../../convex/jellyhunt/approvals"),
+  "convex/jellyhunt/leaderboards.ts": () => import("../../../convex/jellyhunt/leaderboards"),
+  "convex/jellyhunt/rewards.ts": () => import("../../../convex/jellyhunt/rewards"),
+  "convex/jellyhunt/webhooks.ts": () => import("../../../convex/jellyhunt/webhooks"),
 };
 
 export function createJellyhuntTestConvex() {
