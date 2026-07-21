@@ -61,6 +61,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Added OpenAPI schemas, v1/v2 compatibility fixtures, Jelly partner fixtures, implementation/design records, and focused tests for routes, contracts, map behavior, Convex workflows, evidence policy, owner privacy, rewards, and admin compatibility.
 - Added complete setup, environment, security, deployment, ownership, native-app handoff, and launch-gate documentation.
+- Recorded the completed GitHub handoff: implementation PR #3 and dependency-error PR #4 are merged into `main` in `brandonshi10/platepostjelly`.
+- Replaced stale pre-merge and Convex typecheck notes with the current integration evidence and an ordered deployment-resume checklist.
 
 ### Changed
 
@@ -73,6 +75,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Kept v1 reads as a compatibility surface while making v2 the direct-native target for Kris/Jelly engineering; v1 submission writes are pre-cutover/development-only and return `410 Gone` in Production.
 - Changed all-time leaderboard semantics to begin with this PlatePost tool's launch/import boundary; current season is scoped to the active campaign.
 - Recorded the initial-release operating decisions: uncertain rewards remain a restricted, audited manual reconciliation workflow; participation rows are not expired by a background sweeper; rejected users may resubmit within the existing mission attempt/window rules.
+- Designated this repository's `main` branch as the canonical JellyHunt code handoff while keeping the shared PlatePost Convex schema integration as a separate reviewed step.
+- Paused Vercel linking and deployment at the GitHub handoff boundary; a future deployment must reuse PlatePost's exact existing project rather than create a duplicate.
+- Clarified that shared Convex integration must review both canonical namespaced tables and transitional generic legacy tables/modules, then explicitly exclude or collision-review the legacy surface while preserving v1 compatibility.
 
 ### Fixed
 
@@ -92,7 +97,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Integration required before Production
 
-- PlatePost has not yet reviewed/merged this standalone `jellyhunt*` schema into its canonical application or connected a shared development Convex deployment.
+- The JellyHunt implementation is merged into this repository's `main` branch, but PlatePost has not yet reviewed or merged the namespaced `jellyhunt*` tables/functions into its shared Convex schema or connected a shared development deployment.
 - The 16 legacy missions require human review and draft import; legacy submissions and payout receipts require a separate dedupe-safe cutover.
 - Jelly must supply the mission-token endpoint/JWKS and authoritative place-feed, exact-post preflight, component evidence, profile eligibility, reward-intent/lookup, and reward-capacity contracts.
 - Manual uncertain-reward reconciliation is accepted for the initial release and must remain restricted to trained operators with audit review. A server-verified Jelly receipt/confirmed-no-transfer gate remains recommended before this workflow is automated.
@@ -100,4 +105,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The PlatePost admin, public map, v1, and v2 flows require live development and browser acceptance.
 - Admin login rate limiting/WAF policy, monitoring, alerts, retention, support, rollback, and pause runbooks require operator ownership.
 - Production Mapbox, Convex, Vercel, and Jelly settings are not configured in source control.
-- No production payout or Production deployment has been performed.
+- No Vercel Preview, Production deployment, or production payout has been performed; deployment is intentionally paused.

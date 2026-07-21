@@ -1,10 +1,10 @@
 # PlatePost JellyHunt
 
-PlatePost JellyHunt is the PlatePost-hosted mission platform for JellyJelly. PlatePost hosts the consumer map and operations dashboard; namespaced Convex records hold the editable mission catalog and workflow state; Jelly remains authoritative for identity, posts, restaurant/place evidence, trusted post location, balances, and the final `JELLY-MY-JELLY` transfer.
+PlatePost JellyHunt is the mission platform designed for PlatePost to host for JellyJelly. PlatePost will host the consumer map and operations dashboard; namespaced Convex records hold the editable mission catalog and workflow state; Jelly remains authoritative for identity, posts, restaurant/place evidence, trusted post location, balances, and the final `JELLY-MY-JELLY` transfer.
 
 The public experience is branded **PlatePost x JellyJelly: Human Social!** and lives at `/human-social`.
 
-> **Integration status:** the application, Convex model, compatibility API, and native v2 routes are implemented in this standalone repository. They have not been connected to PlatePost's shared Convex project or promoted to Production. Real Jelly mission-token, evidence, place-feed, and at-most-once reward endpoints are still required before production use.
+> **Delivery status (2026-07-20):** the application, Convex model, compatibility API, and native v2 routes are merged into `main` in the canonical JellyHunt delivery repository, [`brandonshi10/platepostjelly`](https://github.com/brandonshi10/platepostjelly). The current handoff is GitHub-only and deployment is intentionally paused. This repository is not linked to a Vercel project, PlatePost's shared Convex project has not been changed, and Production has not been touched. Real Jelly mission-token, evidence, place-feed, and at-most-once reward endpoints are still required before production use.
 
 ## What is built
 
@@ -26,6 +26,7 @@ The public experience is branded **PlatePost x JellyJelly: Human Social!** and l
 
 | Area | Repository status | What remains outside the repository |
 | --- | --- | --- |
+| GitHub handoff | Implementation [PR #3](https://github.com/brandonshi10/platepostjelly/pull/3) and dependency-error [PR #4](https://github.com/brandonshi10/platepostjelly/pull/4) are merged into `main` | PlatePost review and ownership assignment |
 | Consumer map and live leaderboards | Implemented and fixture-tested | Live Mapbox + PlatePost development Convex browser acceptance |
 | Admin mission/review dashboard | Implemented | Connect to PlatePost development Convex and complete operator acceptance |
 | Canonical Convex model/workflows | Implemented under namespaced `jellyhunt*` tables | Merge review against PlatePost's real schema, deployment, configuration, and seed data |
@@ -33,7 +34,7 @@ The public experience is branded **PlatePost x JellyJelly: Human Social!** and l
 | Native v2 API | Route handlers, contracts, auth verification, reads, writes, status/event history, and leaderboards implemented | Jelly mission-token/JWKS, partner APIs, shared environment, and native app integration |
 | Jelly evidence integration | Strict preflight/verification clients and policy implemented; legacy exact-post fallback is conservative | Authoritative Jelly partner endpoints and agreed fixtures |
 | Jelly rewards | Intent, lease, receipt validation, pre-payout recheck, watchdog, uncertain-state quarantine, and manual operator reconciliation implemented | At-most-once Jelly service, capacity controls, funded development account, explicit production approval, and optional proof-backed reconciliation automation |
-| Production | Not deployed | Every gate in [Next Steps](docs/NEXT_STEPS.md) |
+| Deployment | Intentionally paused; no Vercel project was linked or created | PlatePost must explicitly resume deployment and complete every gate in [Next Steps](docs/NEXT_STEPS.md) |
 
 ## Ownership boundary
 
@@ -150,7 +151,7 @@ pnpm install
 pnpm convex
 ```
 
-Run `pnpm dev` in a second terminal. Do not point this standalone schema at PlatePost's shared project until a PlatePost engineer has reviewed how `jellyhuntTables` will be merged into the real `convex/schema.ts`. Never use a Production deploy key for local integration.
+Run `pnpm dev` in a second terminal. Although this is the canonical JellyHunt code repository, its full Convex schema has not been merged into PlatePost's shared schema. Do not point it at PlatePost's shared project until a PlatePost engineer has reviewed how `jellyhuntTables` will be merged into the real `convex/schema.ts`. Never use a Production deploy key for local integration.
 
 ## Configuration
 
@@ -214,13 +215,15 @@ pnpm build
 
 A Next.js build does not validate Convex independently. Run the Convex typecheck/code generation gate against an isolated or approved development deployment before release.
 
-## Deployment outline
+## Deployment status and eventual outline
+
+Deployment is intentionally paused. GitHub `main` is the current handoff artifact; do not create or link a Vercel project until a PlatePost owner explicitly resumes deployment. When that happens:
 
 1. Rotate the exposed Convex and Vercel credentials.
-2. Confirm the canonical PlatePost repository/project and review the schema merge against PlatePost's existing tables.
+2. Identify PlatePost's exact existing Vercel team/project and decide whether this dedicated repository is deployed directly or embedded into the main PlatePost application. Do not create a duplicate project, and review the JellyHunt tables against PlatePost's existing Convex schema before connecting it.
 3. Connect a PlatePost development Convex deployment with developer access—not a pasted deploy key.
 4. Configure fresh development-only Vercel and Convex environment values with rewards disabled.
-5. Deploy Preview, import reviewed draft missions, and prove that one admin edit appears on `/human-social`, v1, and v2 without a code release.
+5. Deploy a Preview, import reviewed draft missions, and prove that one admin edit appears on `/human-social`, v1, and v2 without a code release.
 6. Complete Jelly mission-token, place/evidence, profile, reward, and capacity integrations.
 7. Run the complete end-to-end and rollback checklist in [Next Steps](docs/NEXT_STEPS.md).
 8. Promote to Production only after security, data migration, budget, payout, and operator approvals.
@@ -231,7 +234,7 @@ If a web release fails, roll back Vercel. If mission/workflow state is unsafe, p
 
 ### PlatePost team
 
-PlatePost owns the deployment, Convex schema merge, environment mapping, mission import/review, admin operation, budget setup, monitoring, and Vercel hosting. Start with [Next Steps](docs/NEXT_STEPS.md) and [PlatePost Integration Status](docs/PLATEPOST_INTEGRATION.md).
+The completed code handoff is on GitHub `main`. PlatePost owns the decision to resume deployment, selection of the existing Vercel project, Convex schema merge, environment mapping, mission import/review, admin operation, budget setup, monitoring, and hosting. Start with [Next Steps](docs/NEXT_STEPS.md) and [PlatePost Integration Status](docs/PLATEPOST_INTEGRATION.md).
 
 ### Kris / Jelly app
 

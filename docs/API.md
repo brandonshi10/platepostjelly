@@ -2,6 +2,8 @@
 
 This document describes the implemented v1 compatibility API and the implemented native v2 API. v1 remains available for the existing Jelly server integration, but it is not the direct-native target because personalized calls use a transitional shared key and caller-supplied identity. New Jelly app work should use the v2 OpenAPI contract and short-lived Jelly-signed mission tokens after the target PlatePost/Jelly development environment is connected.
 
+> **Hosting status:** no live PlatePost base URL has been published; deployment is intentionally paused. Until the shared Convex functions are installed, public v2 discovery and leaderboard routes return retryable `503 dependency_unavailable` responses.
+
 ## Base URL and version
 
 The v1 compatibility endpoints are under:
@@ -506,7 +508,7 @@ for the partner-integration contract tests.
 
 ### Migration relationship to v1
 
-v1 reads remain the live compatibility surface while Jelly adopts the implemented
+v1 reads remain the implemented compatibility surface while Jelly adopts the
 v2 API. `tests/jellyhunt-v1-compatibility.test.ts` guards its response shapes
 and statuses; v1 is retired only after the shared Convex deployment, native
 integration, legacy dedupe/transaction cutover, and monitored pilot complete.

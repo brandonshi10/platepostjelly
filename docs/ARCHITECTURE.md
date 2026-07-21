@@ -2,11 +2,13 @@
 
 ## Purpose
 
-This document describes the currently implemented v1 architecture. v1 remains a compatibility surface; signed direct-native identity, full mission/submission status resources, canonical Jelly place content, idempotent rewards, and webhooks are specified in the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md).
+This document describes the implemented PlatePost JellyHunt architecture. Native v2 is the direct JellyJelly integration target; v1 remains a transitional compatibility surface. The binding native contract is the [OpenAPI document](../openapi/jellyhunt-v2.yaml), supported by the [Native Mission API v2 design](superpowers/specs/2026-07-16-platepost-jelly-native-api-v2-design.md).
+
+> **Delivery status:** this is the target runtime architecture. The code is merged in GitHub, but Vercel deployment is paused and shared PlatePost Convex is not connected.
 
 This service moves Jellyhunt operations out of hardcoded JellyJelly website data and into a PlatePost-owned backend. It has three consumers:
 
-- The PlatePost-hosted **PlatePost x JellyJelly: Human Social!** map.
+- The **PlatePost x JellyJelly: Human Social!** map that PlatePost is designed to host.
 - PlatePost operators managing missions and reviewing completions.
 - The JellyJelly native app and Jelly server.
 
@@ -18,13 +20,17 @@ The central boundary is deliberate: PlatePost owns the mission program and its w
 flowchart LR
     Visitor["Consumer browser"] --> Web["PlatePost Next.js\n/human-social"]
     Operator["PlatePost operator"] --> Admin["Protected Next.js admin"]
-    Native["JellyJelly app"] --> JellyServer["Jelly authenticated server"]
-    JellyServer --> API["PlatePost API\n/api/v1/jellyhunt"]
+    Native["JellyJelly app"] -->|authenticate| JellyAuth["Jelly mission token service"]
+    JellyAuth -->|short-lived mission token| Native
+    Native --> V2["PlatePost native API\n/api/v2/jellyhunt"]
+    V2 -.->|JWKS verification| JellyAuth
+    JellyServer["Jelly authenticated server"] --> V1["Compatibility API\n/api/v1/jellyhunt"]
 
     Web --> Repo["Server-only Convex repository"]
     Admin --> AdminRoutes["Signed-session admin routes"]
     AdminRoutes --> Repo
-    API --> Repo
+    V1 --> Repo
+    V2 --> Repo
     Repo --> Convex["PlatePost Convex"]
 
     Convex --> Verify["Internal verification action"]
@@ -56,7 +62,7 @@ Browser code never receives `PLATEPOST_CONVEX_SERVICE_KEY`, Jelly partner creden
 - User authentication and canonical user IDs.
 - Jelly post/video existence and canonical post IDs.
 - Authorship.
-- Restaurant tags/topics or other trusted restaurant association.
+- Canonical place association and versioned component evidence; generic topics, hashtags, or client-writable metadata are never authoritative proof.
 - Trusted post geolocation.
 - Jelly-My-Jelly balances and the final transaction.
 - The final transaction ID.
@@ -87,12 +93,13 @@ The fallback exists for development and graceful degradation; it is not a replac
 
 ### HTTP API
 
-The public HTTP surface is under `/api/v1/jellyhunt`. Next.js validates request authentication and JSON contracts before calling Convex.
+The canonical native surface is under `/api/v2/jellyhunt`; `/api/v1/jellyhunt` remains available only as the compatibility boundary. Next.js validates authentication and contracts before calling Convex.
 
-- Anonymous mission reads expose public mission data only.
-- A mission request with `user_id` requires Jelly server authentication.
-- Submission writes always require Jelly server authentication.
-- The transitional key is compared without early exit and fails closed if the server key is absent.
+- Public v2 discovery, places, Jelly feeds, and leaderboards expose only public projections.
+- Personalized v2 reads derive the viewer from a short-lived Jelly-signed mission token.
+- Participation and submission writes require token scope plus server-enforced idempotency.
+- v1 personalized calls remain server-to-server behind the transitional shared key; Production v1 submission writes return `410 Gone`.
+- Both API versions map to the same canonical namespaced Convex records.
 
 See [API reference](API.md).
 
@@ -103,8 +110,9 @@ The browser admin uses a signed, 12-hour HTTP-only, SameSite=Strict session. Aut
 Mission and location saves use one transactional Convex mutation. Dashboard schedule inputs are interpreted in the location IANA timezone. Submission reviews show the immutable restaurant/location/reward snapshot, claimed and verified GPS/distance, verification summary, and Jelly post link so an operator decides against the terms accepted at submission time.
 
 ## Convex data model
+All canonical workflow tables are namespaced with `jellyhunt*`. The standalone root schema also spreads generic legacy tables as noncanonical transitional artifacts for compatibility; shared integration must explicitly exclude or collision-review them. The v1 route names are compatibility URLs, not canonical table names.
 
-### `locations`
+### `jellyhuntPlaces`
 
 Stores the mission-specific place:
 
@@ -115,9 +123,9 @@ Stores the mission-specific place:
 - IANA timezone.
 - Creation and update timestamps.
 
-### `missions`
+### `jellyhuntMissions` and `jellyhuntMissionRevisions`
 
-Stores editable mission configuration:
+Store editable mission configuration plus immutable published terms:
 
 - Slug, title, description.
 - `draft | active | paused | archived`.
@@ -130,9 +138,9 @@ Stores editable mission configuration:
 
 Only active, currently scheduled missions are returned publicly.
 
-### `submissions`
+### `jellyhuntParticipations`, `jellyhuntSubmissions`, and `jellyhuntSubmissionEvents`
 
-Stores the relationship between a mission, Jelly user, and Jelly post:
+Store revision-locked participation, submission attempts, and owner-visible status history:
 
 - Stable dedupe key and the mission revision accepted at submission time.
 - Workflow status.
@@ -144,9 +152,9 @@ Stores the relationship between a mission, Jelly user, and Jelly post:
 
 Indexes support mission/user checks, exact dedupe, global post reuse prevention, and status queues.
 
-### `rewardAttempts`
+### `jellyhuntRewardBudgets`, reservations, intents, and attempts
 
-Stores one payout orchestration record per stable idempotency key:
+Store campaign/mission capacity, reservations, one immutable reward intent, and attempt records keyed for idempotency:
 
 - Submission relation and idempotency key.
 - Immutable reward amount, token, and mission title copied from the submission snapshot.
@@ -155,7 +163,7 @@ Stores one payout orchestration record per stable idempotency key:
 - A two-minute processing lease moves an abandoned worker to `uncertain` for reconciliation.
 - Timestamps.
 
-### `auditEvents`
+### `jellyhuntAuditEvents`
 
 Stores append-only operator and workflow history:
 
@@ -186,11 +194,11 @@ sequenceDiagram
     N-->>C: public cache or private no-store
 ```
 
-The public map currently calls the same repository from its server component instead of making an HTTP round trip to its own API. This keeps the map and native API on one validation and mapping layer.
+The public map calls the v1-compatible server repository directly instead of making an HTTP round trip to its own API. Native v2 uses a separate repository and contract projection. Both projections read the same canonical namespaced Convex mission records, but each validates and maps the response shape required by its consumer.
 
 The repository supplies a caller-derived current time rounded down to the minute because Convex queries are deterministic and cacheable. Convex applies the coarse schedule window, then the Next.js repository rechecks visibility against the exact current time. Mission starts therefore have up to one minute of publication granularity; expired missions are removed by the exact check.
 
-## Submission and verification path
+## v1 compatibility submission and verification path
 
 ```mermaid
 sequenceDiagram
@@ -220,6 +228,38 @@ sequenceDiagram
 ```
 
 The internal action accepts only `submissionId`. It loads the expected user and post plus the immutable restaurant tag, location, geofence, approval mode, and mission revision captured when the submission was created. A later admin edit cannot change the proof requirements for an in-flight or historical submission, and a caller cannot choose verification criteria.
+
+## Canonical native v2 participation and submission path
+
+```mermaid
+sequenceDiagram
+    participant U as JellyJelly app
+    participant N as PlatePost v2 API
+    participant X as Convex workflow
+    participant P as Jelly partner API
+
+    U->>N: PUT mission participation + mission token
+    N->>N: Verify token and derive Jelly subject
+    N->>X: Start revision-locked participation
+    X-->>N: Participation snapshot
+    N-->>U: Participation and submission deadline
+    U->>N: POST submission + Idempotency-Key
+    N->>X: Acquire HTTP idempotency lease
+    N->>P: Exact-post ownership preflight
+    P-->>N: Canonical owner and post result
+    N->>X: Atomically commit submission, reward reservation, response, and first event
+    X-->>N: Submission accepted
+    N-->>U: 202 + owner resource links
+    X->>P: Verify versioned mission evidence
+    P-->>X: Evidence decision
+    X->>X: Persist status, event history, approval, and reward state
+    U->>N: GET owner submission/events
+    N->>X: Owner-scoped read using token subject
+    X-->>N: Current state and ordered events
+    N-->>U: Submission status timeline
+```
+
+In v2, the Jelly user ID is derived from the verified mission token rather than accepted from the request body. Participation locks the mission revision before posting. Submission intake uses HTTP idempotency, exact-post preflight, and an atomic Convex commit so the attempt count, reward reservation, stored response, and owner-visible first event cannot diverge. Verification and manual review append owner-visible events as the submission and reward states advance.
 
 ### Deduplication rules
 
@@ -314,6 +354,7 @@ The shared Jelly API key is not suitable for embedding in a native app. The targ
 - Every material state change writes an audit event.
 
 ## Target deployment topology
+This topology is intentionally not deployed yet. GitHub is the current delivery boundary; PlatePost must explicitly resume hosting and link the exact existing Vercel project before Preview work begins.
 
 - Vercel will host the Next.js site and HTTP boundary under the PlatePost organization.
 - Convex will host the database, private functions, schedulers, and Jelly actions.
@@ -324,13 +365,13 @@ Preview and Production must use different Convex deployments and credentials. A 
 
 ## Known architectural gaps before launch
 
-- Original visual/discovery-map parity is implemented and verified against the 16-mission local fixture; production parity still requires the reviewed Convex import and live token acceptance. Passport and Editorial Map shells are implemented. The Jelly Library/auth, signed personal progress/profile, and live leaderboard data remain contract-dependent; product must decide which stay native-only versus later PlatePost phases.
+- Original visual/discovery-map parity is implemented and verified against the 16-mission local fixture; production parity still requires the reviewed Convex import and live token acceptance. Passport and Editorial Map shells are implemented. Leaderboard queries, rankings, and all-time/current-season API responses are implemented; real usernames and eligibility still depend on Jelly's profile contract. Product must decide whether Jelly Library/auth and signed personal progress/profile stay native-only or become later PlatePost phases.
 - Native SSO, post selection/submission, and status refresh remain a Jelly/PlatePost launch integration.
-- Production Convex remains empty until the 16 approved legacy missions are imported.
-- PlatePost Convex access is required to generate bindings, deploy functions, seed records, and run live workflow tests.
+- PlatePost Production Convex is not connected and no production mission data has been imported.
+- Generated bindings and local Convex typechecking are complete; PlatePost development access is still required for the reviewed shared-schema push, seeding, and live workflow acceptance.
 - Jelly and PlatePost must finalize the partner verification schema and proof trust rules.
 - Jelly must provide an idempotent partner reward contract or a reliable transaction lookup for reconciliation.
 - The protected admin dashboard and operator workflow must pass live Convex browser testing.
 - Admin login needs Vercel WAF/platform rate limiting and failed-login monitoring before public exposure.
 - Duplicate/reused-post conflicts now preserve stable `409` responses; remaining business-rule and malformed-JSON failures need final HTTP normalization.
-- Native authentication must replace the transitional shared API key.
+- The v2 token verifier is implemented; Jelly must issue the signed mission token/JWKS and adopt v2 in the native app while the v1 shared key remains transitional server-only compatibility.

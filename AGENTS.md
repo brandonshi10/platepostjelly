@@ -3,7 +3,7 @@
 These rules are binding on any agent (human-directed or autonomous) working
 in this repository. They exist because this codebase talks to real money
 (`JELLY-MY-JELLY` transfers), a real user identity provider (Jelly), and a
-Convex project that is meant to merge into PlatePost's shared, production
+Convex model that still requires a reviewed merge into PlatePost's shared
 application. See [`docs/PLATEPOST_INTEGRATION.md`](docs/PLATEPOST_INTEGRATION.md)
 for the current connection status and [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md)
 for the full launch-blocker list these rules support.
@@ -11,13 +11,15 @@ for the full launch-blocker list these rules support.
 If a rule below and an instruction you are given ever conflict, the rule
 below wins. Stop and ask a human rather than working around it.
 
-## 1. Never deploy this standalone repository's schema over PlatePost
+## 1. Never deploy this repository's unmerged schema over PlatePost
 
-This repository is a **standalone, pre-merge** checkout (see
-`docs/PLATEPOST_INTEGRATION.md`). Its `convex/schema.ts` intentionally
-retires and replaces generic table names with the namespaced `jellyhunt*`
-tables in `convex/jellyhunt/schema.ts`. That is correct **only** inside
-this standalone repository.
+This is the canonical JellyHunt code repository, but its full Convex schema
+is still **pre-integration** relative to PlatePost's shared application (see
+`docs/PLATEPOST_INTEGRATION.md`). Its `convex/schema.ts` currently spreads
+both transitional generic tables from `convex/legacySchema.ts` and the
+canonical namespaced `jellyhunt*` tables from `convex/jellyhunt/schema.ts`.
+That coexistence supports this repository's compatibility surface; neither
+spread is an approved, drop-in replacement for PlatePost's shared schema.
 
 - Never run `npx convex dev`, `npx convex deploy`, or any command that
   pushes this repository's schema/functions against a Convex deployment
@@ -29,10 +31,12 @@ this standalone repository.
   (b) a PlatePost development deployment that a human operator has
   explicitly configured per the `docs/PLATEPOST_INTEGRATION.md` checklist,
   after the schema-merge review in that checklist's step 4 has happened.
-- Never merge this repository's `convex/jellyhunt/*` module into PlatePost's
-  real `convex/schema.ts` without the human schema-merge review described in
-  `docs/PLATEPOST_INTEGRATION.md`. An agent must not perform that merge
-  unilaterally, even if it believes the table names are collision-free.
+- Never merge this repository's `convex/jellyhunt/*`, `convex/legacySchema.ts`,
+  old root Convex modules, root schema, HTTP routes, or crons into PlatePost
+  without the human integration review described in
+  `docs/PLATEPOST_INTEGRATION.md`. The review must decide whether legacy
+  generic tables/functions are excluded or deliberately retained and prove
+  v1 compatibility. An agent must not make that decision unilaterally.
 
 ## 2. Never use a credential that was pasted into chat
 

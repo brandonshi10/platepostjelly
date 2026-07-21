@@ -4,11 +4,22 @@ Last updated: 2026-07-20
 
 The PlatePost JellyHunt application code is built, but the system is **not production-ready** until PlatePost and Jelly complete the external integration, data migration, security, and payout gates below. Complete them in order.
 
+## Current handoff state
+
+- [x] Canonical delivery repository: [`brandonshi10/platepostjelly`](https://github.com/brandonshi10/platepostjelly), default branch `main`.
+- [x] Full implementation [PR #3](https://github.com/brandonshi10/platepostjelly/pull/3) and dependency-error [PR #4](https://github.com/brandonshi10/platepostjelly/pull/4) are merged.
+- [x] Consumer map, admin, v1 compatibility API, native v2 API/OpenAPI, Convex workflows, tests, and handoff documentation are present in Git.
+- [ ] PlatePost's shared Convex project and environment mapping are connected.
+- [ ] The exact existing PlatePost Vercel project is identified and linked.
+- [ ] Jelly mission-token, partner evidence/place/profile/reward APIs, and native-app integration are accepted.
+
+The current owner decision is **GitHub-only handoff; deployment paused**. Git work may continue, but nobody should create, link, or deploy a Vercel project until a PlatePost owner explicitly resumes hosting. Shared PlatePost Convex and Production remain untouched.
+
 ## Implemented baseline
 
 These items are already present in this repository and should be preserved during PlatePost integration:
 
-- [x] PlatePost-hosted `/human-social` map and `/admin` operations dashboard.
+- [x] Host-ready `/human-social` map and `/admin` operations dashboard.
 - [x] Live current-season/all-time “most approved” leaderboard tabs with Jelly usernames and loading, empty, error, and retry states.
 - [x] Admin-editable, non-hardcoded missions and reviewed mission-place snapshots, plus optimistic-revision campaign/mission reward caps that cannot fall below reserved + paid amounts.
 - [x] Namespaced `jellyhunt*` Convex schema, immutable mission revisions, participations, submissions, events, dedupe/idempotency, budget reservations, approvals, reward intents/attempts, profiles, leaderboards, webhooks, and audit.
@@ -37,17 +48,19 @@ A Production Convex deploy key and a Vercel credential were exposed in chat. The
 
 **Stop condition:** do not connect or deploy this repository with either chat-exposed credential.
 
-### 2. Connect PlatePost development safely
+### 2. Connect PlatePost development safely after the hold is lifted
 
 **Owner:** PlatePost engineering
 
-This checkout is a standalone pre-merge project. PlatePost must decide whether it stays a dedicated Vercel application or is merged into the main PlatePost app; either path must preserve the namespaced data model and route contracts.
+This repository's `main` branch is the canonical JellyHunt code handoff. Hosting topology, the exact existing Vercel project, and shared Convex integration remain unconfirmed. PlatePost may deploy this dedicated application or deliberately embed it in the main PlatePost app; either path must preserve the namespaced data model and route contracts.
 
-- [ ] Record the canonical PlatePost repository/project, integration branch, Vercel team/project, and owner.
+- [x] Record the canonical JellyHunt delivery repository and branch: `brandonshi10/platepostjelly`, `main`.
+- [x] Merge implementation PR #3 and dependency-error PR #4 into `main`.
+- [ ] Assign the PlatePost deployment owner, explicitly lift the deployment hold, and identify the exact existing Vercel team/project without creating a duplicate.
 - [ ] Grant developer access to the PlatePost Convex project through the team, not through a Production deploy key.
 - [ ] Identify the development and Preview Convex deployments and map each Vercel environment to the correct URL/deployment.
-- [ ] Review `convex/jellyhunt/schema.ts` against PlatePost's real `convex/schema.ts`. Preserve every existing PlatePost table and verify every `jellyhunt*` table/index name is collision-free.
-- [ ] Merge the JellyHunt tables/functions and generated bindings through a reviewed PR.
+- [ ] Review the full Convex integration boundary against PlatePost: `convex/schema.ts`, `convex/jellyhunt/*`, `convex/legacySchema.ts`, old root function modules, HTTP routes, and crons. Preserve every PlatePost table/index/function/route/webhook and verify all names are collision-free.
+- [ ] Decide explicitly whether the transitional generic legacy tables/functions are excluded or deliberately retained. Prove v1 compatibility remains on the namespaced workflow path, then merge only the reviewed tables/functions/bindings.
 - [ ] Configure fresh development-only environment values from `.env.example` in both Vercel and Convex as appropriate.
 - [ ] Keep `JELLYHUNT_AUTOMATIC_REWARDS_ENABLED=false` and `JELLYHUNT_PRODUCTION_REWARDS_APPROVED=false`; set `JELLYHUNT_ENVIRONMENT_IDENTITY` explicitly to `development` for this environment.
 - [ ] Run Convex generation/typecheck against the approved development deployment and resolve every error.
@@ -195,6 +208,8 @@ Production automatic rewards must remain disabled until every old writer and pay
 
 ### Preview
 
+- [ ] A PlatePost owner explicitly lifts the current GitHub-only deployment hold.
+- [ ] The exact existing PlatePost Vercel team/project is recorded and linked; no duplicate project is created.
 - [ ] Credential rotation is complete.
 - [ ] PlatePost schema merge is reviewed and development Convex is connected.
 - [ ] Fresh development-only variables are configured in Convex and Vercel; the Preview reward worker has `JELLYHUNT_ENVIRONMENT_IDENTITY=preview`.
@@ -218,13 +233,14 @@ Production automatic rewards must remain disabled until every old writer and pay
 ## Do not do these
 
 - Do not use either credential exposed in chat; rotate them first.
-- Do not deploy this standalone schema over PlatePost's real schema without the merge review.
+- Do not deploy this repository's unmerged full schema over PlatePost's real schema without the merge review.
 - Do not hardcode Production missions in PlatePost or Jelly clients.
 - Do not enable `JELLYHUNT_DATA_SOURCE=fixture` in Preview or Production.
 - Do not put any service, partner, admin, reward, or deploy credential in `NEXT_PUBLIC_*`.
 - Do not trust a client-supplied Jelly user, username, wallet, reward amount, recipient, or payout idempotency identity.
 - Do not use topics or client-writable metadata as authoritative restaurant/place evidence.
 - Do not automatically retry `reward_uncertain`.
-- Do not mark an uncertain reward sent or failed from operator-entered text alone; require server-verified Jelly proof.
+- Do not mark an uncertain reward sent or failed from unsupported operator text. The accepted initial manual workflow requires a named operator's documented Jelly lookup, a confirmed transaction ID or confirmed-no-transfer reason, and an audit trail; any automated reconciliation additionally requires server-verified proof.
 - Do not test payouts against Production before the partner and legacy-cutover gates pass.
 - Do not apply broad Supabase balance/audit restrictions that could affect Pets or Wobbles.
+- Do not create, link, or deploy a Vercel project while the GitHub-only deployment hold is active.
