@@ -84,6 +84,7 @@ which stays the source of truth.
 - `JELLYHUNT_DATA_SOURCE=convex`
 - `JELLYHUNT_ADMIN_USERNAME`, `JELLYHUNT_ADMIN_PASSWORD`, `JELLYHUNT_ADMIN_SESSION_SECRET`
 - `JELLYHUNT_CURSOR_SECRET`
+- `PLATEPOST_CONVEX_SERVICE_KEY`
 - `NEXT_PUBLIC_JELLY_IOS_APP_URL`, `NEXT_PUBLIC_JELLY_ANDROID_APP_URL`
 
 **Convex deployment**
@@ -93,6 +94,13 @@ which stays the source of truth.
 - `JELLYHUNT_PRODUCTION_REWARDS_APPROVED=false`
 - `JELLYHUNT_VERIFICATION_AUTORUN_ENABLED=false`
 - `JELLYHUNT_MAX_REWARD_AMOUNT=10000`
+- `PLATEPOST_CONVEX_SERVICE_KEY`
+
+`PLATEPOST_CONVEX_SERVICE_KEY` is the one secret that must hold the **same
+value** in Vercel and in Convex. Convex compares against it in
+`requireServiceKey` (`convex/jellyhunt/security.ts`); the Next.js repositories
+and the mission importer present it. A mismatch fails closed as `unauthorized`,
+so every admin write, every v2 write, and the mission import stop working.
 
 `JELLYHUNT_VERIFICATION_AUTORUN_ENABLED` is set to `false` rather than the
 `.env.example` default of `true`, because automatic verification calls Jelly
@@ -102,8 +110,8 @@ absent endpoints would produce a queue of failures with no diagnostic value.
 **Deliberately left unset**
 
 `JELLY_MISSION_JWKS_URL`, `JELLY_MISSION_TOKEN_ISSUER`, `JELLY_PARTNER_*`,
-`JELLYHUNT_API_KEY`, `PLATEPOST_CONVEX_SERVICE_KEY`, `JELLY_LEGACY_API_TOKEN`,
-`JELLY_REWARD_*`, `JELLYHUNT_WEBHOOK_SECRET_*`.
+`JELLYHUNT_API_KEY`, `JELLY_LEGACY_API_TOKEN`, `JELLY_REWARD_*`,
+`JELLYHUNT_WEBHOOK_SECRET_*`.
 
 These are gate 4 and gate 7 values. Leaving them unset means authenticated v2
 routes reject every bearer token, which is the correct and safe behavior for this
