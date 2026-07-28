@@ -159,3 +159,47 @@ describe("JellyHunt campaign current-selection transaction", () => {
     expect(metadata.requestId).toBe("req_selection_42");
   });
 });
+
+describe("ensureProgramConfig", () => {
+  beforeEach(() => {
+    vi.stubEnv("PLATEPOST_CONVEX_SERVICE_KEY", TEST_SERVICE_KEY);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("creates the singleton, is idempotent, and requires the service key", async () => {
+    const t = createJellyhuntTestConvex();
+    const epoch = Date.parse("2026-07-01T00:00:00Z");
+
+    await expect(
+      t.mutation(campaigns.ensureProgramConfig, {
+        serviceKey: "wrong-key",
+        actorId: "operator",
+        leaderboardLaunchEpoch: epoch,
+      }),
+    ).rejects.toThrow(/unauthorized/);
+
+    const first = await t.mutation(campaigns.ensureProgramConfig, {
+      serviceKey: TEST_SERVICE_KEY,
+      actorId: "operator",
+      leaderboardLaunchEpoch: epoch,
+    });
+    expect(first).toMatch(/^cfg_/);
+
+    const second = await t.mutation(campaigns.ensureProgramConfig, {
+      serviceKey: TEST_SERVICE_KEY,
+      actorId: "operator",
+      leaderboardLaunchEpoch: Date.parse("2026-09-01T00:00:00Z"),
+    });
+    expect(second).toBe(first);
+
+    const rows = await t.run(async (ctx: any) =>
+      ctx.db.query("jellyhuntProgramConfig").collect(),
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].leaderboardLaunchEpoch).toBe(epoch);
+    expect(rows[0].singletonKey).toBe("default");
+  });
+});
