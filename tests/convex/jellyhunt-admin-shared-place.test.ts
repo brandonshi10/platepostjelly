@@ -134,6 +134,57 @@ describe("createMissionAtPlace", () => {
     expect(revisions[1].place.name).toBe("Supermoon Bakehouse");
   });
 
+  it("writes shot-type instructions and durations onto the mission revision", async () => {
+    const t = createJellyhuntTestConvex();
+    await createCurrentCampaign(t);
+
+    await t.mutation(admin.createMissionWithLocation, {
+      serviceKey: TEST_SERVICE_KEY,
+      actorId: "operator",
+      mission: mission({ title: "Live Boba-Cooking Station", shotType: "action" }),
+      location: SUPERMOON,
+    });
+
+    const [revision] = await t.run(async (ctx: any) =>
+      ctx.db.query("jellyhuntMissionRevisions").collect(),
+    );
+    expect(revision.requirements.post.minDurationSeconds).toBe(10);
+    expect(revision.requirements.post.maxDurationSeconds).toBe(20);
+    expect(revision.requirements.post.prompt).toMatch(/Start filming before it starts/);
+  });
+
+  it("leaves a mission with no shot type on the legacy requirements", async () => {
+    const t = createJellyhuntTestConvex();
+    await createCurrentCampaign(t);
+
+    await t.mutation(admin.createMissionWithLocation, {
+      serviceKey: TEST_SERVICE_KEY,
+      actorId: "operator",
+      mission: mission(),
+      location: SUPERMOON,
+    });
+
+    const [revision] = await t.run(async (ctx: any) =>
+      ctx.db.query("jellyhuntMissionRevisions").collect(),
+    );
+    expect(revision.requirements.post.prompt).toBe("supermoon-bakehouse");
+    expect(revision.requirements.post.minDurationSeconds).toBeUndefined();
+  });
+
+  it("rejects an unknown shot type", async () => {
+    const t = createJellyhuntTestConvex();
+    await createCurrentCampaign(t);
+
+    await expect(
+      t.mutation(admin.createMissionWithLocation, {
+        serviceKey: TEST_SERVICE_KEY,
+        actorId: "operator",
+        mission: mission({ shotType: "cinematic" }),
+        location: SUPERMOON,
+      }),
+    ).rejects.toThrow(/invalid_shot_type/);
+  });
+
   it("rejects an unknown place", async () => {
     const t = createJellyhuntTestConvex();
     await createCurrentCampaign(t);

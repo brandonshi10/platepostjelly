@@ -47,6 +47,7 @@ const missionInput = v.object({
   category: v.string(),
   difficulty,
   emoji: v.string(),
+  shotType: v.optional(v.string()),
   neighborhood: v.string(),
   price: v.string(),
   hours: v.array(v.string()),
@@ -94,6 +95,7 @@ type AdminMissionInput = {
   category: string;
   difficulty: "easy" | "medium" | "hard" | "legendary";
   emoji: string;
+  shotType?: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -267,12 +269,67 @@ function rewardTerms(rewardAmount: number) {
   };
 }
 
+/**
+ * Filming rules per shot type.
+ *
+ * Deliberately a second copy of `src/lib/jellyhunt/shot-types.ts`: Convex
+ * modules cannot import from `src/`, and a build step for five strings costs
+ * more than it saves. `tests/jellyhunt-shot-types.test.ts` reads this file and
+ * fails if the two ever disagree.
+ */
+const SHOT_TYPE_RULES: Record<
+  string,
+  { instruction: string; minDurationSeconds: number; maxDurationSeconds: number }
+> = {
+  dish: {
+    instruction:
+      "One plated item. Hold the phone steady and make a single close pass over it.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+  spread: {
+    instruction:
+      "The whole table. Show the scale first, then pan slowly across everything on it.",
+    minDurationSeconds: 10,
+    maxDurationSeconds: 20,
+  },
+  action: {
+    instruction:
+      "Something being made. Start filming before it starts and don't cut away early.",
+    minDurationSeconds: 10,
+    maxDurationSeconds: 20,
+  },
+  display: {
+    instruction:
+      "The case or counter. One slow pass, keeping the whole display in frame.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+  ritual: {
+    instruction:
+      "The moment people come here for. One take, and film the person doing it.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+};
+
 function requirements(mission: AdminMissionInput) {
+  const rule = mission.shotType ? SHOT_TYPE_RULES[mission.shotType] : undefined;
+  if (mission.shotType && !rule) throw new Error("invalid_shot_type");
+
   return {
     post: {
       allowedPostTypes: ["video"],
       authorshipPolicy: "canonical_owner",
-      prompt: mission.restaurantTag,
+      // Without a shot type this stays the legacy restaurantTag, so the 16
+      // pre-existing missions keep the exact requirements they were created with.
+      prompt: rule ? rule.instruction : mission.restaurantTag,
+      ...(rule
+        ? {
+            minDurationSeconds: rule.minDurationSeconds,
+            maxDurationSeconds: rule.maxDurationSeconds,
+          }
+        : {}),
       requiredVisibility: "public",
     },
     place: { attachmentRequired: true },

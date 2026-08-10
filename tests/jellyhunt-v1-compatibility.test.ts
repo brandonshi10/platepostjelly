@@ -9,6 +9,16 @@ describe("frozen JellyHunt v1 contract", () => {
     expect(projectLegacyV1(fixture.default.body)).toEqual(fixture.default.legacyProjection);
   });
 
+  it("never leaks shotType into the legacy v1 projection", () => {
+    const projected = projectLegacyV1({
+      apiVersion: "1.0",
+      missions: [{ id: "mis_1", title: "Ube Eclair", shotType: "dish" }],
+    }) as { missions: Array<Record<string, unknown>> };
+
+    expect(projected.missions[0]).not.toHaveProperty("shotType");
+    expect(projected.missions[0].title).toBe("Ube Eclair");
+  });
+
   it("freezes malformed JSON as the existing 500 response", async () => {
     const fixture = await import("./contracts/jellyhunt-v1/submission-malformed.500.json");
     expect(fixture.default.status).toBe(500);
