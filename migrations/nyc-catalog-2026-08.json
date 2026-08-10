@@ -1,0 +1,1998 @@
+[
+  {
+    "venue": {
+      "slug": "kalye",
+      "name": "Kalye",
+      "address": "111 Rivington St, New York, NY 10002",
+      "latitude": 40.719832,
+      "longitude": -73.987918,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Filipino",
+      "price": "$$",
+      "hours": [
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00"
+      ],
+      "websiteUrl": "https://order.toasttab.com/online/kalye"
+    },
+    "missions": [
+      {
+        "slug": "kalye-bbq-skewers",
+        "title": "BBQ Skewers",
+        "shotType": "dish",
+        "description": "Film the BBQ skewers. One plated item, one close pass, hold steady.",
+        "difficulty": "easy",
+        "emoji": "🍢",
+        "sortOrder": 0
+      },
+      {
+        "slug": "kalye-chicken-inasal",
+        "title": "Chicken Inasal",
+        "shotType": "dish",
+        "description": "Film the chicken inasal. Get the char on the skin in one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍗",
+        "sortOrder": 1
+      },
+      {
+        "slug": "kalye-kinilaw",
+        "title": "Kinilaw",
+        "shotType": "dish",
+        "description": "Film the kinilaw. Hold steady and make one close pass over the bowl.",
+        "difficulty": "easy",
+        "emoji": "🐟",
+        "sortOrder": 2
+      },
+      {
+        "slug": "kalye-kamayan-feast-spread",
+        "title": "Kamayan Feast Spread",
+        "shotType": "spread",
+        "description": "Film the kamayan spread. Show the scale of the whole table first, then pan slowly across it.",
+        "difficulty": "medium",
+        "emoji": "🍤",
+        "sortOrder": 3
+      },
+      {
+        "slug": "kalye-ube-ice-cream",
+        "title": "Ube Ice Cream",
+        "shotType": "dish",
+        "description": "Film the ube ice cream. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🍨",
+        "sortOrder": 4
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "miss-korea-bbq",
+      "name": "miss KOREA BBQ",
+      "address": "10 W 32nd St, New York, NY 10001",
+      "latitude": 40.747366,
+      "longitude": -73.986433,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Koreatown",
+      "category": "Korean BBQ",
+      "price": "$$$",
+      "hours": [
+        "00:00-23:59",
+        "00:00-23:59",
+        "00:00-23:59",
+        "00:00-23:59",
+        "00:00-23:59",
+        "00:00-23:59",
+        "00:00-23:59"
+      ],
+      "websiteUrl": "https://www.toasttab.com/local/miss-korea-1st-floor-10-w-32nd-st"
+    },
+    "missions": [
+      {
+        "slug": "miss-korea-bbq-signature-beef-set-galbi",
+        "title": "Signature Beef Set (Galbi)",
+        "shotType": "dish",
+        "description": "Film the galbi set. One close pass over the raw beef before it hits the grill.",
+        "difficulty": "easy",
+        "emoji": "🥩",
+        "sortOrder": 10
+      },
+      {
+        "slug": "miss-korea-bbq-bulgogi",
+        "title": "Bulgogi",
+        "shotType": "dish",
+        "description": "Film the bulgogi. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥩",
+        "sortOrder": 11
+      },
+      {
+        "slug": "miss-korea-bbq-egg-souffle",
+        "title": "Egg Souffle",
+        "shotType": "dish",
+        "description": "Film the egg souffle as it rises in the pan. Start before it puffs and don't cut early.",
+        "difficulty": "medium",
+        "emoji": "🍳",
+        "sortOrder": 12
+      },
+      {
+        "slug": "miss-korea-bbq-kimchi-jjigae",
+        "title": "Kimchi Jjigae",
+        "shotType": "dish",
+        "description": "Film the kimchi jjigae bubbling. One close pass over the pot.",
+        "difficulty": "easy",
+        "emoji": "🍲",
+        "sortOrder": 13
+      },
+      {
+        "slug": "miss-korea-bbq-banchan-spread",
+        "title": "Banchan Spread",
+        "shotType": "spread",
+        "description": "Film the banchan. Show how many dishes there are, then pan slowly across every one.",
+        "difficulty": "medium",
+        "emoji": "🥢",
+        "sortOrder": 14
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "shuka",
+      "name": "Shuka",
+      "address": "38 MacDougal St, New York, NY 10012",
+      "latitude": 40.727059,
+      "longitude": -74.002781,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "SoHo",
+      "category": "Mediterranean",
+      "price": "$$$",
+      "hours": [
+        "10:30-22:00",
+        "12:00-23:00",
+        "12:00-23:00",
+        "12:00-23:00",
+        "12:00-23:00",
+        "12:00-23:00",
+        "10:30-23:00"
+      ],
+      "websiteUrl": "https://www.toasttab.com/shuka-38-macdougal-st/giftcards"
+    },
+    "missions": [
+      {
+        "slug": "shuka-whipped-feta-pistachio",
+        "title": "Whipped Feta & Pistachio",
+        "shotType": "dish",
+        "description": "Film the whipped feta. One close pass, get the pistachios on top.",
+        "difficulty": "easy",
+        "emoji": "🧀",
+        "sortOrder": 20
+      },
+      {
+        "slug": "shuka-hummus-fried-halloumi",
+        "title": "Hummus & Fried Halloumi",
+        "shotType": "dish",
+        "description": "Film the hummus and halloumi. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🫓",
+        "sortOrder": 21
+      },
+      {
+        "slug": "shuka-zaatar-fries",
+        "title": "Za'atar Fries",
+        "shotType": "dish",
+        "description": "Film the za'atar fries. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍟",
+        "sortOrder": 22
+      },
+      {
+        "slug": "shuka-falafel",
+        "title": "Falafel",
+        "shotType": "dish",
+        "description": "Film the falafel. One close pass, get the crust.",
+        "difficulty": "easy",
+        "emoji": "🧆",
+        "sortOrder": 23
+      },
+      {
+        "slug": "shuka-shrimp-lamb-merguez",
+        "title": "Shrimp & Lamb Merguez",
+        "shotType": "dish",
+        "description": "Film the shrimp and merguez. Hold steady and make one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍤",
+        "sortOrder": 24
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "barbounia",
+      "name": "Barbounia",
+      "address": "250 Park Ave S, New York, NY 10003",
+      "latitude": 40.73824,
+      "longitude": -73.988069,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Flatiron",
+      "category": "Mediterranean / Israeli",
+      "price": "$$$",
+      "hours": [
+        "10:30-22:30",
+        "11:30-22:30",
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-23:30",
+        "11:30-23:30",
+        "10:30-23:30"
+      ],
+      "websiteUrl": "https://www.toasttab.com/local/order/barbounia-250-park-ave-s"
+    },
+    "missions": [
+      {
+        "slug": "barbounia-grilled-octopus",
+        "title": "Grilled Octopus",
+        "shotType": "dish",
+        "description": "Film the grilled octopus. One close pass, get the char.",
+        "difficulty": "easy",
+        "emoji": "🐙",
+        "sortOrder": 30
+      },
+      {
+        "slug": "barbounia-kalamata-olive-flatbread",
+        "title": "Kalamata Olive Flatbread",
+        "shotType": "dish",
+        "description": "Film the flatbread. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🫓",
+        "sortOrder": 31
+      },
+      {
+        "slug": "barbounia-short-rib-tagine",
+        "title": "Short Rib Tagine",
+        "shotType": "dish",
+        "description": "Film the tagine. One close pass, ideally as the lid comes off.",
+        "difficulty": "easy",
+        "emoji": "🍲",
+        "sortOrder": 32
+      },
+      {
+        "slug": "barbounia-lamb-chops",
+        "title": "Lamb Chops",
+        "shotType": "dish",
+        "description": "Film the lamb chops. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍖",
+        "sortOrder": 33
+      },
+      {
+        "slug": "barbounia-mezze-sampler",
+        "title": "Mezze Sampler",
+        "shotType": "spread",
+        "description": "Film the mezze. Show the whole spread first, then pan slowly across every dish.",
+        "difficulty": "medium",
+        "emoji": "🫒",
+        "sortOrder": 34
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "motek-flatiron",
+      "name": "Motek Flatiron",
+      "address": "928 Broadway, New York, NY 10010",
+      "latitude": 40.740057,
+      "longitude": -73.989278,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Flatiron",
+      "category": "Israeli / Mediterranean",
+      "price": "$$",
+      "hours": [
+        "10:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-23:00",
+        "10:00-23:00"
+      ],
+      "websiteUrl": "https://www.toasttab.com/local/order/motek-flatiron"
+    },
+    "missions": [
+      {
+        "slug": "motek-flatiron-lamb-shawarma",
+        "title": "Lamb Shawarma",
+        "shotType": "dish",
+        "description": "Film the lamb shawarma. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🥙",
+        "sortOrder": 40
+      },
+      {
+        "slug": "motek-flatiron-spicy-greek-feta-dip",
+        "title": "Spicy Greek Feta Dip",
+        "shotType": "dish",
+        "description": "Film the feta dip. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌶️",
+        "sortOrder": 41
+      },
+      {
+        "slug": "motek-flatiron-pastrami-oven-pita",
+        "title": "Pastrami Oven Pita",
+        "shotType": "dish",
+        "description": "Film the pastrami pita. One close pass, get the fold.",
+        "difficulty": "easy",
+        "emoji": "🫓",
+        "sortOrder": 42
+      },
+      {
+        "slug": "motek-flatiron-hummus-with-roasted-eggplant",
+        "title": "Hummus with Roasted Eggplant",
+        "shotType": "dish",
+        "description": "Film the hummus. One close pass over the bowl.",
+        "difficulty": "easy",
+        "emoji": "🍆",
+        "sortOrder": 43
+      },
+      {
+        "slug": "motek-flatiron-falafel",
+        "title": "Falafel",
+        "shotType": "dish",
+        "description": "Film the falafel. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🧆",
+        "sortOrder": 44
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "mitr-thai-restaurant",
+      "name": "Mitr Thai Restaurant",
+      "address": "37 W 46th St, New York, NY 10036",
+      "latitude": 40.756807,
+      "longitude": -73.980472,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Midtown",
+      "category": "Thai",
+      "price": "$$",
+      "hours": [
+        "11:30-22:15",
+        "11:30-22:15",
+        "11:30-22:15",
+        "11:30-22:15",
+        "11:30-22:15",
+        "11:30-22:45",
+        "11:30-22:45"
+      ],
+      "websiteUrl": "https://www.toasttab.com/local/mitrthai"
+    },
+    "missions": [
+      {
+        "slug": "mitr-thai-restaurant-roti-massaman",
+        "title": "Roti Massaman",
+        "shotType": "dish",
+        "description": "Film the massaman with the roti. One close pass over both.",
+        "difficulty": "easy",
+        "emoji": "🍛",
+        "sortOrder": 50
+      },
+      {
+        "slug": "mitr-thai-restaurant-pineapple-fried-rice",
+        "title": "Pineapple Fried Rice",
+        "shotType": "dish",
+        "description": "Film the fried rice in its pineapple. One close pass, get the whole shell in frame.",
+        "difficulty": "easy",
+        "emoji": "🍍",
+        "sortOrder": 51
+      },
+      {
+        "slug": "mitr-thai-restaurant-green-curry",
+        "title": "Green Curry",
+        "shotType": "dish",
+        "description": "Film the green curry. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍲",
+        "sortOrder": 52
+      },
+      {
+        "slug": "mitr-thai-restaurant-mango-avocado-salad",
+        "title": "Mango Avocado Salad",
+        "shotType": "dish",
+        "description": "Film the salad. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🥭",
+        "sortOrder": 53
+      },
+      {
+        "slug": "mitr-thai-restaurant-basil-fried-rice",
+        "title": "Basil Fried Rice",
+        "shotType": "dish",
+        "description": "Film the basil fried rice. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍚",
+        "sortOrder": 54
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "massawa",
+      "name": "Massawa",
+      "address": "1239 Amsterdam Ave, New York, NY 10027",
+      "latitude": 40.809796,
+      "longitude": -73.95862,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Morningside Heights",
+      "category": "Ethiopian / Eritrean",
+      "price": "$$",
+      "hours": [
+        "10:30-22:00",
+        "10:30-22:00",
+        "10:30-22:00",
+        "10:30-22:00",
+        "10:30-22:00",
+        "10:30-23:00",
+        "10:30-23:00"
+      ],
+      "websiteUrl": "https://order.toasttab.com/online/massawa-restaurant"
+    },
+    "missions": [
+      {
+        "slug": "massawa-sambusa-duo",
+        "title": "Sambusa Duo",
+        "shotType": "dish",
+        "description": "Film the sambusas. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🥟",
+        "sortOrder": 60
+      },
+      {
+        "slug": "massawa-zegeni-stew",
+        "title": "Zegeni Stew",
+        "shotType": "dish",
+        "description": "Film the zegeni. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍲",
+        "sortOrder": 61
+      },
+      {
+        "slug": "massawa-fitfit-tebesi",
+        "title": "Fitfit Tebesi",
+        "shotType": "dish",
+        "description": "Film the fitfit tebesi. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍛",
+        "sortOrder": 62
+      },
+      {
+        "slug": "massawa-vegetable-combo-platter",
+        "title": "Vegetable Combo Platter",
+        "shotType": "spread",
+        "description": "Film the combo platter. Show the scale of the injera first, then pan slowly across every mound.",
+        "difficulty": "medium",
+        "emoji": "🫓",
+        "sortOrder": 63
+      },
+      {
+        "slug": "massawa-signature-mangotini",
+        "title": "Signature Mangotini",
+        "shotType": "dish",
+        "description": "Film the mangotini. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🍹",
+        "sortOrder": 64
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "amor-loco",
+      "name": "Amor Loco",
+      "address": "134 W 46th St, New York, NY 10036",
+      "latitude": 40.757913,
+      "longitude": -73.98389,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Midtown",
+      "category": "Mexican",
+      "price": "$$",
+      "hours": [
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-00:00",
+        "11:30-00:00",
+        "11:30-00:00",
+        "11:30-00:00"
+      ],
+      "websiteUrl": "https://www.toasttab.com/local/amor-loco-nyc/r-7eb3a616-71f3-45be-8e1b-8ed9793e17bf"
+    },
+    "missions": [
+      {
+        "slug": "amor-loco-birria-tacos",
+        "title": "Birria Tacos",
+        "shotType": "dish",
+        "description": "Film the birria tacos. One close pass, get the consomme dip if you can.",
+        "difficulty": "easy",
+        "emoji": "🌮",
+        "sortOrder": 70
+      },
+      {
+        "slug": "amor-loco-al-pastor-tacos",
+        "title": "Al Pastor Tacos",
+        "shotType": "dish",
+        "description": "Film the al pastor. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌮",
+        "sortOrder": 71
+      },
+      {
+        "slug": "amor-loco-chicken-quesadillas",
+        "title": "Chicken Quesadillas",
+        "shotType": "dish",
+        "description": "Film the quesadillas. One close pass, get the cheese pull.",
+        "difficulty": "easy",
+        "emoji": "🧀",
+        "sortOrder": 72
+      },
+      {
+        "slug": "amor-loco-jalapeno-cheesy-fries",
+        "title": "Jalapeno Cheesy Fries",
+        "shotType": "dish",
+        "description": "Film the cheesy fries. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍟",
+        "sortOrder": 73
+      },
+      {
+        "slug": "amor-loco-lychee-martini",
+        "title": "Lychee Martini",
+        "shotType": "dish",
+        "description": "Film the lychee martini. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍸",
+        "sortOrder": 74
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "chi-restaurant-bar",
+      "name": "Chi Restaurant & Bar",
+      "address": "492 9th Ave, New York, NY 10018",
+      "latitude": 40.755515,
+      "longitude": -73.994462,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Hell's Kitchen",
+      "category": "Szechuan / Chinese",
+      "price": "$$",
+      "hours": [
+        "11:30-22:15",
+        "11:30-22:00",
+        "11:30-00:00",
+        "11:30-00:30",
+        "11:30-00:30",
+        "11:30-00:30",
+        "11:30-00:30"
+      ],
+      "websiteUrl": "https://order.toasttab.com/online/chi-restaurant-and-bar-492-9th-avenue"
+    },
+    "missions": [
+      {
+        "slug": "chi-restaurant-bar-szechuan-cucumber-salad",
+        "title": "Szechuan Cucumber Salad",
+        "shotType": "dish",
+        "description": "Film the cucumber salad. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🥒",
+        "sortOrder": 80
+      },
+      {
+        "slug": "chi-restaurant-bar-truffle-beef-tenderloin",
+        "title": "Truffle Beef Tenderloin",
+        "shotType": "dish",
+        "description": "Film the tenderloin. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥩",
+        "sortOrder": 81
+      },
+      {
+        "slug": "chi-restaurant-bar-mapo-tofu",
+        "title": "Mapo Tofu",
+        "shotType": "dish",
+        "description": "Film the mapo tofu. One close pass, get the chilli oil.",
+        "difficulty": "easy",
+        "emoji": "🌶️",
+        "sortOrder": 82
+      },
+      {
+        "slug": "chi-restaurant-bar-lobster-sticky-rice",
+        "title": "Lobster Sticky Rice",
+        "shotType": "dish",
+        "description": "Film the lobster sticky rice. One close pass over the whole dish.",
+        "difficulty": "easy",
+        "emoji": "🦞",
+        "sortOrder": 83
+      },
+      {
+        "slug": "chi-restaurant-bar-brown-sugar-rice-cake",
+        "title": "Brown Sugar Rice Cake",
+        "shotType": "dish",
+        "description": "Film the rice cake. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍡",
+        "sortOrder": 84
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "loong-ramen",
+      "name": "Loong Ramen",
+      "address": "21 S End Ave, New York, NY 10280",
+      "latitude": 40.708326,
+      "longitude": -74.017996,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Battery Park City",
+      "category": "Ramen (Asian fusion)",
+      "price": "$$",
+      "hours": [
+        "11:00-21:30",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-21:30",
+        "11:00-21:30"
+      ],
+      "websiteUrl": "https://pos.chowbus.com/online-ordering/store/LOONG-RAMEN/23300"
+    },
+    "missions": [
+      {
+        "slug": "loong-ramen-signature-chashu-tonkotsu",
+        "title": "Signature Chashu Tonkotsu",
+        "shotType": "dish",
+        "description": "Film the tonkotsu. One close pass over the bowl before it's stirred.",
+        "difficulty": "easy",
+        "emoji": "🍜",
+        "sortOrder": 90
+      },
+      {
+        "slug": "loong-ramen-crispy-osaka-style-chicken-wings",
+        "title": "Crispy Osaka-Style Chicken Wings",
+        "shotType": "dish",
+        "description": "Film the wings. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍗",
+        "sortOrder": 91
+      },
+      {
+        "slug": "loong-ramen-black-truffle-fries",
+        "title": "Black Truffle Fries",
+        "shotType": "dish",
+        "description": "Film the truffle fries. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍟",
+        "sortOrder": 92
+      },
+      {
+        "slug": "loong-ramen-crispy-butterflied-prawns",
+        "title": "Crispy Butterflied Prawns",
+        "shotType": "dish",
+        "description": "Film the prawns. One close pass, get the crust.",
+        "difficulty": "easy",
+        "emoji": "🍤",
+        "sortOrder": 93
+      },
+      {
+        "slug": "loong-ramen-filet-mignon-with-basil-pesto",
+        "title": "Filet Mignon with Basil Pesto",
+        "shotType": "dish",
+        "description": "Film the filet. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥩",
+        "sortOrder": 94
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "myka-greek-frozen-yogurt",
+      "name": "Myka Greek Frozen Yogurt",
+      "address": "159 7th Ave S, New York, NY 10014",
+      "latitude": 40.735564,
+      "longitude": -74.001449,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "West Village",
+      "category": "Frozen yogurt / dessert",
+      "price": "$",
+      "hours": [
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00"
+      ],
+      "websiteUrl": "https://www.instagram.com/myka_greek.usa"
+    },
+    "missions": [
+      {
+        "slug": "myka-greek-frozen-yogurt-greek-froyo-with-dubai-chocolate",
+        "title": "Greek Froyo with Dubai Chocolate",
+        "shotType": "dish",
+        "description": "Film the froyo with the Dubai chocolate topping. One close pass, get the drizzle.",
+        "difficulty": "easy",
+        "emoji": "🍦",
+        "sortOrder": 100
+      },
+      {
+        "slug": "myka-greek-frozen-yogurt-blood-peach-sorbet",
+        "title": "Blood Peach Sorbet",
+        "shotType": "dish",
+        "description": "Film the sorbet. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍑",
+        "sortOrder": 101
+      },
+      {
+        "slug": "myka-greek-frozen-yogurt-pistachio-spread-bowl",
+        "title": "Pistachio Spread Bowl",
+        "shotType": "dish",
+        "description": "Film the pistachio bowl. One close pass over the top.",
+        "difficulty": "easy",
+        "emoji": "🥜",
+        "sortOrder": 102
+      },
+      {
+        "slug": "myka-greek-frozen-yogurt-berry-crumble-bowl",
+        "title": "Berry Crumble Bowl",
+        "shotType": "dish",
+        "description": "Film the berry crumble. One close pass, get the texture.",
+        "difficulty": "easy",
+        "emoji": "🫐",
+        "sortOrder": 103
+      },
+      {
+        "slug": "myka-greek-frozen-yogurt-topping-bar",
+        "title": "Topping Bar",
+        "shotType": "display",
+        "description": "Film the topping bar. One slow pass, keeping the whole counter in frame.",
+        "difficulty": "medium",
+        "emoji": "🍓",
+        "sortOrder": 104
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "xing-fu-tang",
+      "name": "Xing Fu Tang",
+      "address": "133 2nd Ave, New York, NY 10003",
+      "latitude": 40.728835,
+      "longitude": -73.987832,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Taiwanese boba tea",
+      "price": "$",
+      "hours": [
+        "13:00-22:00",
+        "14:00-22:00",
+        "14:00-22:00",
+        "14:00-22:00",
+        "14:00-22:00",
+        "14:00-23:00",
+        "13:00-23:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJc_DNONpZwokRB0_dX3or6ZU"
+    },
+    "missions": [
+      {
+        "slug": "xing-fu-tang-ube-boba-tea",
+        "title": "Ube Boba Tea",
+        "shotType": "dish",
+        "description": "Film the ube boba. One close pass, get the layers.",
+        "difficulty": "easy",
+        "emoji": "🧋",
+        "sortOrder": 110
+      },
+      {
+        "slug": "xing-fu-tang-peach-oolong-tea",
+        "title": "Peach Oolong Tea",
+        "shotType": "dish",
+        "description": "Film the peach oolong. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍑",
+        "sortOrder": 111
+      },
+      {
+        "slug": "xing-fu-tang-oreo-ube-milk",
+        "title": "Oreo Ube Milk",
+        "shotType": "dish",
+        "description": "Film the Oreo ube milk. One close pass over the cup.",
+        "difficulty": "easy",
+        "emoji": "🥛",
+        "sortOrder": 112
+      },
+      {
+        "slug": "xing-fu-tang-brown-sugar-boba",
+        "title": "Brown Sugar Boba",
+        "shotType": "dish",
+        "description": "Film the signature brown sugar boba. One close pass, get the tiger stripes.",
+        "difficulty": "easy",
+        "emoji": "🧋",
+        "sortOrder": 113
+      },
+      {
+        "slug": "xing-fu-tang-live-boba-cooking-station",
+        "title": "Live Boba-Cooking Station",
+        "shotType": "action",
+        "description": "Film the boba being cooked at the window. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "🔥",
+        "sortOrder": 114
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "taiyaki-nyc",
+      "name": "Taiyaki NYC",
+      "address": "119 Baxter St, New York, NY 10013",
+      "latitude": 40.71792,
+      "longitude": -73.998871,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Chinatown",
+      "category": "Japanese soft-serve / taiyaki",
+      "price": "$",
+      "hours": [
+        "11:00-22:00",
+        "12:00-22:00",
+        "12:00-22:00",
+        "12:00-22:00",
+        "12:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJJWY834lZwokRamN-INPv7Yk"
+    },
+    "missions": [
+      {
+        "slug": "taiyaki-nyc-matcha-taiyaki-cone",
+        "title": "Matcha Taiyaki Cone",
+        "shotType": "dish",
+        "description": "Film the matcha taiyaki cone. One close pass, get the fish shape.",
+        "difficulty": "easy",
+        "emoji": "🍦",
+        "sortOrder": 120
+      },
+      {
+        "slug": "taiyaki-nyc-unicorn-taiyaki-cone",
+        "title": "Unicorn Taiyaki Cone",
+        "shotType": "dish",
+        "description": "Film the unicorn cone. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🦄",
+        "sortOrder": 121
+      },
+      {
+        "slug": "taiyaki-nyc-hojicha-matcha-swirl",
+        "title": "Hojicha-Matcha Swirl",
+        "shotType": "dish",
+        "description": "Film the hojicha-matcha swirl. One close pass over the top.",
+        "difficulty": "easy",
+        "emoji": "🍨",
+        "sortOrder": 122
+      },
+      {
+        "slug": "taiyaki-nyc-red-bean-filling",
+        "title": "Red Bean Filling",
+        "shotType": "ritual",
+        "description": "Film the first bite that shows the red bean inside. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🫘",
+        "sortOrder": 123
+      },
+      {
+        "slug": "taiyaki-nyc-soft-serve-swirl",
+        "title": "Soft-Serve Swirl",
+        "shotType": "action",
+        "description": "Film the swirl being pulled. Start before the machine does and don't cut early.",
+        "difficulty": "medium",
+        "emoji": "🌀",
+        "sortOrder": 124
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "figo-il-gelato-italiano",
+      "name": "Figo il Gelato Italiano",
+      "address": "178 Mulberry St, New York, NY 10012",
+      "latitude": 40.720654,
+      "longitude": -73.996669,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Nolita",
+      "category": "Italian gelato",
+      "price": "$",
+      "hours": [
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00",
+        "11:00-00:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJT0kl7ohZwokRCCCEkTgCPMs"
+    },
+    "missions": [
+      {
+        "slug": "figo-il-gelato-italiano-dubai-chocolate-gelato",
+        "title": "Dubai Chocolate Gelato",
+        "shotType": "dish",
+        "description": "Film the Dubai chocolate gelato. One close pass, get the pistachio.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 130
+      },
+      {
+        "slug": "figo-il-gelato-italiano-pistachio-gelato",
+        "title": "Pistachio Gelato",
+        "shotType": "dish",
+        "description": "Film the pistachio gelato. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥜",
+        "sortOrder": 131
+      },
+      {
+        "slug": "figo-il-gelato-italiano-fig-caramel-gelato",
+        "title": "Fig Caramel Gelato",
+        "shotType": "dish",
+        "description": "Film the fig caramel. One close pass over the scoop.",
+        "difficulty": "easy",
+        "emoji": "🍯",
+        "sortOrder": 132
+      },
+      {
+        "slug": "figo-il-gelato-italiano-coffee-pistachio-combo",
+        "title": "Coffee-Pistachio Combo",
+        "shotType": "dish",
+        "description": "Film the coffee-pistachio combo. One close pass, get both colours.",
+        "difficulty": "easy",
+        "emoji": "☕",
+        "sortOrder": 133
+      },
+      {
+        "slug": "figo-il-gelato-italiano-gelato-case",
+        "title": "Gelato Case",
+        "shotType": "display",
+        "description": "Film the gelato case. One slow pass, keeping the whole case in frame.",
+        "difficulty": "medium",
+        "emoji": "🍨",
+        "sortOrder": 134
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "the-original-chinatown-ice-cream-factory",
+      "name": "The Original Chinatown Ice Cream Factory",
+      "address": "65 Bayard St, New York, NY 10013",
+      "latitude": 40.715355,
+      "longitude": -73.998167,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Chinatown",
+      "category": "Ice cream (Asian flavors)",
+      "price": "$",
+      "hours": [
+        "11:00-22:00",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-21:00",
+        "11:00-22:00",
+        "11:00-22:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJX6BlAidawokRJ-4Jb4Bo8Vk"
+    },
+    "missions": [
+      {
+        "slug": "the-original-chinatown-ice-cream-factory-black-sesame-ice-cream",
+        "title": "Black Sesame Ice Cream",
+        "shotType": "dish",
+        "description": "Film the black sesame scoop. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "⚫",
+        "sortOrder": 140
+      },
+      {
+        "slug": "the-original-chinatown-ice-cream-factory-lychee-rose-ice-cream",
+        "title": "Lychee Rose Ice Cream",
+        "shotType": "dish",
+        "description": "Film the lychee rose. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌹",
+        "sortOrder": 141
+      },
+      {
+        "slug": "the-original-chinatown-ice-cream-factory-coconut-ice-cream",
+        "title": "Coconut Ice Cream",
+        "shotType": "dish",
+        "description": "Film the coconut scoop. One close pass.",
+        "difficulty": "easy",
+        "emoji": "🥥",
+        "sortOrder": 142
+      },
+      {
+        "slug": "the-original-chinatown-ice-cream-factory-taro-ice-cream",
+        "title": "Taro Ice Cream",
+        "shotType": "dish",
+        "description": "Film the taro scoop. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "💜",
+        "sortOrder": 143
+      },
+      {
+        "slug": "the-original-chinatown-ice-cream-factory-sample-tasting-ritual",
+        "title": "Sample-Tasting Ritual",
+        "shotType": "ritual",
+        "description": "Film someone taking a sample spoon at the counter. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🥄",
+        "sortOrder": 144
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "joes-pizza-broadway",
+      "name": "Joe's Pizza Broadway",
+      "address": "1435 Broadway, New York, NY 10018",
+      "latitude": 40.754692,
+      "longitude": -73.986983,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Midtown",
+      "category": "Pizza by the slice",
+      "price": "$",
+      "hours": [
+        "10:00-03:00",
+        "10:00-03:00",
+        "10:00-03:00",
+        "10:00-03:00",
+        "10:00-04:00",
+        "10:00-05:00",
+        "10:00-05:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJifIePKtZwokRVZ-UdRGkZzs"
+    },
+    "missions": [
+      {
+        "slug": "joes-pizza-broadway-classic-cheese-slice",
+        "title": "Classic Cheese Slice",
+        "shotType": "dish",
+        "description": "Film the cheese slice. One close pass, get the grease shine.",
+        "difficulty": "easy",
+        "emoji": "🍕",
+        "sortOrder": 150
+      },
+      {
+        "slug": "joes-pizza-broadway-pepperoni-slice",
+        "title": "Pepperoni Slice",
+        "shotType": "dish",
+        "description": "Film the pepperoni slice. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍕",
+        "sortOrder": 151
+      },
+      {
+        "slug": "joes-pizza-broadway-the-fold",
+        "title": "The Fold",
+        "shotType": "ritual",
+        "description": "Film the fold and the first bite. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🤌",
+        "sortOrder": 152
+      },
+      {
+        "slug": "joes-pizza-broadway-whole-pie-reveal",
+        "title": "Whole Pie Reveal",
+        "shotType": "display",
+        "description": "Film a whole pie coming out. One slow pass, keeping the whole pie in frame.",
+        "difficulty": "medium",
+        "emoji": "🥧",
+        "sortOrder": 153
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "scarrs-pizza",
+      "name": "Scarr's Pizza",
+      "address": "35 Orchard St, New York, NY 10002",
+      "latitude": 40.715786,
+      "longitude": -73.991625,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Pizza by the slice",
+      "price": "$",
+      "hours": [
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-23:00",
+        "11:30-00:00",
+        "11:30-02:00",
+        "11:30-02:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJOUqatilawokRguvFSj0wX7Y"
+    },
+    "missions": [
+      {
+        "slug": "scarrs-pizza-original-cheese-slice",
+        "title": "Original Cheese Slice",
+        "shotType": "dish",
+        "description": "Film the cheese slice. One close pass, get the cheese pull.",
+        "difficulty": "easy",
+        "emoji": "🍕",
+        "sortOrder": 160
+      },
+      {
+        "slug": "scarrs-pizza-vodka-pesto-slice",
+        "title": "Vodka Pesto Slice",
+        "shotType": "dish",
+        "description": "Film the vodka pesto slice. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌿",
+        "sortOrder": 161
+      },
+      {
+        "slug": "scarrs-pizza-sicilian-hotboi-slice",
+        "title": "Sicilian Hotboi Slice",
+        "shotType": "dish",
+        "description": "Film the Hotboi square. One close pass, get the edge.",
+        "difficulty": "easy",
+        "emoji": "🌶️",
+        "sortOrder": 162
+      },
+      {
+        "slug": "scarrs-pizza-pizza-making",
+        "title": "Pizza-Making",
+        "shotType": "action",
+        "description": "Film a pie being made behind the counter. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "👨‍🍳",
+        "sortOrder": 163
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "ny-pizza-suprema",
+      "name": "NY Pizza Suprema",
+      "address": "413 8th Ave, New York, NY 10001",
+      "latitude": 40.750177,
+      "longitude": -73.99526,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Chelsea",
+      "category": "Pizza by the slice",
+      "price": "$",
+      "hours": [
+        "10:30-00:00",
+        "10:30-00:00",
+        "10:30-00:00",
+        "10:30-00:00",
+        "10:30-00:00",
+        "10:30-00:00",
+        "10:30-00:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJjaD94kFZwokR-20CXqlpy_4"
+    },
+    "missions": [
+      {
+        "slug": "ny-pizza-suprema-tomato-slice",
+        "title": "Tomato Slice",
+        "shotType": "dish",
+        "description": "Film the tomato slice. One close pass over the slice.",
+        "difficulty": "easy",
+        "emoji": "🍅",
+        "sortOrder": 170
+      },
+      {
+        "slug": "ny-pizza-suprema-fig-bacon-slice",
+        "title": "Fig & Bacon Slice",
+        "shotType": "dish",
+        "description": "Film the fig and bacon slice. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥓",
+        "sortOrder": 171
+      },
+      {
+        "slug": "ny-pizza-suprema-the-fold",
+        "title": "The Fold",
+        "shotType": "ritual",
+        "description": "Film the fold and the first bite. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🤌",
+        "sortOrder": 172
+      },
+      {
+        "slug": "ny-pizza-suprema-whole-pie-reveal",
+        "title": "Whole Pie Reveal",
+        "shotType": "display",
+        "description": "Film a whole pie on the counter. One slow pass, keeping the whole pie in frame.",
+        "difficulty": "medium",
+        "emoji": "🥧",
+        "sortOrder": 173
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "king-dumplings",
+      "name": "King Dumplings",
+      "address": "74 Hester St, New York, NY 10002",
+      "latitude": 40.716021,
+      "longitude": -73.991707,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Chinatown",
+      "category": "Dumpling counter",
+      "price": "$",
+      "hours": [
+        "09:30-22:00",
+        "09:30-22:00",
+        "09:30-22:00",
+        "09:30-22:00",
+        "09:30-22:00",
+        "09:30-22:00",
+        "09:30-22:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJwUWtpVNbwokRFXYqGsP5tyQ"
+    },
+    "missions": [
+      {
+        "slug": "king-dumplings-pork-chive-fried-dumplings",
+        "title": "Pork & Chive Fried Dumplings",
+        "shotType": "dish",
+        "description": "Film the fried dumplings. One close pass, get the crisp bottoms.",
+        "difficulty": "easy",
+        "emoji": "🥟",
+        "sortOrder": 180
+      },
+      {
+        "slug": "king-dumplings-pork-buns",
+        "title": "Pork Buns",
+        "shotType": "dish",
+        "description": "Film the pork buns. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥖",
+        "sortOrder": 181
+      },
+      {
+        "slug": "king-dumplings-sesame-pancake-with-duck",
+        "title": "Sesame Pancake with Duck",
+        "shotType": "dish",
+        "description": "Film the sesame pancake. One close pass over the whole thing.",
+        "difficulty": "easy",
+        "emoji": "🦆",
+        "sortOrder": 182
+      },
+      {
+        "slug": "king-dumplings-pan-fried-buns",
+        "title": "Pan-Fried Buns",
+        "shotType": "dish",
+        "description": "Film the pan-fried buns. One close pass, get the browned side.",
+        "difficulty": "easy",
+        "emoji": "🍳",
+        "sortOrder": 183
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "nan-xiang-soup-dumplings",
+      "name": "Nan Xiang Soup Dumplings",
+      "address": "15 St Marks Pl, New York, NY 10003",
+      "latitude": 40.729277,
+      "longitude": -73.98889,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Shanghainese soup dumplings",
+      "price": "$$",
+      "hours": [
+        "09:00-02:00",
+        "09:00-02:00",
+        "09:00-02:00",
+        "09:00-02:00",
+        "09:00-02:00",
+        "09:00-02:00",
+        "09:00-02:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ0ePwOZ5ZwokRTYn9SLadiRE"
+    },
+    "missions": [
+      {
+        "slug": "nan-xiang-soup-dumplings-signature-pork-soup-dumplings",
+        "title": "Signature Pork Soup Dumplings",
+        "shotType": "dish",
+        "description": "Film the basket of pork soup dumplings. One close pass over the steamer.",
+        "difficulty": "easy",
+        "emoji": "🥟",
+        "sortOrder": 190
+      },
+      {
+        "slug": "nan-xiang-soup-dumplings-crab-meat-pork-soup-dumplings",
+        "title": "Crab Meat & Pork Soup Dumplings",
+        "shotType": "dish",
+        "description": "Film the crab and pork basket. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🦀",
+        "sortOrder": 191
+      },
+      {
+        "slug": "nan-xiang-soup-dumplings-truffle-pork-soup-dumplings",
+        "title": "Truffle & Pork Soup Dumplings",
+        "shotType": "dish",
+        "description": "Film the truffle basket. One close pass, get the colour difference.",
+        "difficulty": "easy",
+        "emoji": "🍄",
+        "sortOrder": 192
+      },
+      {
+        "slug": "nan-xiang-soup-dumplings-scallion-pancake",
+        "title": "Scallion Pancake",
+        "shotType": "dish",
+        "description": "Film the scallion pancake. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🧅",
+        "sortOrder": 193
+      },
+      {
+        "slug": "nan-xiang-soup-dumplings-the-slurp",
+        "title": "The Slurp",
+        "shotType": "ritual",
+        "description": "Film the dumpling being bitten and the soup running out. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🥢",
+        "sortOrder": 194
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "matcha-house",
+      "name": "MATCHA HOUSE",
+      "address": "203 E 10th St, New York, NY 10003",
+      "latitude": 40.7297,
+      "longitude": -73.98637,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Matcha cafe",
+      "price": "$",
+      "hours": [
+        "closed",
+        "09:00-17:30",
+        "08:00-17:30",
+        "08:00-17:30",
+        "08:00-17:30",
+        "09:00-17:30",
+        "09:00-18:30"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJqzgQCiNZwokRKmfVY2UYkYc"
+    },
+    "missions": [
+      {
+        "slug": "matcha-house-chocolate-matcha",
+        "title": "Chocolate Matcha",
+        "shotType": "dish",
+        "description": "Film the chocolate matcha. One close pass, get the layers.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 200
+      },
+      {
+        "slug": "matcha-house-london-fog-matcha-latte",
+        "title": "London Fog Matcha Latte",
+        "shotType": "dish",
+        "description": "Film the London fog. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌫️",
+        "sortOrder": 201
+      },
+      {
+        "slug": "matcha-house-matchadamia-latte",
+        "title": "Matchadamia Latte",
+        "shotType": "dish",
+        "description": "Film the matchadamia latte. One close pass over the cup.",
+        "difficulty": "easy",
+        "emoji": "🥛",
+        "sortOrder": 202
+      },
+      {
+        "slug": "matcha-house-live-matcha-whisking",
+        "title": "Live Matcha Whisking",
+        "shotType": "action",
+        "description": "Film the matcha being whisked. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "🍵",
+        "sortOrder": 203
+      },
+      {
+        "slug": "matcha-house-pastry-case",
+        "title": "Pastry Case",
+        "shotType": "display",
+        "description": "Film the pastry case. One slow pass, keeping the whole case in frame.",
+        "difficulty": "medium",
+        "emoji": "🥐",
+        "sortOrder": 204
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "12-matcha",
+      "name": "12 Matcha",
+      "address": "54 Bond St, New York, NY 10012",
+      "latitude": 40.725912,
+      "longitude": -73.992374,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "NoHo",
+      "category": "Matcha cafe",
+      "price": "$$",
+      "hours": [
+        "08:30-17:00",
+        "08:30-17:00",
+        "08:30-17:00",
+        "08:30-17:00",
+        "08:30-17:00",
+        "08:30-17:00",
+        "08:30-17:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJYQM4uYJZwokRtU7IAZdSHZ0"
+    },
+    "missions": [
+      {
+        "slug": "12-matcha-signature-matcha-latte",
+        "title": "Signature Matcha Latte",
+        "shotType": "dish",
+        "description": "Film the signature latte. One close pass, get the layers.",
+        "difficulty": "easy",
+        "emoji": "🍵",
+        "sortOrder": 210
+      },
+      {
+        "slug": "12-matcha-hojicha-brownie",
+        "title": "Hojicha Brownie",
+        "shotType": "dish",
+        "description": "Film the hojicha brownie. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 211
+      },
+      {
+        "slug": "12-matcha-one-on-one-whisking",
+        "title": "One-on-One Whisking",
+        "shotType": "action",
+        "description": "Film the drink being whisked in front of you. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "🥄",
+        "sortOrder": 212
+      },
+      {
+        "slug": "12-matcha-matcha-tin-shelf",
+        "title": "Matcha Tin Shelf",
+        "shotType": "display",
+        "description": "Film the retail tins. One slow pass, keeping the whole shelf in frame.",
+        "difficulty": "medium",
+        "emoji": "🫙",
+        "sortOrder": 213
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "chanta-casa-de-empanadas",
+      "name": "Chanta Casa de Empanadas",
+      "address": "333 6th Ave, New York, NY 10014",
+      "latitude": 40.731524,
+      "longitude": -74.001389,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "West Village",
+      "category": "Argentine empanadas",
+      "price": "$",
+      "hours": [
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00",
+        "11:00-22:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJxXZjzvpZwokRSHOTlTTlSvc"
+    },
+    "missions": [
+      {
+        "slug": "chanta-casa-de-empanadas-onion-empanada",
+        "title": "Onion Empanada",
+        "shotType": "dish",
+        "description": "Film the onion empanada. One close pass, get the crimp.",
+        "difficulty": "easy",
+        "emoji": "🧅",
+        "sortOrder": 220
+      },
+      {
+        "slug": "chanta-casa-de-empanadas-four-cheese-empanada",
+        "title": "Four Cheese Empanada",
+        "shotType": "dish",
+        "description": "Film the four cheese. Hold steady, one close pass — get the cheese pull if you break it.",
+        "difficulty": "easy",
+        "emoji": "🧀",
+        "sortOrder": 221
+      },
+      {
+        "slug": "chanta-casa-de-empanadas-caprese-empanada",
+        "title": "Caprese Empanada",
+        "shotType": "dish",
+        "description": "Film the caprese. One close pass over the pastry.",
+        "difficulty": "easy",
+        "emoji": "🍅",
+        "sortOrder": 222
+      },
+      {
+        "slug": "chanta-casa-de-empanadas-alfajores",
+        "title": "Alfajores",
+        "shotType": "dish",
+        "description": "Film the alfajores. One close pass, get the dulce de leche.",
+        "difficulty": "easy",
+        "emoji": "🍪",
+        "sortOrder": 223
+      },
+      {
+        "slug": "chanta-casa-de-empanadas-fresh-baked-case",
+        "title": "Fresh-Baked Case",
+        "shotType": "display",
+        "description": "Film the case of empanadas. One slow pass, keeping the whole display in frame.",
+        "difficulty": "medium",
+        "emoji": "🥟",
+        "sortOrder": 224
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "titis-empanadas",
+      "name": "Titi's Empanadas",
+      "address": "130 E 7th St, New York, NY 10009",
+      "latitude": 40.72613,
+      "longitude": -73.983988,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Latin empanadas",
+      "price": "$",
+      "hours": [
+        "11:00-23:00",
+        "11:00-23:00",
+        "11:00-23:00",
+        "11:00-23:00",
+        "11:00-23:00",
+        "11:00-02:00",
+        "11:00-02:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJO-Tvwi1ZwokRrWBKqzIqgRs"
+    },
+    "missions": [
+      {
+        "slug": "titis-empanadas-papa-con-queso-empanada",
+        "title": "Papa Con Queso Empanada",
+        "shotType": "dish",
+        "description": "Film the papa con queso. One close pass, get the crimp.",
+        "difficulty": "easy",
+        "emoji": "🥔",
+        "sortOrder": 230
+      },
+      {
+        "slug": "titis-empanadas-empanada-flight",
+        "title": "Empanada Flight",
+        "shotType": "spread",
+        "description": "Film the flight. Show how many there are, then pan slowly across every one.",
+        "difficulty": "medium",
+        "emoji": "🥟",
+        "sortOrder": 231
+      },
+      {
+        "slug": "titis-empanadas-chopped-cheese",
+        "title": "Chopped Cheese",
+        "shotType": "dish",
+        "description": "Film the chopped cheese. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥪",
+        "sortOrder": 232
+      },
+      {
+        "slug": "titis-empanadas-guava-cheesecake-empanada",
+        "title": "Guava Cheesecake Empanada",
+        "shotType": "dish",
+        "description": "Film the guava cheesecake empanada. One close pass over the pastry.",
+        "difficulty": "easy",
+        "emoji": "🍮",
+        "sortOrder": 233
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "supermoon-bakehouse",
+      "name": "Supermoon Bakehouse",
+      "address": "120 Rivington St, New York, NY 10002",
+      "latitude": 40.719871,
+      "longitude": -73.987222,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Asian-inspired pastry",
+      "price": "$$",
+      "hours": [
+        "08:00-22:00",
+        "08:00-22:00",
+        "08:00-22:00",
+        "08:00-22:00",
+        "08:00-22:00",
+        "08:00-22:00",
+        "08:00-22:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJcTYla4FZwokRYe11aG3tgqk"
+    },
+    "missions": [
+      {
+        "slug": "supermoon-bakehouse-ube-eclair",
+        "title": "Ube Eclair",
+        "shotType": "dish",
+        "description": "Film the ube eclair. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🍩",
+        "sortOrder": 240
+      },
+      {
+        "slug": "supermoon-bakehouse-creme-brulee-danish",
+        "title": "Creme Brulee Danish",
+        "shotType": "dish",
+        "description": "Film the creme brulee danish. Hold steady, one close pass over the caramelised top.",
+        "difficulty": "easy",
+        "emoji": "🍮",
+        "sortOrder": 241
+      },
+      {
+        "slug": "supermoon-bakehouse-corn-crunch-cookie",
+        "title": "Corn Crunch Cookie",
+        "shotType": "dish",
+        "description": "Film the corn crunch cookie. One close pass, get the texture.",
+        "difficulty": "easy",
+        "emoji": "🍪",
+        "sortOrder": 242
+      },
+      {
+        "slug": "supermoon-bakehouse-pina-colada-donut",
+        "title": "Pina Colada Donut",
+        "shotType": "dish",
+        "description": "Film the pina colada donut. One close pass over the glaze.",
+        "difficulty": "easy",
+        "emoji": "🍍",
+        "sortOrder": 243
+      },
+      {
+        "slug": "supermoon-bakehouse-pastry-case-reveal",
+        "title": "Pastry Case Reveal",
+        "shotType": "display",
+        "description": "Film the pastry case. One slow pass, keeping the whole case in frame.",
+        "difficulty": "medium",
+        "emoji": "🥐",
+        "sortOrder": 244
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "mille-feuille-bakery-cafe",
+      "name": "Mille-Feuille Bakery Cafe",
+      "address": "552 LaGuardia Pl, New York, NY 10012",
+      "latitude": 40.729328,
+      "longitude": -73.998078,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Greenwich Village",
+      "category": "French bakery",
+      "price": "$",
+      "hours": [
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJTzijtpFZwokRmOeHGIqJPmg"
+    },
+    "missions": [
+      {
+        "slug": "mille-feuille-bakery-cafe-classic-croissant",
+        "title": "Classic Croissant",
+        "shotType": "dish",
+        "description": "Film the croissant. One close pass, get the lamination.",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "sortOrder": 250
+      },
+      {
+        "slug": "mille-feuille-bakery-cafe-ham-cheese-croissant",
+        "title": "Ham & Cheese Croissant",
+        "shotType": "dish",
+        "description": "Film the ham and cheese croissant. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥪",
+        "sortOrder": 251
+      },
+      {
+        "slug": "mille-feuille-bakery-cafe-macarons",
+        "title": "Macarons",
+        "shotType": "dish",
+        "description": "Film the macarons. One close pass across the row.",
+        "difficulty": "easy",
+        "emoji": "🍬",
+        "sortOrder": 252
+      },
+      {
+        "slug": "mille-feuille-bakery-cafe-mille-feuille",
+        "title": "Mille-Feuille",
+        "shotType": "dish",
+        "description": "Film the mille-feuille. One close pass, get the layers from the side.",
+        "difficulty": "easy",
+        "emoji": "🍰",
+        "sortOrder": 253
+      },
+      {
+        "slug": "mille-feuille-bakery-cafe-croissant-lamination",
+        "title": "Croissant Lamination",
+        "shotType": "action",
+        "description": "Film the dough being laminated or shaped. Start before they start and don't cut away early.",
+        "difficulty": "hard",
+        "emoji": "👐",
+        "sortOrder": 254
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "le-fournil",
+      "name": "Le Fournil",
+      "address": "115 2nd Ave, New York, NY 10003",
+      "latitude": 40.727928,
+      "longitude": -73.988444,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "French bakery",
+      "price": "$",
+      "hours": [
+        "09:00-15:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00",
+        "07:30-18:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJ29uymPhZwokR1hJbkWp_gjw"
+    },
+    "missions": [
+      {
+        "slug": "le-fournil-pistachio-croissant",
+        "title": "Pistachio Croissant",
+        "shotType": "dish",
+        "description": "Film the pistachio croissant. One close pass, get the filling.",
+        "difficulty": "easy",
+        "emoji": "🥐",
+        "sortOrder": 260
+      },
+      {
+        "slug": "le-fournil-canele",
+        "title": "Canele",
+        "shotType": "dish",
+        "description": "Film the canele. Hold steady, one close pass over the dark crust.",
+        "difficulty": "easy",
+        "emoji": "🍮",
+        "sortOrder": 261
+      },
+      {
+        "slug": "le-fournil-pain-au-chocolat",
+        "title": "Pain au Chocolat",
+        "shotType": "dish",
+        "description": "Film the pain au chocolat. One close pass.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 262
+      },
+      {
+        "slug": "le-fournil-chouquette",
+        "title": "Chouquette",
+        "shotType": "dish",
+        "description": "Film the chouquettes. One close pass, get the sugar.",
+        "difficulty": "easy",
+        "emoji": "🍬",
+        "sortOrder": 263
+      },
+      {
+        "slug": "le-fournil-fresh-baguette-pull",
+        "title": "Fresh Baguette Pull",
+        "shotType": "ritual",
+        "description": "Film a baguette coming out of the oven or off the rack. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "🥖",
+        "sortOrder": 264
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "fresh-from-hell",
+      "name": "Fresh From Hell",
+      "address": "676 9th Ave, New York, NY 10036",
+      "latitude": 40.761363,
+      "longitude": -73.990235,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Hell's Kitchen",
+      "category": "Açaí bowls",
+      "price": "$",
+      "hours": [
+        "07:00-20:00",
+        "07:00-20:00",
+        "07:00-20:00",
+        "07:00-20:00",
+        "07:00-20:00",
+        "07:00-20:00",
+        "07:00-20:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJJd-4_1NYwokRegME8dO2Dlw"
+    },
+    "missions": [
+      {
+        "slug": "fresh-from-hell-hells-kitchen-sink-bowl",
+        "title": "Hell's Kitchen Sink Bowl",
+        "shotType": "dish",
+        "description": "Film the Kitchen Sink bowl. One close pass over the toppings.",
+        "difficulty": "easy",
+        "emoji": "🥣",
+        "sortOrder": 270
+      },
+      {
+        "slug": "fresh-from-hell-classic-acai-bowl",
+        "title": "Classic Acai Bowl",
+        "shotType": "dish",
+        "description": "Film the classic acai bowl. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🫐",
+        "sortOrder": 271
+      },
+      {
+        "slug": "fresh-from-hell-fresh-pressed-orange-juice",
+        "title": "Fresh-Pressed Orange Juice",
+        "shotType": "dish",
+        "description": "Film the orange juice. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🍊",
+        "sortOrder": 272
+      },
+      {
+        "slug": "fresh-from-hell-coconut-oatmeal-cream-bread",
+        "title": "Coconut Oatmeal Cream Bread",
+        "shotType": "dish",
+        "description": "Film the coconut bread. One close pass.",
+        "difficulty": "easy",
+        "emoji": "🥥",
+        "sortOrder": 273
+      },
+      {
+        "slug": "fresh-from-hell-bowl-assembly",
+        "title": "Bowl Assembly",
+        "shotType": "action",
+        "description": "Film a bowl being built. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "🥄",
+        "sortOrder": 274
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "chelsea-acai-cafe",
+      "name": "Chelsea Acai Cafe",
+      "address": "301 W 49th St, New York, NY 10019",
+      "latitude": 40.762015,
+      "longitude": -73.987131,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Hell's Kitchen",
+      "category": "Açaí bowls / juice bar",
+      "price": "$",
+      "hours": [
+        "08:00-20:00",
+        "07:00-20:30",
+        "07:00-20:30",
+        "07:00-20:30",
+        "07:00-20:30",
+        "07:00-20:30",
+        "08:00-20:00"
+      ],
+      "websiteUrl": "https://www.google.com/maps/place/?q=place_id:ChIJXWO3LoFZwokRgUy7NEyO4XY"
+    },
+    "missions": [
+      {
+        "slug": "chelsea-acai-cafe-almond-butter-acai-bowl",
+        "title": "Almond Butter Acai Bowl",
+        "shotType": "dish",
+        "description": "Film the almond butter bowl. One close pass over the toppings.",
+        "difficulty": "easy",
+        "emoji": "🥜",
+        "sortOrder": 280
+      },
+      {
+        "slug": "chelsea-acai-cafe-strawberry-banana-smoothie",
+        "title": "Strawberry Banana Smoothie",
+        "shotType": "dish",
+        "description": "Film the smoothie. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍓",
+        "sortOrder": 281
+      },
+      {
+        "slug": "chelsea-acai-cafe-fresh-pressed-juice",
+        "title": "Fresh-Pressed Juice",
+        "shotType": "dish",
+        "description": "Film the juice. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🥤",
+        "sortOrder": 282
+      },
+      {
+        "slug": "chelsea-acai-cafe-toppings-bar",
+        "title": "Toppings Bar",
+        "shotType": "display",
+        "description": "Film the toppings bar. One slow pass, keeping the whole counter in frame.",
+        "difficulty": "medium",
+        "emoji": "🍯",
+        "sortOrder": 283
+      }
+    ]
+  }
+]
