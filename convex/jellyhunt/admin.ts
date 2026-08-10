@@ -734,6 +734,126 @@ export const createMissionWithLocation = mutationGeneric({
   },
 });
 
+/**
+ * Admin/service-only: create a mission at a place that already exists.
+ *
+ * `createMissionWithLocation` creates a place per mission and enforces one
+ * place per `jellyPlaceId`, so it cannot express "five dishes at one
+ * restaurant" — the second call throws `place_already_linked_to_jelly_place_id`.
+ * That uniqueness rule is correct and stays; this mutation is the missing
+ * second half, attaching an additional mission to a place that has already
+ * been created and reviewed.
+ *
+ * The place is reused as-is. Its coordinates, hours, geofence, and review
+ * status are never rewritten here, because a later mission must not be able
+ * to silently move a venue that earlier missions were verified against.
+ */
+export const createMissionAtPlace = mutationGeneric({
+  args: {
+    serviceKey: v.string(),
+    actorId: v.string(),
+    locationId: v.string(),
+    mission: missionInput,
+    budgets: budgetInput,
+  },
+  handler: async (ctx: any, args: any) => {
+    requireServiceKey(args.serviceKey);
+    const actorId = required(args.actorId, "invalid_actor_id");
+    const campaign = await currentCampaign(ctx);
+    const mission = cleanMission(args.mission);
+
+    const place = await ctx.db
+      .query("jellyhuntPlaces")
+      .withIndex("by_public_id", (q: any) => q.eq("publicId", args.locationId))
+      .unique();
+    if (!place) throw new Error("place_not_found");
+
+    await ensureUniqueSlug(ctx, mission.slug);
+
+    const now = Date.now();
+    const missionPublicId = createPublicId("mis");
+    const reward = rewardTerms(mission.rewardAmount);
+    const missionId = await ctx.db.insert("jellyhuntMissions", {
+      publicId: missionPublicId,
+      campaignId: campaign._id,
+      legacySlug: mission.slug,
+      slug: mission.slug,
+      status: mission.status,
+      approvalMode: mission.approvalMode,
+      currentRevision: 1,
+      title: mission.title,
+      category: mission.category,
+      difficulty: mission.difficulty,
+      emoji: mission.emoji,
+      neighborhood: mission.neighborhood,
+      price: mission.price,
+      sortOrder: mission.sortOrder,
+      placeId: place._id,
+      reward,
+      acceptingSubmissions: mission.status === "active",
+      startsAt: mission.startsAt,
+      endsAt: mission.endsAt,
+      createdBy: actorId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const appliedBudgets = await applyMissionBudgets(
+      ctx,
+      campaign,
+      { _id: missionId, publicId: missionPublicId },
+      args.budgets,
+      reward.amount,
+      mission.status === "active",
+      now,
+    );
+    await ctx.db.patch(missionId, {
+      budgetAllocation: appliedBudgets.mission.allocatedAmount,
+    });
+
+    await ctx.db.insert("jellyhuntMissionRevisions", {
+      publicId: createPublicId("mrv"),
+      missionId,
+      revision: 1,
+      title: mission.title,
+      description: mission.description,
+      instructions: [mission.description],
+      requirements: requirements(mission),
+      approvalMode: mission.approvalMode,
+      reward,
+      place: {
+        placeId: place._id,
+        jellyPlaceId: place.jellyPlaceId,
+        name: place.name,
+        address: place.address,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        geofenceRadiusMeters: place.geofenceRadiusMeters,
+        timeZone: place.timeZone,
+      },
+      missionWindow: { startsAt: mission.startsAt, endsAt: mission.endsAt },
+      legacyDisplay: legacyDisplay(mission),
+      createdBy: actorId,
+      createdAt: now,
+    });
+
+    await bumpCatalog(ctx, campaign, now);
+    await recordAuditEvent(ctx, {
+      actor: actorId,
+      action: "mission.created",
+      entityType: "mission",
+      entityId: missionId,
+      nextState: {
+        publicId: missionPublicId,
+        status: mission.status,
+        revision: 1,
+        placeId: place.publicId,
+      },
+    });
+    return { missionId: missionPublicId, locationId: place.publicId };
+  },
+});
+
 export const updateMissionWithLocation = mutationGeneric({
   args: {
     serviceKey: v.string(),
