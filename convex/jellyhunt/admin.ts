@@ -313,6 +313,28 @@ const SHOT_TYPE_RULES: Record<
   },
 };
 
+/**
+ * Recover a mission's shot type from its stored requirements.
+ *
+ * The shot type is not a column: adding one would mean a schema change, and an
+ * undeclared JellyHunt field has taken the restaurant platform down twice. It
+ * does not need to be. `requirements.post.prompt` holds the shot type's
+ * instruction, the five instructions are distinct, and
+ * `tests/jellyhunt-shot-types.test.ts` fails if they ever drift, so the mapping
+ * back is exact rather than a guess.
+ */
+const SHOT_TYPE_BY_INSTRUCTION: Record<string, string> = {};
+
+function shotTypeFromRequirements(reqs: any): string | undefined {
+  if (!Object.keys(SHOT_TYPE_BY_INSTRUCTION).length) {
+    for (const [id, rule] of Object.entries(SHOT_TYPE_RULES)) {
+      SHOT_TYPE_BY_INSTRUCTION[rule.instruction] = id;
+    }
+  }
+  const prompt = reqs?.post?.prompt;
+  return typeof prompt === "string" ? SHOT_TYPE_BY_INSTRUCTION[prompt] : undefined;
+}
+
 function requirements(mission: AdminMissionInput) {
   const rule = mission.shotType ? SHOT_TYPE_RULES[mission.shotType] : undefined;
   if (mission.shotType && !rule) throw new Error("invalid_shot_type");
@@ -554,6 +576,7 @@ async function projectMission(ctx: any, mission: any) {
     category: mission.category,
     difficulty: mission.difficulty,
     emoji: mission.emoji,
+    shotType: shotTypeFromRequirements(revision.requirements),
     neighborhood: mission.neighborhood,
     price: mission.price,
     hours: display?.hours ?? toLegacyHours(place.hours),

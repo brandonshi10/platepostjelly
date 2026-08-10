@@ -105,7 +105,13 @@ VENUES = [
     # Address, coordinates and hours corrected: the 88 W Houston flagship closed
     # in October 2025 and Morgenstern's reopened at 2 Rivington St, noon-midnight
     # daily. The record carried over from the original 16 points at the dead shop.
-    ("morgensterns", "Morgenstern's", "2 Rivington St", 40.72159, -73.993042, "Lower East Side", "$",
+    #
+    # The slug is deliberately `morgensterns-rivington`, not `morgensterns`. The
+    # importer reuses an existing place when a venue's slug matches an existing
+    # mission's restaurantTag, and the place behind `morgensterns` is the closed
+    # W Houston address. A distinct slug creates a new place at the real one
+    # instead of hanging correct missions off a dead location.
+    ("morgensterns-rivington", "Morgenstern's", "2 Rivington St", 40.72159, -73.993042, "Lower East Side", "$",
      "Ice Cream",
      ["12:00-00:00", "12:00-00:00", "12:00-00:00", "12:00-00:00", "12:00-00:00", "12:00-00:00", "12:00-00:00"],
      [

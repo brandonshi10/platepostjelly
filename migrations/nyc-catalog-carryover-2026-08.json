@@ -464,7 +464,7 @@
   },
   {
     "venue": {
-      "slug": "morgensterns",
+      "slug": "morgensterns-rivington",
       "name": "Morgenstern's",
       "address": "2 Rivington St",
       "latitude": 40.72159,
@@ -486,7 +486,7 @@
     },
     "missions": [
       {
-        "slug": "morgensterns-burnt-honey-vanilla",
+        "slug": "morgensterns-rivington-burnt-honey-vanilla",
         "title": "Burnt Honey Vanilla",
         "shotType": "dish",
         "description": "Film the burnt honey vanilla scoop. One close pass, get the texture.",
@@ -495,7 +495,7 @@
         "sortOrder": 370
       },
       {
-        "slug": "morgensterns-salt-pepper-pine-nut",
+        "slug": "morgensterns-rivington-salt-pepper-pine-nut",
         "title": "Salt & Pepper Pine Nut",
         "shotType": "dish",
         "description": "Film the salt and pepper pine nut. Hold steady, one close pass.",
@@ -504,7 +504,7 @@
         "sortOrder": 371
       },
       {
-        "slug": "morgensterns-king-kong-banana-split",
+        "slug": "morgensterns-rivington-king-kong-banana-split",
         "title": "King Kong Banana Split",
         "shotType": "spread",
         "description": "Film the banana split. Show the whole thing first, then pan slowly across every element.",
@@ -513,7 +513,7 @@
         "sortOrder": 372
       },
       {
-        "slug": "morgensterns-chocolate-deluxe",
+        "slug": "morgensterns-rivington-chocolate-deluxe",
         "title": "Chocolate Deluxe",
         "shotType": "dish",
         "description": "Film the Chocolate Deluxe. One close pass over the top.",
@@ -522,7 +522,7 @@
         "sortOrder": 373
       },
       {
-        "slug": "morgensterns-the-scoop-pull",
+        "slug": "morgensterns-rivington-the-scoop-pull",
         "title": "The Scoop Pull",
         "shotType": "action",
         "description": "Film a scoop being pulled from the tub. Start before the scoop goes in and don't cut away early.",
