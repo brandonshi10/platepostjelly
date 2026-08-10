@@ -13,8 +13,12 @@ describe("consumer map UI safety", () => {
   });
 
   it("preserves an intentional closed detail card", () => {
+    // The card is keyed on a venue now, not a mission, but the rule is the
+    // same: only correct a selection that has gone out of view, and never
+    // re-open one the user deliberately closed.
+    expect(source).not.toContain("if (!selectedId && venues[0])");
     expect(source).not.toContain("if (!selectedId && filteredMissions[0])");
-    expect(source).toContain("if (selectedId && !filteredMissions.some");
+    expect(source).toContain("if (selectedId && !venues.some");
   });
 
   it("does not advertise a loading Mapbox instance with no missions", () => {
