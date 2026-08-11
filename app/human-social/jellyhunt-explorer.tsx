@@ -8,7 +8,6 @@ import {
   LocateFixed,
   Map as MapIcon,
   Menu,
-  Mic2,
   Navigation,
   Play,
   Search,
@@ -76,11 +75,16 @@ const LEADERBOARD_ENDPOINTS: Record<LeaderboardScope, string> = {
 };
 const EMPTY_LEADERBOARD: LeaderboardLoadState = { status: "idle", standings: [] };
 const HQ = { latitude: 40.7228, longitude: -73.9881 };
+// Widened from the original Lower-East-Side-only window. The catalog now runs
+// from Battery Park City up to Morningside Heights, and venues outside these
+// bounds get clamped to the edge — Midtown pins piled up underneath the header.
+// The decorative street labels are projected through the same bounds, so they
+// stay geographically honest as the window grows.
 const MAP_BOUNDS = {
-  minLatitude: 40.711,
-  maxLatitude: 40.734,
-  minLongitude: -74.004,
-  maxLongitude: -73.978,
+  minLatitude: 40.702,
+  maxLatitude: 40.816,
+  minLongitude: -74.024,
+  maxLongitude: -73.953,
 };
 
 function jellyhuntMapStyle(theme: Theme): StyleSpecification {
@@ -208,11 +212,12 @@ function missionState(missionId: string, statuses: UserMissionStatus[]) {
   return statuses.find((status) => status.missionId === missionId)?.status ?? "not_started";
 }
 
+// Tuned to sit on the PlatePost navy ground rather than the old near-black.
 function missionAccent(mission: JellyhuntMission) {
-  if (mission.difficulty === "legendary") return "#f59e0b";
-  if (mission.difficulty === "hard") return "#f43f5e";
-  if (mission.difficulty === "medium") return "#a855f7";
-  return "#00d4aa";
+  if (mission.difficulty === "legendary") return "#f5a524";
+  if (mission.difficulty === "hard") return "#f4635e";
+  if (mission.difficulty === "medium") return "#9d8dff";
+  return "#3ddc97";
 }
 
 /**
@@ -928,12 +933,14 @@ export function JellyhuntExplorer({
               <Menu size={23} aria-hidden="true" />
             </button>
             <span className="hunt-brand-mark" aria-hidden="true">
-              <Mic2 size={25} strokeWidth={2.4} />
+              {/* Referenced as a file, not inlined as a data: URI — next/image
+                  returns 400 on data: sources. */}
+              <Image src="/brand/platepost-emblem.svg" alt="" width={26} height={31} priority />
             </span>
             <div className="hunt-brand-copy">
-              <span className="hunt-partnership" translate="no">PlatePost x JellyJelly: Human Social!</span>
+              <span className="hunt-partnership" translate="no">PlatePost × Jelly</span>
               <h1>JELLYHUNT</h1>
-              <small><span>LOWER MANHATTAN</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
+              <small><span>NEW YORK CITY</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
             </div>
           </div>
 
@@ -948,8 +955,13 @@ export function JellyhuntExplorer({
             >
               <SlidersHorizontal size={18} aria-hidden="true" />
             </button>
+            {/* Two calls to action: Jelly gets the app install, PlatePost gets
+                its own front door. Before this the page converted only for Jelly. */}
             <a className="hunt-get-app" href={appLinks.ios} target="_blank" rel="noreferrer">
-              Get JellyJelly <ArrowUpRight size={15} aria-hidden="true" />
+              Get Jelly <ArrowUpRight size={15} aria-hidden="true" />
+            </a>
+            <a className="hunt-get-platepost" href="https://platepost.io" target="_blank" rel="noreferrer">
+              PlatePost <ArrowUpRight size={15} aria-hidden="true" />
             </a>
             <button type="button" aria-label="How Jellyhunt works" onClick={() => showPanel("how")}>
               <CircleHelp size={20} aria-hidden="true" />
@@ -1144,6 +1156,9 @@ export function JellyhuntExplorer({
             <div className="hunt-menu-stores">
               <a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={17} aria-hidden="true" /> iPhone</a>
               <a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={17} aria-hidden="true" /> Android</a>
+              {/* Both header CTAs are hidden on small screens, so PlatePost needs a
+                  home here for parity with Jelly's two store links. */}
+              <a href="https://platepost.io" target="_blank" rel="noreferrer"><Sparkles size={17} aria-hidden="true" /> PlatePost</a>
             </div>
           </aside>
         </>
