@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import manifest from "./contracts/jellyhunt-v1/manifest.json";
 import { projectLegacyV1 } from "../src/lib/jellyhunt/contracts";
@@ -17,6 +18,17 @@ describe("frozen JellyHunt v1 contract", () => {
 
     expect(projected.missions[0]).not.toHaveProperty("shotType");
     expect(projected.missions[0].title).toBe("Ube Eclair");
+  });
+
+  it("actually applies the legacy projection in the v1 missions route", () => {
+    // The projection function passing its unit test proved nothing on its own:
+    // for a while nothing called it, and every additive field reached Jelly's
+    // frozen payload. shotType landed on each mission object before this was
+    // caught by querying the running route. Assert the wiring, not just the
+    // helper.
+    const route = readFileSync("app/api/v1/jellyhunt/missions/route.ts", "utf8");
+    expect(route).toContain("projectLegacyV1");
+    expect(route).toMatch(/projectLegacyV1\(\s*await getMissionResponse\(/);
   });
 
   it("freezes malformed JSON as the existing 500 response", async () => {

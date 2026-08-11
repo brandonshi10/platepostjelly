@@ -4,6 +4,7 @@ import {
   getMissionResponse,
   JellyhuntDataError,
 } from "@/src/lib/jellyhunt/convex-repository";
+import { projectLegacyV1 } from "@/src/lib/jellyhunt/contracts";
 import { isValidServerKey } from "@/src/lib/jellyhunt/domain";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const data = await getMissionResponse(userId);
+    // projectLegacyV1 existed but nothing called it, so every additive field
+    // reached Jelly's frozen v1 payload — shotType was landing on each mission
+    // object, which is the part their native decoder parses. Strip additive
+    // keys here, then add requestId to the envelope, which v1 already carried.
+    const data = projectLegacyV1(await getMissionResponse(userId)) as Record<string, unknown>;
     return NextResponse.json(
       { ...data, requestId },
       {
