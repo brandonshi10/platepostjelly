@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { FormEvent } from "react";
 import { formatMissionDateTime, parseMissionDateTime } from "@/src/lib/jellyhunt/admin-time";
+import { SHOT_TYPES, SHOT_TYPE_SPECS, type ShotType } from "@/src/lib/jellyhunt/shot-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type LocationRecord = {
@@ -60,6 +61,7 @@ type MissionRecord = {
   category: string;
   difficulty: "easy" | "medium" | "hard" | "legendary";
   emoji: string;
+  shotType?: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -123,6 +125,7 @@ type Draft = {
   category: string;
   difficulty: MissionRecord["difficulty"];
   emoji: string;
+  shotType: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -161,6 +164,7 @@ function emptyDraft(budgetContext?: AdminBudgetContext | null): Draft {
     category: "Food",
     difficulty: "easy",
     emoji: "🍽️",
+    shotType: "",
     neighborhood: "",
     price: "$$",
     hours: Array.from({ length: 7 }, () => "09:00-22:00"),
@@ -200,6 +204,7 @@ function toDraft(mission: MissionRecord): Draft {
     category: mission.category,
     difficulty: mission.difficulty,
     emoji: mission.emoji,
+    shotType: mission.shotType ?? "",
     neighborhood: mission.neighborhood,
     price: mission.price,
     hours: mission.hours,
@@ -282,6 +287,34 @@ export function AdminDashboard({ username }: { username: string }) {
     () => submissions.filter((submission) => filter === "all" || submission.status === filter),
     [filter, submissions],
   );
+
+  // 175 missions in one flat list is unusable. Group by the place each mission
+  // belongs to, so an operator sees "Supermoon Bakehouse — 5 missions, 5
+  // published" and works a restaurant at a time.
+  const missionsByVenue = useMemo(() => {
+    const groups = new Map<string, { key: string; name: string; missions: MissionRecord[]; publishedCount: number }>();
+    for (const mission of missions) {
+      const key = mission.location?._id ?? `no-location:${mission.restaurantTag}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          name: mission.location?.name ?? mission.restaurantTag ?? "Location missing",
+          missions: [],
+          publishedCount: 0,
+        };
+        groups.set(key, group);
+      }
+      group.missions.push(mission);
+      if (mission.status === "active") group.publishedCount += 1;
+    }
+    for (const group of groups.values()) {
+      group.missions.sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+    return [...groups.values()].sort(
+      (a, b) => a.missions[0].sortOrder - b.missions[0].sortOrder,
+    );
+  }, [missions]);
   const reviewCount = submissions.filter((submission) => submission.status === "needs_review").length;
   const activeCount = missions.filter((mission) => mission.status === "active").length;
   const exceptionCount = submissions.filter((submission) => ["reward_failed", "reward_uncertain"].includes(submission.status)).length;
@@ -308,6 +341,7 @@ export function AdminDashboard({ username }: { username: string }) {
         category: draft.category,
         difficulty: draft.difficulty,
         emoji: draft.emoji,
+        shotType: draft.shotType || undefined,
         neighborhood: draft.neighborhood,
         price: draft.price,
         hours: draft.hours,
@@ -442,7 +476,13 @@ export function AdminDashboard({ username }: { username: string }) {
             </div>
             {loading ? <div className="admin-empty">Loading missions…</div> : missions.length ? (
               <div className="admin-mission-stack">
-                {missions.map((mission) => (
+                {missionsByVenue.map((venue) => (
+                  <section className="admin-venue" key={venue.key}>
+                    <h3 className="admin-venue-head">
+                      <span>{venue.name}</span>
+                      <small>{venue.missions.length} missions · {venue.publishedCount} published</small>
+                    </h3>
+                {venue.missions.map((mission) => (
                   <article className="admin-mission-ticket" data-selected={draft.missionId === mission._id} key={mission._id}>
                     <button className="admin-ticket-main" type="button" onClick={() => setDraft(toDraft(mission))}>
                       <span className="admin-ticket-emoji">{mission.emoji}</span>
@@ -458,6 +498,8 @@ export function AdminDashboard({ username }: { username: string }) {
                       </select>
                     </div>
                   </article>
+                ))}
+                  </section>
                 ))}
               </div>
             ) : (
@@ -481,6 +523,13 @@ export function AdminDashboard({ username }: { username: string }) {
                 <label>Category<input required value={draft.category} onChange={(event) => set("category", event.target.value)} /></label>
                 <label>Neighborhood<input value={draft.neighborhood} onChange={(event) => set("neighborhood", event.target.value)} /></label>
                 <label>Difficulty<select value={draft.difficulty} onChange={(event) => set("difficulty", event.target.value as Draft["difficulty"])}><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option><option value="legendary">Legendary</option></select></label>
+                <label>Shot type<select value={draft.shotType} onChange={(event) => set("shotType", event.target.value)}>
+                  <option value="">— none —</option>
+                  {SHOT_TYPES.map((id) => <option key={id} value={id}>{SHOT_TYPE_SPECS[id].label}</option>)}
+                </select></label>
+                {draft.shotType && SHOT_TYPE_SPECS[draft.shotType as ShotType] ? (
+                  <p className="admin-shot-hint">{SHOT_TYPE_SPECS[draft.shotType as ShotType].instruction} ({SHOT_TYPE_SPECS[draft.shotType as ShotType].minDurationSeconds}–{SHOT_TYPE_SPECS[draft.shotType as ShotType].maxDurationSeconds}s)</p>
+                ) : null}
                 <label>Price marker<input value={draft.price} onChange={(event) => set("price", event.target.value)} /></label>
               </div>
             </fieldset>
