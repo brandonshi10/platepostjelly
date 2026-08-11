@@ -1330,3 +1330,97 @@ body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-m
 @media (max-width:600px){
   .hunt-get-app,.hunt-get-platepost{font-size:10px;padding:0 11px;min-height:38px}
 }
+
+/* ---- Real map for people whose interactive map cannot start -------------- */
+/* The old fallback drew street names in an empty field, which tells a filmer
+   nothing. This is a picture of the actual city at the same centre and zoom the
+   pins are projected through, so a pin sits on the building it names. */
+.hunt-fallback-viewport{inset:0;position:absolute;transform-origin:50% 50%;transition:transform .26s ease}
+.hunt-static-map{display:block;height:100%;left:0;object-fit:cover;position:absolute;top:0;width:100%}
+.hunt-fallback-map.has-static{background:var(--hunt-void)}
+.hunt-fallback-map.has-static:before{content:none}
+/* Sink the map a touch so navy pins and white type stay legible over it. */
+.hunt-fallback-map.has-static .hunt-static-map{filter:saturate(.85) brightness(.82)}
+.hunt-theme-wobbles .hunt-fallback-map.has-static .hunt-static-map{filter:saturate(.9) brightness(1.02)}
+
+/* ---- The venue card ------------------------------------------------------ */
+/* It used to span the full width and stand half the screen tall, with the
+   selected mission's instruction alone in a large empty column. The map is the
+   point of this page, so the card docks to one side and stays out of the way. */
+@media (min-width:900px){
+  .hunt-detail-card{
+    border-radius:18px;
+    bottom:22px;
+    left:22px;
+    max-height:min(70vh,660px);
+    overflow-y:auto;
+    right:auto;
+    width:min(430px,calc(100vw - 44px));
+  }
+  .hunt-detail-grid{display:block}
+  .hunt-zoom-controls.lifted,.hunt-theme-toggle.lifted{transform:none}
+}
+
+/* One column everywhere: venue, then its menu, then what to film. */
+.hunt-detail-grid{display:block}
+.hunt-detail-mission{margin-top:12px}
+
+/* Menu rows: shot type and difficulty above, dish and what it pays below. */
+.hunt-venue-mission{
+  align-items:baseline;
+  gap:2px 10px;
+  grid-template-areas:"meta reward" "title reward";
+  grid-template-columns:1fr auto;
+  padding:9px 12px;
+}
+.hunt-venue-mission-shot{grid-area:meta;font-size:9.5px;letter-spacing:.1em}
+.hunt-venue-mission-title{grid-area:title;font-size:15px;line-height:1.25}
+.hunt-venue-mission-reward{
+  align-self:center;
+  font-size:15px;
+  grid-area:reward;
+  opacity:.92;
+}
+.hunt-venue-mission[data-selected=true]{background:rgba(95,208,255,.09)}
+
+/* The venue's own line: name big, everything else quiet. */
+.hunt-detail-title h2{font-size:clamp(21px,2.2vw,27px);line-height:1.12}
+.hunt-detail-title p{font-size:12.5px}
+.hunt-detail-emoji{flex-basis:44px;height:44px;width:44px;font-size:22px}
+.hunt-reward-badge strong{font-size:19px}
+
+/* Sticky was worse than the problem: it floated the button over the caption
+   that explains the shot. The card is short enough to hold everything once the
+   rows and caption are tightened, so the action simply sits last. */
+.hunt-detail-card .hunt-start-mission{margin-top:12px}
+
+/* What to film: a caption under the menu, not a panel of its own. */
+.hunt-detail-mission{padding:11px 13px}
+.hunt-detail-mission span{font-size:9.5px;letter-spacing:.1em}
+.hunt-detail-mission p{font-size:13.5px;line-height:1.45;margin:5px 0 0}
+
+/* JellyJelly HQ is a landmark, not a mission — it was outshining the pins it
+   sits among, and at Rivington it lands almost on top of one. */
+.hunt-hq img{height:34px;width:34px}
+.hunt-hq{opacity:.62;z-index:1}
+.hunt-hq strong{font-size:8px;letter-spacing:.12em}
+.hunt-hq .hunt-hq-pulse{opacity:.35;transform:scale(.55)}
+.hunt-mapbox-hq{pointer-events:none}
+
+/* Rows were 82px each, so five dishes plus the caption and the action overran
+   the card. A menu line does not need that much room. */
+.hunt-venue-mission{gap:1px 10px;padding:7px 11px}
+.hunt-venue-mission-shot{font-size:9px}
+.hunt-venue-mission-title{font-size:14px;line-height:1.2}
+.hunt-venue-mission-reward{font-size:14px}
+.hunt-venue-missions{gap:5px;margin-top:10px}
+
+@media (min-width:900px){
+  .hunt-detail-card{max-height:min(78vh,720px);padding:14px}
+  /* The drag handle promises a bottom sheet; on desktop this is a docked card. */
+  .hunt-detail-card .hunt-drawer-handle{display:none}
+  .hunt-detail-title h2{font-size:21px}
+  .hunt-detail-emoji{flex-basis:38px;height:38px;width:38px;font-size:19px}
+  .hunt-reward-badge strong{font-size:17px}
+  .hunt-detail-hours{padding:7px 11px}
+}

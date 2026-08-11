@@ -37,6 +37,11 @@ import {
 } from "@/src/lib/jellyhunt/map-ui";
 import { groupMissionsIntoVenues, type Venue } from "@/src/lib/jellyhunt/venues";
 import { shotTypeSpec } from "@/src/lib/jellyhunt/shot-types";
+import {
+  fitStaticMapView,
+  projectOntoStaticMap,
+  staticMapUrl,
+} from "@/src/lib/jellyhunt/static-map";
 
 type AppLinks = { ios: string; android: string };
 type Coordinates = { latitude: number; longitude: number };
@@ -365,6 +370,11 @@ export function JellyhuntExplorer({
   // shows a mission belonging to the venue you just left.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  // Measured so the static map image is requested at the container's own aspect
+  // ratio — any mismatch would crop the image and slide every pin off its building.
+  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const [staticMapFailed, setStaticMapFailed] = useState(false);
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
@@ -430,6 +440,61 @@ export function JellyhuntExplorer({
   useEffect(() => {
     setSelectedMissionId(null);
   }, [selectedId]);
+
+  useEffect(() => {
+    const node = stageRef.current;
+    if (!node) return;
+    // Snap to a 64px grid. The image URL is derived from this size, so an
+    // unquantised measurement re-requests a multi-megabyte map on every pixel of
+    // resize — nine requests for one page load before this was added.
+    const snap = (value: number) => Math.max(64, Math.round(value / 64) * 64);
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      const width = snap(rect.width);
+      const height = snap(rect.height);
+      setStageSize((current) =>
+        current.width === width && current.height === height ? current : { width, height },
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Frame every visible venue, then ask Mapbox for a picture of exactly that.
+  const staticView = useMemo(
+    () =>
+      fitStaticMapView(
+        venues.map((venue) => ({ latitude: venue.latitude, longitude: venue.longitude })),
+        stageSize.width || 1200,
+        stageSize.height || 800,
+        Math.min(120, Math.max(56, (stageSize.height || 800) * 0.12)),
+      ),
+    [venues, stageSize.width, stageSize.height],
+  );
+
+  const staticMapSrc = useMemo(() => {
+    if (!mapboxToken || staticMapFailed || !stageSize.width || !stageSize.height) return null;
+    return staticMapUrl(
+      staticView,
+      stageSize.width,
+      stageSize.height,
+      mapboxToken,
+      theme === "wobbles" ? "light-v11" : "dark-v11",
+    );
+  }, [mapboxToken, staticMapFailed, staticView, stageSize.width, stageSize.height, theme]);
+
+  // Pins are placed with the same projection the image was rendered with, so a
+  // pin sits on the building it names. Before the stage is measured there is no
+  // image yet, so the old linear projection is only a placeholder.
+  const projectOnStage = useMemo(() => {
+    const width = stageSize.width;
+    const height = stageSize.height;
+    if (!width || !height) return projectCoordinates;
+    return (coordinates: Coordinates) =>
+      projectOntoStaticMap(coordinates, staticView, width, height);
+  }, [staticView, stageSize.width, stageSize.height]);
 
   useEffect(() => {
     if (experiencePanel !== "leaderboard") return;
@@ -509,6 +574,12 @@ export function JellyhuntExplorer({
         const mapboxModule = await import("mapbox-gl");
         if (cancelled || !mapContainerRef.current) return;
         const mapboxgl = mapboxModule.default;
+        // No WebGL means no interactive map, ever. Fail now and show the static
+        // map rather than making the visitor stare at nothing for 20 seconds.
+        if (typeof mapboxgl.supported === "function" && !mapboxgl.supported()) {
+          failMap();
+          return;
+        }
         mapboxModuleRef.current = mapboxgl;
         mapboxgl.accessToken = mapboxToken;
 
@@ -547,17 +618,14 @@ export function JellyhuntExplorer({
           if (!cancelled && map && !map.loaded()) failMap();
         }, 20_000);
 
-        const markLoaded = () => {
+        map.on("load", () => {
           if (cancelled) return;
           if (failureTimer) window.clearTimeout(failureTimer);
           setMapLoaded(true);
-        };
-
-        map.on("load", markLoaded);
-        // `idle` fires once the map has finished rendering everything it can.
-        // Listening to both means a map that is usable but never emits `load`
-        // still counts as loaded rather than timing out into the fallback.
-        map.on("idle", markLoaded);
+        });
+        // Deliberately NOT listening to `idle`: it fires even when the map has
+        // rendered nothing, which flipped mapLoaded true on a WebGL-less device,
+        // unmounted the fallback, and left a blank screen instead of a map.
         map.on("error", () => {
           if (!cancelled && map && !map.loaded()) failMap();
         });
@@ -637,7 +705,14 @@ export function JellyhuntExplorer({
     }
 
     if (venues.length > 1) {
-      map.fitBounds(bounds, { padding: 100, maxZoom: 14, duration: 0 });
+      // Even padding, clearing the header. Reserving the card's width here left
+      // a third of the frame showing New Jersey whenever no card was open; the
+      // card is dodged when a venue is selected instead, below.
+      map.fitBounds(bounds, {
+        padding: { top: 132, right: 80, bottom: 88, left: 80 },
+        maxZoom: 15.2,
+        duration: 0,
+      });
     } else if (venues.length === 1) {
       const only = venues[0];
       map.jumpTo({ center: [only.longitude, only.latitude], zoom: 14 });
@@ -654,8 +729,12 @@ export function JellyhuntExplorer({
 
     if (!selectedMission || !mapRef.current) return;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Shift the venue clear of the card that is about to cover it: right on a
+    // desktop where the card docks left, up on a phone where it is a bottom sheet.
+    const wide = window.innerWidth >= 900;
     mapRef.current.flyTo({
       center: [selectedMission.location.longitude, selectedMission.location.latitude],
+      offset: wide ? [200, 0] : [0, -170],
       zoom: Math.max(mapRef.current.getZoom(), 13.5),
       duration: reduceMotion ? 0 : 550,
       essential: false,
@@ -828,47 +907,76 @@ export function JellyhuntExplorer({
             aria-label="Interactive Jellyhunt mission map"
           />
         ) : null}
-        {!mapboxActive || !mapLoaded ? (
-          <div className="hunt-fallback-map" role="region" aria-label="Interactive Jellyhunt coordinate map">
+        {/* The static map stays mounted underneath the interactive one. Detecting
+            "the GL map failed" is unreliable — it can report `load` having painted
+            nothing — so instead a real picture of the city is always the floor,
+            and the interactive map simply paints over it when it genuinely works.
+            It doubles as the loading state, so nobody ever sees an empty field. */}
+        {staticMapSrc || !mapboxActive || !mapLoaded ? (
+          <div
+            className={`hunt-fallback-map${staticMapSrc ? " has-static" : ""}`}
+            ref={stageRef}
+            role="region"
+            aria-label="Jellyhunt mission map"
+            aria-hidden={mapboxActive && mapLoaded ? true : undefined}
+          >
+            {/* A picture of the real city for anyone whose interactive map cannot
+                start. Plain <img>, not next/image: the URL is generated per
+                viewport size and must not be routed through the optimizer. */}
             <div
-              className="hunt-fallback-layer"
+              className="hunt-fallback-viewport"
               style={{ transform: `scale(${fallbackZoom})` }}
             >
-              {EAST_WEST_STREETS.map((street) => (
-                <div
-                  className={`hunt-street hunt-street-ew${street.major ? " major" : ""}${street.spine ? " spine" : ""}`}
-                  key={street.label}
-                  style={{ top: `${projectCoordinates({ latitude: street.latitude, longitude: HQ.longitude }).top}%` }}
-                  aria-hidden="true"
-                >
-                  <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
-                </div>
-              ))}
-              {NORTH_SOUTH_STREETS.map((street) => (
-                <div
-                  className={`hunt-street hunt-street-ns${street.major ? " major" : ""}`}
-                  key={street.label}
-                  style={{ left: `${projectCoordinates({ latitude: HQ.latitude, longitude: street.longitude }).left}%` }}
-                  aria-hidden="true"
-                >
-                  <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
-                </div>
-              ))}
+            {staticMapSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className="hunt-static-map"
+                src={staticMapSrc}
+                alt=""
+                aria-hidden="true"
+                onError={() => setStaticMapFailed(true)}
+              />
+            ) : null}
+            <div className="hunt-fallback-layer">
+              {!staticMapSrc ? (
+                <>
+                  {EAST_WEST_STREETS.map((street) => (
+                    <div
+                      className={`hunt-street hunt-street-ew${street.major ? " major" : ""}${street.spine ? " spine" : ""}`}
+                      key={street.label}
+                      style={{ top: `${projectOnStage({ latitude: street.latitude, longitude: HQ.longitude }).top}%` }}
+                      aria-hidden="true"
+                    >
+                      <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
+                    </div>
+                  ))}
+                  {NORTH_SOUTH_STREETS.map((street) => (
+                    <div
+                      className={`hunt-street hunt-street-ns${street.major ? " major" : ""}`}
+                      key={street.label}
+                      style={{ left: `${projectOnStage({ latitude: HQ.latitude, longitude: street.longitude }).left}%` }}
+                      aria-hidden="true"
+                    >
+                      <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
+                    </div>
+                  ))}
+                </>
+              ) : null}
 
-              <div
+              {(!mapboxActive || !mapLoaded) ? <div
                 className="hunt-hq"
                 style={{
-                  left: `${projectCoordinates(HQ).left}%`,
-                  top: `${projectCoordinates(HQ).top}%`,
+                  left: `${projectOnStage(HQ).left}%`,
+                  top: `${projectOnStage(HQ).top}%`,
                 }}
               >
                 <span className="hunt-hq-pulse" aria-hidden="true" />
                 <Image src="/wobbles/wobble_product.png" alt="JellyJelly HQ" width={72} height={72} priority />
                 <strong>JELLYJELLY HQ</strong>
-              </div>
+              </div> : null}
 
-              {venues.map((venue) => {
-                const position = projectCoordinates({
+              {(!mapboxActive || !mapLoaded) && venues.map((venue) => {
+                const position = projectOnStage({
                   latitude: venue.latitude,
                   longitude: venue.longitude,
                 });
@@ -904,13 +1012,14 @@ export function JellyhuntExplorer({
                 <span
                   className="hunt-fallback-user"
                   style={{
-                    left: `${projectCoordinates(userLocation).left}%`,
-                    top: `${projectCoordinates(userLocation).top}%`,
+                    left: `${projectOnStage(userLocation).left}%`,
+                    top: `${projectOnStage(userLocation).top}%`,
                   }}
                   role="img"
                   aria-label="Your approximate location"
                 />
               ) : null}
+            </div>
             </div>
           </div>
         ) : null}
@@ -1120,7 +1229,7 @@ export function JellyhuntExplorer({
                 href={`jellyjelly://camera?mission_id=${encodeURIComponent(selectedMission.id)}`}
                 aria-label={`${missionStatusLabel(selectedState)}: ${selectedMission.title} at ${selectedVenue.name}`}
               >
-                {missionStatusLabel(selectedState)} · {selectedMission.title}
+                {missionStatusLabel(selectedState)}
               </a>
             ) : (
               <div className={`hunt-start-mission hunt-start-${selectedState}`} role="status" data-disabled="true">
