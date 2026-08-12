@@ -37,6 +37,7 @@ import {
 } from "@/src/lib/jellyhunt/map-ui";
 import { groupMissionsIntoVenues, type Venue } from "@/src/lib/jellyhunt/venues";
 import { shotTypeSpec } from "@/src/lib/jellyhunt/shot-types";
+import { FILMING_RULES, captureSummary } from "@/src/lib/jellyhunt/filming-spec";
 import {
   fitStaticMapView,
   projectOntoStaticMap,
@@ -1226,6 +1227,16 @@ export function JellyhuntExplorer({
               <div className="hunt-detail-mission">
                 <span>{shotTypeSpec(selectedMission.shotType ?? "")?.label.toUpperCase() ?? "YOUR MISSION"} · {selectedMission.title.toUpperCase()}</span>
                 <p>{selectedMission.description}</p>
+                {/* Every videomenu layout is vertical, so the shape of the clip
+                    is as much a requirement as the dish in it. */}
+                {(() => {
+                  const spec = shotTypeSpec(selectedMission.shotType ?? "");
+                  return spec ? (
+                    <p className="hunt-capture-spec">
+                      {captureSummary(spec.minDurationSeconds, spec.maxDurationSeconds)}
+                    </p>
+                  ) : null;
+                })()}
               </div>
             </div>
             {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason ? (
@@ -1404,8 +1415,26 @@ export function JellyhuntExplorer({
               <div className="hunt-how-grid">
                 <article><b>01</b><MapIcon size={28} aria-hidden="true" /><h2>Pick a place</h2><p>Choose a live mission on the map and check the venue details.</p></article>
                 <article><b>02</b><Sparkles size={28} aria-hidden="true" /><h2>Make a Jelly</h2><p>Visit the location, complete the prompt, and post the real moment in JellyJelly.</p></article>
-                <article><b>03</b><Trophy size={28} aria-hidden="true" /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the final Jelly-My-Jelly reward.</p></article>
+                <article><b>03</b><Trophy size={28} aria-hidden="true" /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the wobbles.</p></article>
               </div>
+              {/* The rules that decide whether a clip can be used at all. The
+                  iPhone one matters most: the default camera format records
+                  HEVC, which browsers cannot play. */}
+              <section className="hunt-how-filming" aria-labelledby="hunt-filming-heading">
+                <h2 id="hunt-filming-heading">Filming a clip we can use</h2>
+                <p className="hunt-how-filming-lede">
+                  Your video becomes part of the restaurant&rsquo;s menu, so it has to
+                  survive being cropped and played on a phone.
+                </p>
+                <ul>
+                  {FILMING_RULES.map((rule) => (
+                    <li key={rule.id}>
+                      <strong>{rule.label}</strong>
+                      <span>{rule.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
               <div className="hunt-how-apps"><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} aria-hidden="true" /> Get JellyJelly for iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} aria-hidden="true" /> Get JellyJelly for Android</a></div>
             </div>
           ) : null}

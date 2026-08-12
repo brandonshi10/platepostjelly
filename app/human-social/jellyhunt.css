@@ -1461,3 +1461,33 @@ body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-m
   }
   .hunt-brand-lockup-marks .hunt-brand-mark-jelly{padding:2px}
 }
+
+/* The shape and length of the clip, on the mission itself. */
+.hunt-capture-spec{
+  border-top:1px solid rgba(226,236,255,.14);
+  color:var(--hunt-cyan);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.05em;
+  margin:9px 0 0;
+  padding-top:8px;
+  text-transform:uppercase;
+}
+
+/* How to film, in the How It Works panel. */
+.hunt-how-filming{margin:26px 0 0;max-width:760px}
+.hunt-how-filming h2{font-size:19px;font-weight:800;margin:0}
+.hunt-how-filming-lede{color:var(--hunt-muted);font-size:14px;margin:6px 0 14px}
+.hunt-how-filming ul{display:grid;gap:9px;list-style:none;margin:0;padding:0}
+.hunt-how-filming li{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(226,236,255,.1);
+  border-radius:12px;
+  display:grid;
+  gap:3px;
+  padding:11px 13px;
+}
+.hunt-how-filming strong{font-size:14px}
+.hunt-how-filming span{color:var(--hunt-muted);font-size:13px;line-height:1.45}
+.hunt-theme-wobbles .hunt-how-filming li{background:rgba(13,40,71,.05);border-color:rgba(13,40,71,.12)}
+.hunt-theme-wobbles .hunt-how-filming span{color:rgba(13,40,71,.72)}
