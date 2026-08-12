@@ -1182,7 +1182,7 @@ export function JellyhuntExplorer({
                   </div>
                   <span className="hunt-reward-badge">
                     <small>UP TO</small>
-                    <strong><i aria-hidden="true" /> {selectedVenue.rewardTotal}<em> JMJ</em></strong>
+                    <strong><i aria-hidden="true" /> {selectedVenue.rewardTotal}<em> wobbles</em></strong>
                   </span>
                 </div>
                 <div className="hunt-detail-hours">
@@ -1241,7 +1241,7 @@ export function JellyhuntExplorer({
 
         <div className={`hunt-theme-toggle${selectedMission ? " lifted" : ""}`} role="group" aria-label="Map theme">
           <button type="button" aria-pressed={theme === "dark"} data-active={theme === "dark"} onClick={() => setTheme("dark")}>🌙 Dark</button>
-          <button type="button" aria-pressed={theme === "wobbles"} data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>🌊 Wobbles</button>
+          <button type="button" aria-pressed={theme === "wobbles"} data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>☀️ Light</button>
         </div>
       </section>
 
@@ -1310,7 +1310,7 @@ export function JellyhuntExplorer({
               <div className="hunt-panel-intro"><span>Editorial map</span><h1>{missions.length} reasons to go outside.</h1><p>A living guide to local places, playful prompts, and real moments worth sharing.</p></div>
               <label className="hunt-guide-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search mission guide</span><input type="search" name="guideSearch" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the guide…" /></label>
               <div className="hunt-guide-grid">
-                {filteredMissions.map((mission, index) => <button key={mission.id} type="button" onClick={() => chooseMission(mission.id)}><small>STOP {String(index + 1).padStart(2, "0")} · {mission.neighborhood}</small><strong><span>{mission.emoji}</span>{mission.location.name}</strong><p>{mission.description}</p><i>+{mission.rewardAmount} JMJ</i></button>)}
+                {filteredMissions.map((mission, index) => <button key={mission.id} type="button" onClick={() => chooseMission(mission.id)}><small>STOP {String(index + 1).padStart(2, "0")} · {mission.neighborhood}</small><strong><span>{mission.emoji}</span>{mission.location.name}</strong><p>{mission.description}</p><i>+{mission.rewardAmount} wobbles</i></button>)}
               </div>
             </div>
           ) : null}
