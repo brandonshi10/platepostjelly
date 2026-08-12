@@ -1252,6 +1252,12 @@ export function JellyhuntExplorer({
             {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason ? (
               <div className="hunt-rejection"><strong>Try again:</strong> {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason}</div>
             ) : null}
+            <p className="hunt-usage-note">
+              Filming this gives PlatePost permission to use your clip in{" "}
+              {selectedVenue.name}&rsquo;s menu. You keep the video and can ask for it
+              to be removed.{" "}
+              <button type="button" onClick={() => showPanel("how")}>How your video is used</button>
+            </p>
             {canStartMission(selectedState) ? (
               <a
                 className={`hunt-start-mission hunt-start-${selectedState}`}
@@ -1446,6 +1452,26 @@ export function JellyhuntExplorer({
                       <span>{rule.detail}</span>
                     </li>
                   ))}
+                </ul>
+              </section>
+              {/* The programme's whole point is putting these clips into a
+                  restaurant's commercial menu, so the terms of that cannot be
+                  left implicit. NOT LAWYER-REVIEWED — see docs/NEXT_STEPS.md. */}
+              <section className="hunt-how-rights" aria-labelledby="hunt-rights-heading">
+                <h2 id="hunt-rights-heading">What happens to your video</h2>
+                <ul>
+                  <li><strong>It goes into the restaurant&rsquo;s menu.</strong> PlatePost builds a
+                    videomenu from these clips and gives it to the restaurant. Yours may be
+                    trimmed, cropped, and shown next to the dish it features.</li>
+                  <li><strong>You keep it.</strong> Filming a mission does not hand over
+                    ownership. You are giving PlatePost permission to use the clip for this
+                    purpose, and you can keep posting it wherever you like.</li>
+                  <li><strong>You can pull it back.</strong> Email{" "}
+                    <a href="mailto:hello@platepost.io">hello@platepost.io</a> and we will take
+                    your clip out of any menu it appears in.</li>
+                  <li><strong>Film the food, not the room.</strong> Do not film other diners or
+                    staff who have not agreed to it. Clips with recognisable people in them are
+                    rejected at review.</li>
                 </ul>
               </section>
               <div className="hunt-how-apps"><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} aria-hidden="true" /> Get JellyJelly for iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} aria-hidden="true" /> Get JellyJelly for Android</a></div>

@@ -1571,3 +1571,35 @@ body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-m
   white-space:nowrap;
 }
 .hunt-how-filming-lede a:hover{text-decoration:underline}
+
+/* Rights, stated where the decision is made rather than buried. */
+.hunt-usage-note{
+  color:var(--hunt-muted);
+  font-size:11.5px;
+  line-height:1.5;
+  margin:12px 0 0;
+}
+.hunt-usage-note button{
+  background:none;
+  border:0;
+  color:var(--hunt-cyan);
+  cursor:pointer;
+  font:inherit;
+  font-weight:700;
+  padding:0;
+  text-decoration:underline;
+}
+.hunt-how-rights{margin:26px 0 0;max-width:760px}
+.hunt-how-rights h2{font-size:19px;font-weight:800;margin:0 0 12px}
+.hunt-how-rights ul{display:grid;gap:9px;list-style:none;margin:0;padding:0}
+.hunt-how-rights li{
+  border-left:2px solid var(--hunt-blue);
+  color:var(--hunt-muted);
+  font-size:13.5px;
+  line-height:1.5;
+  padding:2px 0 2px 12px;
+}
+.hunt-how-rights strong{color:var(--hunt-paper)}
+.hunt-how-rights a{color:var(--hunt-cyan)}
+.hunt-theme-wobbles .hunt-how-rights li{color:rgba(13,40,71,.75)}
+.hunt-theme-wobbles .hunt-how-rights strong{color:#0d2847}

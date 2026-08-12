@@ -1,5 +1,10 @@
 """Build migrations/nyc-catalog-carryover-2026-08.json.
 
+HOURS CORRECTED 2026-08-12. The hours copied from the original 16 records were
+wrong for six of the eight venues — The Pastry Box was the worst, recorded as
+closed Sunday and open Monday-Tuesday when it is the exact opposite. Every set
+below is now from a current listing, not the migration file.
+
 The eight venues kept from the original 16. Coordinates, hours, neighborhood and
 price are copied verbatim from their existing verified Convex records -- they
 were checked once already and are not re-derived here.
@@ -41,7 +46,7 @@ BASE_SORT = 300
 VENUES = [
     ("trapizzino", "Trapizzino", "144 Orchard St", 40.7201, -73.9893, "Lower East Side", "$",
      "Roman Sandwich",
-     ["12:00-22:00", "12:00-22:00", "12:00-22:00", "12:00-22:00", "12:00-23:00", "12:00-23:00", "12:00-22:00"],
+     ["11:00-21:30", "12:00-21:00", "12:00-22:00", "12:00-22:00", "12:00-22:30", "12:00-00:00", "11:00-00:00"],
      [
          ("Polpette al Sugo", "dish", "🍅", "easy", "Film the meatball trapizzino. One close pass, get the sauce soaking into the pocket."),
          ("Chicken Cacciatore", "dish", "🍗", "easy", "Film the cacciatore trapizzino. Hold steady, one close pass."),
@@ -51,7 +56,7 @@ VENUES = [
      ]),
     ("economy-candy", "Economy Candy", "108 Rivington St", 40.7195, -73.9883, "Lower East Side", "$",
      "Candy",
-     ["09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00", "09:00-18:00", "10:00-18:00", "10:00-18:00"],
+     ["11:00-18:00", "11:00-18:00", "11:00-18:00", "11:00-18:00", "11:00-18:00", "11:00-18:00", "11:00-18:00"],
      [
          ("The Candy Wall", "display", "🍬", "medium", "Film the floor-to-ceiling candy wall. One slow pass, keeping as much of it in frame as you can."),
          ("Halvah Counter", "display", "🍯", "medium", "Film the halvah at the counter. One slow pass across the whole case."),
@@ -60,7 +65,7 @@ VENUES = [
      ]),
     ("russ-and-daughters-cafe", "Russ & Daughters Cafe", "127 Orchard St", 40.7203, -73.9893,
      "Lower East Side", "$$", "Appetizing",
-     ["08:00-16:00", "08:00-16:00", "08:00-16:00", "08:00-16:00", "08:00-16:00", "08:00-16:00", "08:00-16:00"],
+     ["08:30-15:30", "08:30-14:30", "08:30-14:30", "08:30-14:30", "08:30-14:30", "08:30-15:30", "08:30-15:30"],
      [
          ("The Classic Board", "spread", "🐟", "medium", "Film the Classic board. Show the whole board first, then pan slowly across the fish, bagel and capers."),
          ("Bagel with Nova Lox", "dish", "🥯", "easy", "Film the bagel and lox. One close pass, get the fish."),
@@ -77,7 +82,7 @@ VENUES = [
          ("Nicaraguan Pour-Over", "action", "💧", "medium", "Film the pour-over being made. Start before the water hits and don't cut away early."),
      ]),
     ("the-pastry-box", "The Pastry Box", "515 E 12th St", 40.7287, -73.9819, "East Village", "$", "Bakery",
-     ["closed", "08:00-18:00", "08:00-18:00", "08:00-18:00", "08:00-18:00", "08:00-18:00", "08:00-18:00"],
+     ["10:30-17:00", "closed", "closed", "11:00-19:00", "11:00-19:00", "10:30-19:00", "10:30-19:00"],
      [
          ("Quarter-Pound Sea Salt Chocolate Chip Cookie", "dish", "🍪", "easy", "Film the quarter-pound cookie. One close pass, get the sea salt and the thin edge."),
          ("Black and White Cookie", "dish", "⚫", "easy", "Film the black and white. Hold steady, one close pass."),
@@ -85,7 +90,7 @@ VENUES = [
          ("The Cookie Snap", "ritual", "✋", "medium", "Film the cookie being broken in half. One take, and film the person doing it."),
      ]),
     ("librae-bakery", "Librae Bakery", "35 Cooper Sq", 40.7281, -73.9909, "East Village", "$$", "Bakery",
-     ["08:00-19:00", "08:00-19:00", "08:00-19:00", "08:00-19:00", "08:00-19:00", "08:00-19:00", "08:00-19:00"],
+     ["08:00-17:00", "07:30-16:30", "07:30-16:30", "07:30-16:30", "07:30-16:30", "07:30-16:30", "08:00-17:00"],
      [
          ("Rose Pistachio Croissant", "dish", "🌹", "easy", "Film the rose pistachio croissant. One close pass, get the pistachio and the rose petals."),
          ("Loomi Babka Bun", "dish", "🍋", "easy", "Film the loomi babka bun. Hold steady, one close pass."),
@@ -94,7 +99,7 @@ VENUES = [
          ("Pastry Case", "display", "🥐", "medium", "Film the pastry case. One slow pass, keeping the whole case in frame."),
      ]),
     ("dimes", "Dimes", "49 Canal St", 40.7148, -73.992, "Lower East Side", "$$", "Restaurant",
-     ["08:00-22:00", "08:00-22:00", "08:00-22:00", "08:00-22:00", "08:00-23:00", "08:00-23:00", "08:00-22:00"],
+     ["09:00-22:00", "08:00-23:00", "08:00-23:00", "08:00-23:00", "08:00-23:00", "08:00-23:00", "09:00-23:00"],
      [
          ("Salmon Bowl", "dish", "🐟", "easy", "Film the salmon bowl. One close pass over the whole bowl."),
          ("Pozole", "dish", "🌶️", "easy", "Film the pozole. Hold steady, one close pass."),
