@@ -134,7 +134,13 @@ describe("JellyHunt public discovery Convex projections", () => {
   it("returns exact campaign and reviewed-place projections without internal fields", async () => {
     const t = createJellyhuntTestConvex();
     const { placePublicId } = await seedPublishedMission(t);
-    const campaign = await t.query(campaigns.getCurrentCampaignDiscovery, {});
+    // Pass an explicit clock, like every other test in this file. Without one
+    // the query used the real wall clock against a campaign seeded to run
+    // 2026-08-01 to 2026-09-01, so this assertion silently became wrong on
+    // 1 August — the test was date-dependent, not the code.
+    const campaign = await t.query(campaigns.getCurrentCampaignDiscovery, {
+      now: Date.parse("2026-07-20T18:00:00Z"),
+    });
     expect(campaign).toMatchObject({
       title: "PlatePost x JellyJelly: Human Social!",
       status: "upcoming",
