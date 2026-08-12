@@ -1041,13 +1041,21 @@ export function JellyhuntExplorer({
             >
               <Menu size={23} aria-hidden="true" />
             </button>
-            <span className="hunt-brand-mark" aria-hidden="true">
-              {/* Referenced as a file, not inlined as a data: URI — next/image
-                  returns 400 on data: sources. */}
-              <Image src="/brand/platepost-emblem.svg" alt="" width={26} height={31} priority />
+            {/* Both partners' marks, PlatePost first. Referenced as files, not
+                inlined as data: URIs — next/image returns 400 on data: sources.
+                The Jelly mark is the mascot's head; swapping in an official
+                JellyJelly logo is a one-file replacement. */}
+            <span className="hunt-brand-lockup-marks" aria-hidden="true">
+              <span className="hunt-brand-mark">
+                <Image src="/brand/platepost-emblem.svg" alt="" width={26} height={31} priority />
+              </span>
+              <span className="hunt-brand-x">&times;</span>
+              <span className="hunt-brand-mark hunt-brand-mark-jelly">
+                <Image src="/brand/jelly-mark.png" alt="" width={30} height={30} priority />
+              </span>
             </span>
             <div className="hunt-brand-copy">
-              <span className="hunt-partnership" translate="no">PlatePost × Jelly</span>
+              <span className="hunt-partnership" translate="no">PlatePost × JellyJelly</span>
               <h1>JELLYHUNT</h1>
               <small><span>NEW YORK CITY</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
             </div>

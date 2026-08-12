@@ -1424,3 +1424,40 @@ body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-m
   .hunt-reward-badge strong{font-size:17px}
   .hunt-detail-hours{padding:7px 11px}
 }
+
+/* Two partner marks, PlatePost first, joined by a quiet multiplication sign. */
+.hunt-brand-lockup-marks{align-items:center;display:flex;flex:0 0 auto;gap:6px}
+.hunt-brand-x{
+  color:var(--hunt-paper);
+  font-size:13px;
+  font-weight:700;
+  line-height:1;
+  opacity:.5;
+  text-shadow:0 1px 6px rgba(7,17,38,.9);
+}
+/* The Jelly mark is a soft illustration, so it needs a lighter ground and a
+   rounder frame than PlatePost's geometric emblem to sit level with it. */
+.hunt-brand-mark-jelly{
+  background:rgba(255,255,255,.94);
+  border-color:rgba(95,208,255,.55);
+  border-radius:50%;
+  padding:3px;
+}
+.hunt-brand-mark-jelly img{border-radius:50%}
+@media (max-width:600px){
+  .hunt-brand-lockup-marks{gap:4px}
+  .hunt-brand-x{font-size:11px}
+}
+
+/* A pre-existing rule hides the brand mark on small screens, which left the
+   × separator stranded on its own. Both partner marks stay, just smaller. */
+@media (max-width:600px){
+  .hunt-brand-lockup-marks .hunt-brand-mark{
+    display:flex;
+    flex-basis:28px;
+    height:28px;
+    padding:4px;
+    width:28px;
+  }
+  .hunt-brand-lockup-marks .hunt-brand-mark-jelly{padding:2px}
+}
