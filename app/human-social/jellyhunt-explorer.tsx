@@ -246,12 +246,11 @@ function venueState(venue: Venue, userStatus: UserMissionStatus[]) {
   return "not_started";
 }
 
-function venueAccent(venue: Venue) {
-  const hardest = venue.missions.reduce((worst, mission) => {
-    const rank = { easy: 0, medium: 1, hard: 2, legendary: 3 } as const;
-    return rank[mission.difficulty] > rank[worst.difficulty] ? mission : worst;
-  }, venue.missions[0]);
-  return missionAccent(hardest);
+function venueAccent(venue: Venue, userStatus: UserMissionStatus[] = EMPTY_STATUSES) {
+  const remaining = venueRemaining(venue, userStatus);
+  if (remaining === 0) return "#3ddc97";                     // nothing left here
+  if (remaining < venue.missions.length) return "#5fd0ff";   // part-filmed
+  return "#4576ef";                                          // untouched
 }
 
 function formatDistance(meters: number) {
@@ -666,7 +665,7 @@ export function JellyhuntExplorer({
     const bounds = new mapboxgl.LngLatBounds();
     for (const venue of venues) {
       const venueStatus = venueState(venue, userStatus);
-      const accent = venueAccent(venue);
+      const accent = venueAccent(venue, userStatus);
       let entry = mapMarkersRef.current.get(venue.id);
 
       if (!entry) {
@@ -679,13 +678,15 @@ export function JellyhuntExplorer({
         markerLabel.setAttribute("aria-hidden", "true");
         const tooltip = document.createElement("small");
         tooltip.className = "hunt-marker-tooltip";
+        const count = document.createElement("i");
+        count.className = "hunt-marker-count";
         markerElement.append(markerButton, tooltip);
 
         const marker = new mapboxgl.Marker({ element: markerElement, anchor: "bottom" })
           .setLngLat([venue.longitude, venue.latitude])
           .addTo(map);
         entry = { marker, button: markerButton, label: markerLabel, tooltip };
-        markerButton.append(markerLabel);
+        markerButton.append(markerLabel, count);
         mapMarkersRef.current.set(venue.id, entry);
       }
 
@@ -699,6 +700,12 @@ export function JellyhuntExplorer({
       );
       entry.button.style.setProperty("--accent", accent);
       entry.label.textContent = remaining === 0 ? "✓" : venue.emoji;
+      const countEl = entry.marker.getElement().querySelector(".hunt-marker-count");
+      if (countEl) {
+        countEl.textContent = remaining === 0 ? "" : String(remaining);
+        (countEl as HTMLElement).style.setProperty("--accent", accent);
+        (countEl as HTMLElement).hidden = remaining === 0;
+      }
       entry.tooltip.textContent = venue.name;
       entry.tooltip.style.borderColor = accent;
       entry.tooltip.hidden = true;
@@ -982,7 +989,7 @@ export function JellyhuntExplorer({
                   longitude: venue.longitude,
                 });
                 const status = venueState(venue, userStatus);
-                const accent = venueAccent(venue);
+                const accent = venueAccent(venue, userStatus);
                 const remaining = venueRemaining(venue, userStatus);
                 const isSelected = venue.id === selectedVenue?.id;
                 return (
@@ -1001,6 +1008,9 @@ export function JellyhuntExplorer({
                       aria-label={`Open ${venue.name}, ${remaining} of ${venue.missions.length} missions left`}
                     >
                       <span aria-hidden="true">{remaining === 0 ? "✓" : venue.emoji}</span>
+                      {remaining > 0 ? (
+                        <i className="hunt-marker-count" aria-hidden="true">{remaining}</i>
+                      ) : null}
                     </button>
                     {isSelected ? (
                       <small className="hunt-marker-tooltip" style={{ borderColor: accent }}>{venue.name}</small>
@@ -1177,17 +1187,17 @@ export function JellyhuntExplorer({
             </button>
             <div className="hunt-detail-meta">
               <span>SELECTED · {selectedDistance === null ? "NEARBY" : `${formatDistance(selectedDistance)} FROM ${userLocation ? "YOU" : "HQ"}`}</span>
-              <strong style={{ color: venueAccent(selectedVenue) }}>
+              <strong style={{ color: venueAccent(selectedVenue, userStatus) }}>
                 {venueRemaining(selectedVenue, userStatus)} OF {selectedVenue.missions.length} LEFT
               </strong>
             </div>
             <div className="hunt-detail-grid">
               <div className="hunt-detail-venue">
                 <div className="hunt-detail-row">
-                  <span className="hunt-detail-emoji" style={{ borderColor: venueAccent(selectedVenue) }} aria-hidden="true">{selectedVenue.emoji}</span>
+                  <span className="hunt-detail-emoji" style={{ borderColor: venueAccent(selectedVenue, userStatus) }} aria-hidden="true">{selectedVenue.emoji}</span>
                   <div className="hunt-detail-title">
                     <h2 id="hunt-mission-title">{selectedVenue.name}</h2>
-                    <p><span style={{ color: venueAccent(selectedVenue) }} aria-hidden="true">●</span> {selectedVenue.address} · {selectedVenue.neighborhood}</p>
+                    <p><span style={{ color: venueAccent(selectedVenue, userStatus) }} aria-hidden="true">●</span> {selectedVenue.address} · {selectedVenue.neighborhood}</p>
                   </div>
                   <span className="hunt-reward-badge">
                     <small>UP TO</small>
@@ -1424,7 +1434,10 @@ export function JellyhuntExplorer({
                 <h2 id="hunt-filming-heading">Filming a clip we can use</h2>
                 <p className="hunt-how-filming-lede">
                   Your video becomes part of the restaurant&rsquo;s menu, so it has to
-                  survive being cropped and played on a phone.
+                  survive being cropped and played on a phone.{" "}
+                  <a href="https://qua.platepost.io" target="_blank" rel="noreferrer">
+                    See a finished videomenu <ArrowUpRight size={13} aria-hidden="true" />
+                  </a>
                 </p>
                 <ul>
                   {FILMING_RULES.map((rule) => (

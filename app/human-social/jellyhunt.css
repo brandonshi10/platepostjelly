@@ -1491,3 +1491,83 @@ body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-m
 .hunt-how-filming span{color:var(--hunt-muted);font-size:13px;line-height:1.45}
 .hunt-theme-wobbles .hunt-how-filming li{background:rgba(13,40,71,.05);border-color:rgba(13,40,71,.12)}
 .hunt-theme-wobbles .hunt-how-filming span{color:rgba(13,40,71,.72)}
+
+/* ---- Pins ---------------------------------------------------------------- */
+/* They were 58px teardrops filled with a bright difficulty colour, so the food
+   fought the container and the colour meant nothing to a filmer. Now the pin is
+   a quiet navy disc, the dish is the only bright thing in it, and the ring says
+   how much is left to shoot here. */
+.hunt-mapbox-marker,.hunt-fallback-marker{
+  background:rgba(9,20,44,.94);
+  border:2.5px solid var(--accent);
+  border-radius:50%;
+  box-shadow:0 3px 14px rgba(4,10,26,.6),0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent);
+  height:46px;
+  transform:none;
+  width:46px;
+}
+.hunt-mapbox-marker>span,.hunt-fallback-marker>span{
+  font-size:21px;
+  line-height:1;
+  transform:none;
+}
+/* The stem, replacing the rotated-square trick. */
+.hunt-mapbox-marker:after,.hunt-fallback-marker:after{
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid var(--accent);
+  bottom:-8px;
+  content:"";
+  height:0;
+  left:50%;
+  position:absolute;
+  transform:translateX(-50%);
+  width:0;
+}
+.hunt-mapbox-marker[data-selected=true],.hunt-fallback-marker[data-selected=true],
+.hunt-mapbox-marker:hover,.hunt-fallback-marker:hover{
+  box-shadow:0 4px 18px rgba(4,10,26,.7),0 0 0 7px color-mix(in srgb,var(--accent) 30%,transparent);
+  transform:scale(1.07);
+}
+
+/* Dishes still to film at this restaurant. */
+.hunt-marker-count{
+  align-items:center;
+  background:var(--accent);
+  /* Positioned against the pin itself, not the taller marker anchor. */
+  border:2px solid rgba(9,20,44,.95);
+  border-radius:999px;
+  color:#071126;
+  display:flex;
+  font-size:11px;
+  font-style:normal;
+  font-weight:900;
+  height:20px;
+  justify-content:center;
+  min-width:20px;
+  padding:0 4px;
+  pointer-events:none;
+  position:absolute;
+  right:-6px;
+  top:-5px;
+}
+.hunt-marker-count[hidden]{display:none}
+.hunt-fallback-marker-anchor,.hunt-mapbox-marker-anchor{position:relative}
+
+@media (max-width:600px){
+  .hunt-mapbox-marker,.hunt-fallback-marker{height:40px;width:40px}
+  .hunt-mapbox-marker>span,.hunt-fallback-marker>span{font-size:18px}
+  .hunt-marker-count{font-size:10px;height:18px;min-width:18px}
+}
+
+/* The payoff: what the footage turns into. */
+.hunt-how-filming-lede a{
+  align-items:center;
+  color:var(--hunt-cyan);
+  display:inline-flex;
+  font-weight:700;
+  gap:3px;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.hunt-how-filming-lede a:hover{text-decoration:underline}
