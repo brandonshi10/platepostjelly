@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { FormEvent } from "react";
 import { formatMissionDateTime, parseMissionDateTime } from "@/src/lib/jellyhunt/admin-time";
+import { SHOT_TYPES, SHOT_TYPE_SPECS, type ShotType } from "@/src/lib/jellyhunt/shot-types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type LocationRecord = {
@@ -60,6 +61,7 @@ type MissionRecord = {
   category: string;
   difficulty: "easy" | "medium" | "hard" | "legendary";
   emoji: string;
+  shotType?: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -123,6 +125,7 @@ type Draft = {
   category: string;
   difficulty: MissionRecord["difficulty"];
   emoji: string;
+  shotType: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -161,6 +164,7 @@ function emptyDraft(budgetContext?: AdminBudgetContext | null): Draft {
     category: "Food",
     difficulty: "easy",
     emoji: "🍽️",
+    shotType: "",
     neighborhood: "",
     price: "$$",
     hours: Array.from({ length: 7 }, () => "09:00-22:00"),
@@ -200,6 +204,7 @@ function toDraft(mission: MissionRecord): Draft {
     category: mission.category,
     difficulty: mission.difficulty,
     emoji: mission.emoji,
+    shotType: mission.shotType ?? "",
     neighborhood: mission.neighborhood,
     price: mission.price,
     hours: mission.hours,
@@ -282,6 +287,34 @@ export function AdminDashboard({ username }: { username: string }) {
     () => submissions.filter((submission) => filter === "all" || submission.status === filter),
     [filter, submissions],
   );
+
+  // 175 missions in one flat list is unusable. Group by the place each mission
+  // belongs to, so an operator sees "Supermoon Bakehouse — 5 missions, 5
+  // published" and works a restaurant at a time.
+  const missionsByVenue = useMemo(() => {
+    const groups = new Map<string, { key: string; name: string; missions: MissionRecord[]; publishedCount: number }>();
+    for (const mission of missions) {
+      const key = mission.location?._id ?? `no-location:${mission.restaurantTag}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          name: mission.location?.name ?? mission.restaurantTag ?? "Location missing",
+          missions: [],
+          publishedCount: 0,
+        };
+        groups.set(key, group);
+      }
+      group.missions.push(mission);
+      if (mission.status === "active") group.publishedCount += 1;
+    }
+    for (const group of groups.values()) {
+      group.missions.sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+    return [...groups.values()].sort(
+      (a, b) => a.missions[0].sortOrder - b.missions[0].sortOrder,
+    );
+  }, [missions]);
   const reviewCount = submissions.filter((submission) => submission.status === "needs_review").length;
   const activeCount = missions.filter((mission) => mission.status === "active").length;
   const exceptionCount = submissions.filter((submission) => ["reward_failed", "reward_uncertain"].includes(submission.status)).length;
@@ -308,6 +341,7 @@ export function AdminDashboard({ username }: { username: string }) {
         category: draft.category,
         difficulty: draft.difficulty,
         emoji: draft.emoji,
+        shotType: draft.shotType || undefined,
         neighborhood: draft.neighborhood,
         price: draft.price,
         hours: draft.hours,
@@ -442,7 +476,13 @@ export function AdminDashboard({ username }: { username: string }) {
             </div>
             {loading ? <div className="admin-empty">Loading missions…</div> : missions.length ? (
               <div className="admin-mission-stack">
-                {missions.map((mission) => (
+                {missionsByVenue.map((venue) => (
+                  <section className="admin-venue" key={venue.key}>
+                    <h3 className="admin-venue-head">
+                      <span>{venue.name}</span>
+                      <small>{venue.missions.length} missions · {venue.publishedCount} published</small>
+                    </h3>
+                {venue.missions.map((mission) => (
                   <article className="admin-mission-ticket" data-selected={draft.missionId === mission._id} key={mission._id}>
                     <button className="admin-ticket-main" type="button" onClick={() => setDraft(toDraft(mission))}>
                       <span className="admin-ticket-emoji">{mission.emoji}</span>
@@ -451,13 +491,15 @@ export function AdminDashboard({ username }: { username: string }) {
                     </button>
                     <div className="admin-ticket-foot">
                       <span className={`admin-state ${mission.status}`}>{stateLabel(mission.status)}</span>
-                      <span>{mission.rewardAmount} JELLY · {stateLabel(mission.budgets.capacityStatus)}</span>
+                      <span>{mission.rewardAmount} wobbles · {stateLabel(mission.budgets.capacityStatus)}</span>
                       <select aria-label={`Change ${mission.title} status`} value={mission.status} onChange={(event) => void changeStatus(mission._id, event.target.value as MissionRecord["status"])}>
                         <option value="draft">Draft</option><option value="active">Live</option>
                         <option value="paused">Paused</option><option value="archived">Archived</option>
                       </select>
                     </div>
                   </article>
+                ))}
+                  </section>
                 ))}
               </div>
             ) : (
@@ -481,6 +523,13 @@ export function AdminDashboard({ username }: { username: string }) {
                 <label>Category<input required value={draft.category} onChange={(event) => set("category", event.target.value)} /></label>
                 <label>Neighborhood<input value={draft.neighborhood} onChange={(event) => set("neighborhood", event.target.value)} /></label>
                 <label>Difficulty<select value={draft.difficulty} onChange={(event) => set("difficulty", event.target.value as Draft["difficulty"])}><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option><option value="legendary">Legendary</option></select></label>
+                <label>Shot type<select value={draft.shotType} onChange={(event) => set("shotType", event.target.value)}>
+                  <option value="">— none —</option>
+                  {SHOT_TYPES.map((id) => <option key={id} value={id}>{SHOT_TYPE_SPECS[id].label}</option>)}
+                </select></label>
+                {draft.shotType && SHOT_TYPE_SPECS[draft.shotType as ShotType] ? (
+                  <p className="admin-shot-hint">{SHOT_TYPE_SPECS[draft.shotType as ShotType].instruction} ({SHOT_TYPE_SPECS[draft.shotType as ShotType].minDurationSeconds}–{SHOT_TYPE_SPECS[draft.shotType as ShotType].maxDurationSeconds}s)</p>
+                ) : null}
                 <label>Price marker<input value={draft.price} onChange={(event) => set("price", event.target.value)} /></label>
               </div>
             </fieldset>
@@ -525,7 +574,7 @@ export function AdminDashboard({ username }: { username: string }) {
                 <div className="admin-budget-summary wide" data-status={draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.capacityStatus : "unfunded"}>
                   <strong>{draft.missionId ? `Funding ${stateLabel(missions.find((mission) => mission._id === draft.missionId)?.budgets.capacityStatus ?? "unfunded")}` : "Set funding before going live"}</strong>
                   <span>
-                    Campaign remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.campaign.remainingAmount ?? "0" : budgetContext?.campaign.remainingAmount ?? "0"} JELLY · Mission remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.mission.remainingAmount ?? "0" : "0"} JELLY
+                    Campaign remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.campaign.remainingAmount ?? "0" : budgetContext?.campaign.remainingAmount ?? "0"} wobbles · Mission remaining: {draft.missionId ? missions.find((mission) => mission._id === draft.missionId)?.budgets.mission.remainingAmount ?? "0" : "0"} wobbles
                   </span>
                   <small>Caps are explicit maximum commitments. They cannot be reduced below amounts already reserved or paid. A live mission must have room for at least one reward in both caps.</small>
                 </div>
@@ -571,7 +620,7 @@ export function AdminDashboard({ username }: { username: string }) {
                   {submission.rewardAttempt?.error ? <p className="admin-proof error">Reward service: {submission.rewardAttempt.error}</p> : null}
                   <div className="admin-review-actions">
                     {submission.status === "needs_review" ? <>
-                      <button className="approve" onClick={() => void review(submission._id, "approve")}><Check size={15} /> Approve + {submission.rewardAmountSnapshot ?? submission.mission?.rewardAmount ?? "?"} JELLY</button>
+                      <button className="approve" onClick={() => void review(submission._id, "approve")}><Check size={15} /> Approve + {submission.rewardAmountSnapshot ?? submission.mission?.rewardAmount ?? "?"} wobbles</button>
                       <label>Internal rejection note<input value={reasons[submission._id] ?? ""} onChange={(event) => setReasons((current) => ({ ...current, [submission._id]: event.target.value }))} /></label>
                       <button className="reject" disabled={!reasons[submission._id]?.trim()} onClick={() => void review(submission._id, "reject")}><X size={15} /> Reject</button>
                     </> : null}

@@ -1,29 +1,29 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Quicksand:wght@500;600;700&family=Ranchers&display=swap");
-body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-map-screen),.shell:has(.hunt-map-screen) .hunt-map-screen{height:100dvh;min-height:100dvh;overflow:hidden}.shell:has(.hunt-map-screen)>.topbar{display:none}
-.hunt-map-screen{--hunt-void:#050711;--hunt-deep:#101133;--hunt-panel:#171a35;--hunt-blue:#8aa8f3;--hunt-cyan:#00e5ff;--hunt-mint:#00d4aa;--hunt-coral:#f43f5e;--hunt-paper:#f8f9ff;--hunt-muted:rgba(231,240,255,.65);background:var(--hunt-void);color:var(--hunt-paper);font-family:Outfit,Inter,ui-sans-serif,system-ui,sans-serif;inset:0;position:fixed;z-index:100}.hunt-map-stage,.hunt-mapbox,.hunt-fallback-map{inset:0;overflow:hidden;position:absolute}.hunt-mapbox{z-index:0}.hunt-mapbox:after{background:radial-gradient(circle at 65% 72%,rgba(0,229,255,.1),transparent 38%);content:"";inset:0;pointer-events:none;position:absolute}
+@font-face{font-family:Manrope;src:url("/fonts/Manrope-Variable.woff2") format("woff2-variations");font-weight:400 800;font-display:swap;font-style:normal}
+body:has(.hunt-map-screen){background:#071126;overflow:hidden}.shell:has(.hunt-map-screen),.shell:has(.hunt-map-screen) .hunt-map-screen{height:100dvh;min-height:100dvh;overflow:hidden}.shell:has(.hunt-map-screen)>.topbar{display:none}
+.hunt-map-screen{--hunt-void:#071126;--hunt-deep:#0d1c39;--hunt-panel:#12244a;--hunt-blue:#4576ef;--hunt-cyan:#5fd0ff;--hunt-mint:#3ddc97;--hunt-coral:#f4635e;--hunt-paper:#f6f8ff;--hunt-muted:rgba(226,236,255,.78);background:var(--hunt-void);color:var(--hunt-paper);font-family:Manrope,ui-sans-serif,system-ui,sans-serif;inset:0;position:fixed;z-index:100}.hunt-map-stage,.hunt-mapbox,.hunt-fallback-map{inset:0;overflow:hidden;position:absolute}.hunt-mapbox{z-index:0}.hunt-mapbox:after{background:radial-gradient(circle at 65% 72%,rgba(0,229,255,.1),transparent 38%);content:"";inset:0;pointer-events:none;position:absolute}
 .hunt-fallback-map{background:radial-gradient(circle at 65% 73%,rgba(0,229,255,.18),transparent 42%),radial-gradient(circle at 18% 8%,rgba(39,23,145,.48),transparent 38%),linear-gradient(120deg,#121041,#080b1f 48%,#04131a);z-index:0}.hunt-fallback-map:before{background-image:linear-gradient(rgba(138,168,243,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(138,168,243,.035) 1px,transparent 1px);background-size:48px 48px;content:"";inset:0;position:absolute}.hunt-fallback-layer{inset:0;position:absolute;transform-origin:50% 50%;transition:transform .26s ease}
-.hunt-street{color:rgba(231,240,255,.68);display:flex;font-family:"JetBrains Mono","Courier New",monospace;font-size:8px;font-weight:700;letter-spacing:.14em;pointer-events:none;position:absolute;text-shadow:0 1px 4px #050711,0 0 5px #050711;z-index:1}.hunt-street:before{background:rgba(138,168,243,.32);content:"";position:absolute}.hunt-street.major{color:rgba(241,245,255,.84);font-size:9px}.hunt-street.major:before{background:rgba(138,168,243,.72);box-shadow:0 0 7px rgba(87,119,191,.34)}.hunt-street.spine:before{background:linear-gradient(90deg,transparent,#8aa8f3,transparent);box-shadow:0 0 12px rgba(138,168,243,.72);height:3px}.hunt-street-ew{align-items:center;justify-content:space-around;left:0;right:0}.hunt-street-ew:before{height:1px;left:0;right:0;top:50%}.hunt-street-ew span{position:relative;z-index:1}.hunt-street-ns{align-items:center;bottom:0;flex-direction:column;justify-content:space-around;top:0}.hunt-street-ns:before{bottom:0;left:50%;top:0;width:1px}.hunt-street-ns span{position:relative;transform:rotate(-90deg);white-space:nowrap;z-index:1}
-.hunt-hq{align-items:center;display:flex;flex-direction:column;pointer-events:none;position:absolute;transform:translate(-50%,-50%);z-index:2}.hunt-hq img{filter:drop-shadow(0 0 13px rgba(0,229,255,.78));height:64px;object-fit:contain;width:64px;z-index:1}.hunt-hq strong{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:12px;letter-spacing:.12em;margin-top:-78px;position:absolute;text-shadow:0 1px 7px #000,0 0 14px rgba(0,229,255,.75);white-space:nowrap}.hunt-hq-pulse{border:2px solid var(--hunt-cyan);border-radius:50%;height:104px;opacity:.35;position:absolute;width:104px;animation:hunt-hq-pulse 2.6s ease-out infinite}@keyframes hunt-hq-pulse{0%,100%{opacity:.35;transform:scale(.75)}60%{opacity:0;transform:scale(1.35)}}
+.hunt-street{color:rgba(231,240,255,.68);display:flex;font-family:Manrope,"Courier New",monospace;font-size:8px;font-weight:700;letter-spacing:.14em;pointer-events:none;position:absolute;text-shadow:0 1px 4px #050711,0 0 5px #050711;z-index:1}.hunt-street:before{background:rgba(138,168,243,.32);content:"";position:absolute}.hunt-street.major{color:rgba(241,245,255,.84);font-size:9px}.hunt-street.major:before{background:rgba(138,168,243,.72);box-shadow:0 0 7px rgba(87,119,191,.34)}.hunt-street.spine:before{background:linear-gradient(90deg,transparent,#8aa8f3,transparent);box-shadow:0 0 12px rgba(138,168,243,.72);height:3px}.hunt-street-ew{align-items:center;justify-content:space-around;left:0;right:0}.hunt-street-ew:before{height:1px;left:0;right:0;top:50%}.hunt-street-ew span{position:relative;z-index:1}.hunt-street-ns{align-items:center;bottom:0;flex-direction:column;justify-content:space-around;top:0}.hunt-street-ns:before{bottom:0;left:50%;top:0;width:1px}.hunt-street-ns span{position:relative;transform:rotate(-90deg);white-space:nowrap;z-index:1}
+.hunt-hq{align-items:center;display:flex;flex-direction:column;pointer-events:none;position:absolute;transform:translate(-50%,-50%);z-index:2}.hunt-hq img{filter:drop-shadow(0 0 13px rgba(0,229,255,.78));height:64px;object-fit:contain;width:64px;z-index:1}.hunt-hq strong{color:var(--hunt-cyan);font-family:Manrope,"Courier New",monospace;font-size:12px;letter-spacing:.12em;margin-top:-78px;position:absolute;text-shadow:0 1px 7px #000,0 0 14px rgba(0,229,255,.75);white-space:nowrap}.hunt-hq-pulse{border:2px solid var(--hunt-cyan);border-radius:50%;height:104px;opacity:.35;position:absolute;width:104px;animation:hunt-hq-pulse 2.6s ease-out infinite}@keyframes hunt-hq-pulse{0%,100%{opacity:.35;transform:scale(.75)}60%{opacity:0;transform:scale(1.35)}}
 .hunt-fallback-marker-anchor{position:absolute;transform:translate(-50%,-100%)}.hunt-fallback-marker,.hunt-mapbox-marker{--accent:#00d4aa;align-items:center;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 78%,#15152e));border:2px solid #fff;border-radius:50% 50% 50% 0;box-shadow:0 0 17px color-mix(in srgb,var(--accent) 65%,transparent);color:#fff;cursor:pointer;display:flex;height:58px;justify-content:center;padding:0;transform:rotate(-45deg);transition:filter .18s ease,transform .18s ease;width:58px}.hunt-mapbox-marker-anchor{align-items:flex-end;display:flex;height:64px;justify-content:center;width:64px}.hunt-mapbox-marker{position:relative}.hunt-fallback-marker>span,.hunt-mapbox-marker>span{align-items:center;display:flex;font-size:25px;height:100%;justify-content:center;transform:rotate(45deg);width:100%}.hunt-fallback-marker:hover,.hunt-fallback-marker:focus-visible,.hunt-fallback-marker[data-selected=true],.hunt-mapbox-marker:hover,.hunt-mapbox-marker:focus-visible{filter:brightness(1.13);transform:rotate(-45deg) scale(1.1)}.hunt-fallback-marker[data-selected=true]{animation:hunt-pin-bob 1.8s ease-in-out infinite;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent),0 0 28px var(--accent)}@keyframes hunt-pin-bob{0%,100%{transform:rotate(-45deg) translateY(0) scale(1.08)}50%{transform:rotate(-45deg) translateY(-5px) scale(1.08)}}
 .hunt-marker-submitted,.hunt-marker-verifying,.hunt-marker-needs_review{--accent:#f59e0b!important}.hunt-marker-approved,.hunt-marker-reward_sent{--accent:#5777bf!important}.hunt-marker-rejected,.hunt-marker-reward_failed,.hunt-marker-reward_uncertain{--accent:#f43f5e!important}.hunt-marker-tooltip{background:rgba(20,22,48,.94);border:1px solid;border-radius:8px;color:#fff;font-size:11px;font-weight:800;left:50%;max-width:160px;overflow:hidden;padding:4px 8px;position:absolute;text-overflow:ellipsis;top:-35px;transform:translateX(-50%);white-space:nowrap}.hunt-user-marker,.hunt-fallback-user{background:#4285f4;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 10px rgba(66,133,244,.2),0 0 12px rgba(66,133,244,.7);display:block;height:17px;width:17px}.hunt-fallback-user{position:absolute;transform:translate(-50%,-50%);z-index:7}
-.hunt-map-header{align-items:flex-start;display:flex;justify-content:space-between;left:18px;pointer-events:none;position:absolute;right:18px;top:max(22px,env(safe-area-inset-top));z-index:20}.hunt-brand-lockup,.hunt-header-actions{align-items:center;display:flex;gap:11px;pointer-events:auto}.hunt-menu-button,.hunt-header-actions>button{align-items:center;backdrop-filter:blur(14px);background:rgba(22,24,52,.78);border:1px solid rgba(138,168,243,.38);border-radius:13px;color:#d3f2ff;cursor:pointer;display:flex;height:44px;justify-content:center;padding:0;width:44px}.hunt-header-actions>button[data-active=true]{border-color:var(--hunt-cyan);color:var(--hunt-cyan)}.hunt-brand-lockup>div:last-child{display:flex;flex-direction:column}.hunt-partnership{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.13em;margin-bottom:2px;text-shadow:0 0 10px rgba(0,229,255,.55);text-transform:uppercase}.hunt-brand-lockup strong,.hunt-menu-heading strong,.hunt-experience-panel>header strong{color:#fff;font-family:Ranchers,Impact,Haettenschweiler,"Arial Black",sans-serif;font-size:clamp(34px,4vw,52px);font-weight:900;letter-spacing:.035em;line-height:.86;text-shadow:0 0 18px rgba(0,229,255,.4),0 3px 10px #000}.hunt-brand-lockup small{color:#d3f2ff;font-family:"JetBrains Mono","Courier New",monospace;font-size:clamp(8px,1.1vw,12px);font-weight:700;letter-spacing:.12em;margin-top:6px;text-shadow:0 1px 5px #000;white-space:nowrap}.hunt-header-actions{gap:8px}.hunt-get-app{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:999px;box-shadow:0 0 22px rgba(0,229,255,.26);color:#081018;display:flex;font-size:11px;font-weight:900;gap:6px;min-height:42px;padding:0 15px;text-transform:uppercase}
+.hunt-map-header{align-items:flex-start;display:flex;justify-content:space-between;left:18px;pointer-events:none;position:absolute;right:18px;top:max(22px,env(safe-area-inset-top));z-index:20}.hunt-brand-lockup,.hunt-header-actions{align-items:center;display:flex;gap:11px;pointer-events:auto}.hunt-menu-button,.hunt-header-actions>button{align-items:center;backdrop-filter:blur(14px);background:rgba(22,24,52,.78);border:1px solid rgba(138,168,243,.38);border-radius:13px;color:#d3f2ff;cursor:pointer;display:flex;height:44px;justify-content:center;padding:0;width:44px}.hunt-header-actions>button[data-active=true]{border-color:var(--hunt-cyan);color:var(--hunt-cyan)}.hunt-brand-lockup>div:last-child{display:flex;flex-direction:column}.hunt-partnership{color:var(--hunt-cyan);font-family:Manrope,"Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.13em;margin-bottom:2px;text-shadow:0 0 10px rgba(0,229,255,.55);text-transform:uppercase}.hunt-brand-lockup strong,.hunt-menu-heading strong,.hunt-experience-panel>header strong{color:#fff;font-family:Manrope,Impact,Haettenschweiler,"Arial Black",sans-serif;font-size:clamp(34px,4vw,52px);font-weight:900;letter-spacing:.035em;line-height:.86;text-shadow:0 0 18px rgba(0,229,255,.4),0 3px 10px #000}.hunt-brand-lockup small{color:#d3f2ff;font-family:Manrope,"Courier New",monospace;font-size:clamp(8px,1.1vw,12px);font-weight:700;letter-spacing:.12em;margin-top:6px;text-shadow:0 1px 5px #000;white-space:nowrap}.hunt-header-actions{gap:8px}.hunt-get-app{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:999px;box-shadow:0 0 22px rgba(0,229,255,.26);color:#081018;display:flex;font-size:11px;font-weight:900;gap:6px;min-height:42px;padding:0 15px;text-transform:uppercase}
 .hunt-cross-street{align-items:center;backdrop-filter:blur(14px);background:rgba(15,16,34,.86);border:1px solid rgba(138,168,243,.32);border-radius:999px;box-shadow:0 6px 22px rgba(0,0,0,.42);color:#e7f0ff;display:flex;font-size:12px;font-weight:800;gap:8px;left:50%;padding:9px 15px;position:absolute;text-transform:uppercase;top:170px;transform:translateX(-50%);white-space:nowrap;z-index:12}.hunt-cross-street>span{background:var(--hunt-cyan);border-radius:50%;box-shadow:0 0 9px var(--hunt-cyan);height:6px;width:6px}
 .hunt-filter-panel{background:rgba(20,23,50,.97);border:1px solid rgba(138,168,243,.3);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);display:grid;gap:11px;left:18px;padding:14px;position:absolute;top:138px;width:min(330px,calc(100vw - 36px));z-index:30}.hunt-filter-heading{align-items:center;display:flex;justify-content:space-between}.hunt-filter-heading>div{display:grid;gap:2px}.hunt-filter-heading strong{font-size:14px}.hunt-filter-heading span{color:var(--hunt-muted);font-size:10px}.hunt-filter-heading button,.hunt-detail-close{align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:50%;color:#d3f2ff;cursor:pointer;display:flex;height:30px;justify-content:center;padding:0;width:30px}.hunt-filter-search,.hunt-guide-search{align-items:center;background:rgba(0,0,0,.23);border:1px solid rgba(138,168,243,.22);border-radius:10px;color:rgba(231,240,255,.52);display:flex;gap:8px;min-height:42px;padding:0 11px}.hunt-filter-search input,.hunt-guide-search input{background:transparent;border:0;color:#fff;min-height:0;padding:0;width:100%}.hunt-filter-search input::placeholder,.hunt-guide-search input::placeholder{color:rgba(231,240,255,.38)}.hunt-filter-selects{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}.hunt-filter-selects label{color:rgba(231,240,255,.46);display:grid;font-size:9px;gap:4px;letter-spacing:.08em;text-transform:uppercase}.hunt-filter-selects select{background:rgba(0,0,0,.22);border:1px solid rgba(138,168,243,.2);border-radius:9px;color:#e7f0ff;font-size:11px;min-height:36px;padding:0 9px}.hunt-filter-selects option{background:#171a35}.hunt-clear-filters{background:transparent;border:0;color:var(--hunt-cyan);cursor:pointer;font-size:10px;justify-self:start;padding:0}
 .hunt-zoom-controls{bottom:185px;display:flex;flex-direction:column;gap:6px;position:absolute;right:13px;transition:bottom .18s ease;z-index:18}.hunt-zoom-controls.lifted{bottom:340px}.hunt-zoom-controls button{align-items:center;backdrop-filter:blur(12px);background:rgba(15,16,34,.87);border:1px solid rgba(138,168,243,.36);border-radius:10px;color:#d3f2ff;cursor:pointer;display:flex;height:42px;justify-content:center;padding:0;width:42px}.hunt-location-toast,.hunt-data-notice,.hunt-no-results{backdrop-filter:blur(14px);background:rgba(15,16,34,.9);border:1px solid rgba(138,168,243,.3);border-radius:12px;color:#e7f0ff;font-size:11px;left:50%;padding:10px 13px;position:absolute;top:224px;transform:translateX(-50%);z-index:18}.hunt-data-notice{display:grid;gap:2px;max-width:410px;text-align:center}.hunt-data-notice span{color:var(--hunt-muted)}.hunt-no-results{align-items:center;display:flex;flex-direction:column;gap:6px}.hunt-no-results button{background:transparent;border:0;color:var(--hunt-cyan);cursor:pointer;font-size:11px}
 
-.hunt-detail-card{background:rgba(28,31,61,.97);border:1px solid rgba(255,255,255,.11);border-radius:22px;bottom:57px;box-shadow:0 -10px 42px rgba(0,0,0,.58);color:#fff;left:12px;max-height:52vh;overflow-y:auto;padding:16px;position:absolute;right:12px;width:auto;z-index:25}.hunt-detail-close{position:absolute;right:12px;top:11px}.hunt-detail-meta{align-items:center;display:flex;gap:9px;margin-bottom:10px;padding-right:37px}.hunt-detail-meta span,.hunt-detail-meta strong{font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;letter-spacing:.15em}.hunt-detail-meta span{color:rgba(255,255,255,.4)}.hunt-detail-row{align-items:center;display:flex;gap:12px}.hunt-detail-emoji{align-items:center;background:rgba(255,255,255,.04);border:1.5px solid;border-radius:16px;display:flex;flex:0 0 58px;font-size:28px;height:58px;justify-content:center;width:58px}.hunt-detail-title{flex:1;min-width:0}.hunt-detail-title h2{color:#fff;font-size:19px;line-height:1.1;margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hunt-detail-title p{color:rgba(255,255,255,.62);font-size:12px;line-height:1.35}.hunt-reward-badge{align-items:center;background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(168,85,247,.14));border:1px solid rgba(0,229,255,.4);border-radius:999px;display:flex;font-size:13px;font-weight:900;gap:5px;padding:5px 9px}.hunt-reward-badge i{background:radial-gradient(circle at 30% 30%,#d3f2ff,#00e5ff 42%,#5777bf 88%);border-radius:50%;box-shadow:0 0 6px rgba(0,229,255,.75);height:12px;width:12px}.hunt-detail-hours{align-items:center;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;display:flex;gap:10px;margin-top:11px;min-height:37px;padding:8px 11px}.hunt-detail-hours strong{color:var(--hunt-blue);font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;letter-spacing:.12em;white-space:nowrap}.hunt-detail-hours strong[data-open=true]{color:var(--hunt-mint)}.hunt-detail-hours span{color:#e7f0ff;flex:1;font-size:12px}.hunt-detail-hours a{align-items:center;color:var(--hunt-cyan);display:flex;font-size:10px;gap:4px}.hunt-detail-mission{background:rgba(255,255,255,.04);border-left:3px solid rgba(0,229,255,.45);border-radius:3px 10px 10px 3px;color:rgba(255,255,255,.73);font-size:13px;line-height:1.42;margin-top:10px;padding:10px 12px}.hunt-detail-mission span{color:var(--hunt-cyan);display:block;font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.18em;margin-bottom:4px}.hunt-rejection{background:rgba(244,63,94,.14);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:#fff;font-size:11px;margin-top:9px;padding:9px 11px}.hunt-rejection strong{color:#ff8399}.hunt-start-mission{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:14px;box-shadow:0 0 22px rgba(0,229,255,.42);color:#081018;display:flex;font-size:14px;font-weight:900;justify-content:center;letter-spacing:.04em;margin-top:12px;min-height:48px;text-transform:uppercase}.hunt-start-submitted,.hunt-start-verifying,.hunt-start-needs_review,.hunt-start-reward_queued,.hunt-start-reward_uncertain{background:linear-gradient(135deg,#f59e0b,#c97809);box-shadow:none;color:#fff}.hunt-start-approved,.hunt-start-reward_sent{background:linear-gradient(135deg,#5777bf,#4469b8);box-shadow:none;color:#fff}.hunt-start-rejected,.hunt-start-reward_failed{background:linear-gradient(135deg,#f43f5e,#be2945);box-shadow:none;color:#fff}
+.hunt-detail-card{background:rgba(28,31,61,.97);border:1px solid rgba(255,255,255,.11);border-radius:22px;bottom:57px;box-shadow:0 -10px 42px rgba(0,0,0,.58);color:#fff;left:12px;max-height:52vh;overflow-y:auto;padding:16px;position:absolute;right:12px;width:auto;z-index:25}.hunt-detail-close{position:absolute;right:12px;top:11px}.hunt-detail-meta{align-items:center;display:flex;gap:9px;margin-bottom:10px;padding-right:37px}.hunt-detail-meta span,.hunt-detail-meta strong{font-family:Manrope,"Courier New",monospace;font-size:9px;letter-spacing:.15em}.hunt-detail-meta span{color:rgba(255,255,255,.4)}.hunt-detail-row{align-items:center;display:flex;gap:12px}.hunt-detail-emoji{align-items:center;background:rgba(255,255,255,.04);border:1.5px solid;border-radius:16px;display:flex;flex:0 0 58px;font-size:28px;height:58px;justify-content:center;width:58px}.hunt-detail-title{flex:1;min-width:0}.hunt-detail-title h2{color:#fff;font-size:19px;line-height:1.1;margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hunt-detail-title p{color:rgba(255,255,255,.62);font-size:12px;line-height:1.35}.hunt-reward-badge{align-items:center;background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(168,85,247,.14));border:1px solid rgba(0,229,255,.4);border-radius:999px;display:flex;font-size:13px;font-weight:900;gap:5px;padding:5px 9px}.hunt-reward-badge i{background:radial-gradient(circle at 30% 30%,#d3f2ff,#00e5ff 42%,#5777bf 88%);border-radius:50%;box-shadow:0 0 6px rgba(0,229,255,.75);height:12px;width:12px}.hunt-detail-hours{align-items:center;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:11px;display:flex;gap:10px;margin-top:11px;min-height:37px;padding:8px 11px}.hunt-detail-hours strong{color:var(--hunt-blue);font-family:Manrope,"Courier New",monospace;font-size:9px;letter-spacing:.12em;white-space:nowrap}.hunt-detail-hours strong[data-open=true]{color:var(--hunt-mint)}.hunt-detail-hours span{color:#e7f0ff;flex:1;font-size:12px}.hunt-detail-hours a{align-items:center;color:var(--hunt-cyan);display:flex;font-size:10px;gap:4px}.hunt-detail-mission{background:rgba(255,255,255,.04);border-left:3px solid rgba(0,229,255,.45);border-radius:3px 10px 10px 3px;color:rgba(255,255,255,.73);font-size:13px;line-height:1.42;margin-top:10px;padding:10px 12px}.hunt-detail-mission span{color:var(--hunt-cyan);display:block;font-family:Manrope,"Courier New",monospace;font-size:9px;font-weight:800;letter-spacing:.18em;margin-bottom:4px}.hunt-rejection{background:rgba(244,63,94,.14);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:#fff;font-size:11px;margin-top:9px;padding:9px 11px}.hunt-rejection strong{color:#ff8399}.hunt-start-mission{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:14px;box-shadow:0 0 22px rgba(0,229,255,.42);color:#081018;display:flex;font-size:14px;font-weight:900;justify-content:center;letter-spacing:.04em;margin-top:12px;min-height:48px;text-transform:uppercase}.hunt-start-submitted,.hunt-start-verifying,.hunt-start-needs_review,.hunt-start-reward_queued,.hunt-start-reward_uncertain{background:linear-gradient(135deg,#f59e0b,#c97809);box-shadow:none;color:#fff}.hunt-start-approved,.hunt-start-reward_sent{background:linear-gradient(135deg,#5777bf,#4469b8);box-shadow:none;color:#fff}.hunt-start-rejected,.hunt-start-reward_failed{background:linear-gradient(135deg,#f43f5e,#be2945);box-shadow:none;color:#fff}
 .hunt-theme-toggle{background:rgba(28,31,61,.96);border:1px solid rgba(138,168,243,.28);border-radius:999px;bottom:max(14px,env(safe-area-inset-bottom));box-shadow:0 0 23px rgba(0,229,255,.14);display:flex;gap:3px;left:50%;padding:4px;position:absolute;transform:translateX(-50%);z-index:45}.hunt-theme-toggle button{background:transparent;border:0;border-radius:999px;color:rgba(255,255,255,.54);cursor:pointer;font-size:10px;font-weight:800;padding:7px 14px;white-space:nowrap}.hunt-theme-toggle button[data-active=true]{background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));box-shadow:0 0 15px rgba(0,229,255,.45);color:#081018}
 
-.hunt-menu-overlay{backdrop-filter:blur(3px);background:rgba(0,0,0,.58);border:0;inset:0;padding:0;position:fixed;z-index:110}.hunt-menu-panel{background:#161830;border-right:1px solid rgba(138,168,243,.22);bottom:0;color:#fff;display:flex;flex-direction:column;left:0;max-width:84vw;position:fixed;top:0;width:300px;z-index:120;animation:hunt-menu-in .22s ease-out}@keyframes hunt-menu-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}.hunt-menu-heading{align-items:center;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;padding:max(30px,env(safe-area-inset-top)) 20px 17px}.hunt-menu-heading>div,.hunt-experience-panel>header>div{display:grid;gap:4px}.hunt-menu-heading span,.hunt-experience-panel>header span{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:8px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.hunt-menu-heading strong,.hunt-experience-panel>header strong{color:var(--hunt-blue);font-size:24px;text-shadow:none}.hunt-menu-heading button{background:transparent;border:0;color:#d3f2ff;cursor:pointer;padding:5px}.hunt-menu-panel nav{display:grid;padding-top:6px}.hunt-menu-panel nav button{align-items:center;background:transparent;border:0;color:rgba(255,255,255,.67);cursor:pointer;display:flex;font-size:15px;font-weight:700;gap:14px;min-height:58px;padding:0 23px;text-align:left}.hunt-menu-panel nav button:hover,.hunt-menu-panel nav button[data-active=true]{background:rgba(0,229,255,.09);color:var(--hunt-cyan)}.hunt-menu-spacer{flex:1}.hunt-admin-link{align-items:center;color:rgba(255,255,255,.62);display:flex;font-size:12px;gap:6px;padding:10px 20px}.hunt-menu-panel>p{color:rgba(255,255,255,.42);font-size:10px;padding:0 20px 10px}.hunt-menu-stores{display:grid;gap:7px;grid-template-columns:repeat(2,1fr);padding:0 17px max(18px,env(safe-area-inset-bottom))}.hunt-menu-stores a{align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(138,168,243,.2);border-radius:10px;display:flex;font-size:11px;font-weight:800;gap:6px;justify-content:center;min-height:42px}
-.hunt-experience-panel{background:radial-gradient(circle at 84% 6%,rgba(0,229,255,.13),transparent 27%),radial-gradient(circle at 12% 30%,rgba(39,23,145,.35),transparent 30%),#090b18;color:#fff;inset:0;overflow-y:auto;position:fixed;z-index:130}.hunt-experience-panel>header{align-items:center;backdrop-filter:blur(15px);background:rgba(9,11,24,.82);border-bottom:1px solid rgba(138,168,243,.16);display:grid;gap:15px;grid-template-columns:44px 1fr auto;min-height:82px;padding:max(12px,env(safe-area-inset-top)) 20px 12px;position:sticky;top:0;z-index:4}.hunt-experience-panel>header>button{align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(138,168,243,.24);border-radius:50%;color:#fff;cursor:pointer;display:flex;height:40px;justify-content:center;padding:0;width:40px}.hunt-experience-panel>header>a{align-items:center;color:var(--hunt-cyan);display:flex;font-size:11px;font-weight:800;gap:5px}.hunt-passport-view,.hunt-guide-view,.hunt-how-view{margin:0 auto;max-width:1180px;padding:54px 24px 80px}.hunt-panel-intro>span,.hunt-coming-view>span{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.hunt-panel-intro h1,.hunt-coming-view h1{color:#fff;font-family:Ranchers,Impact,Haettenschweiler,"Arial Black",sans-serif;font-size:clamp(44px,8vw,94px);letter-spacing:.01em;line-height:.92;margin:12px 0 14px;max-width:850px}.hunt-panel-intro p,.hunt-coming-view p{color:var(--hunt-muted);font-size:15px;max-width:670px}
-.hunt-passport-progress{background:rgba(255,255,255,.07);border-radius:999px;height:8px;margin:30px 0 24px;overflow:hidden}.hunt-passport-progress span{background:linear-gradient(90deg,var(--hunt-cyan),var(--hunt-mint),var(--hunt-blue));box-shadow:0 0 15px rgba(0,229,255,.65);display:block;height:100%}.hunt-passport-grid{display:grid;gap:12px;grid-template-columns:repeat(4,minmax(0,1fr))}.hunt-passport-grid button{align-items:center;background:rgba(255,255,255,.035);border:1px dashed rgba(138,168,243,.24);border-radius:16px;color:rgba(255,255,255,.45);cursor:pointer;display:grid;gap:8px;min-height:168px;padding:15px;position:relative}.hunt-passport-grid button[data-stamped=true]{background:linear-gradient(135deg,rgba(0,229,255,.13),rgba(87,119,191,.13));border-style:solid;color:#fff}.hunt-passport-grid button small{font-family:"JetBrains Mono","Courier New",monospace;justify-self:start}.hunt-passport-grid button strong{font-size:40px}.hunt-passport-grid button span{font-size:12px;font-weight:800}.hunt-passport-grid button i{align-items:center;background:var(--hunt-mint);border-radius:50%;color:#051211;display:flex;font-style:normal;height:25px;justify-content:center;position:absolute;right:10px;top:10px;width:25px}
+.hunt-menu-overlay{backdrop-filter:blur(3px);background:rgba(0,0,0,.58);border:0;inset:0;padding:0;position:fixed;z-index:110}.hunt-menu-panel{background:#161830;border-right:1px solid rgba(138,168,243,.22);bottom:0;color:#fff;display:flex;flex-direction:column;left:0;max-width:84vw;position:fixed;top:0;width:300px;z-index:120;animation:hunt-menu-in .22s ease-out}@keyframes hunt-menu-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}.hunt-menu-heading{align-items:center;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;padding:max(30px,env(safe-area-inset-top)) 20px 17px}.hunt-menu-heading>div,.hunt-experience-panel>header>div{display:grid;gap:4px}.hunt-menu-heading span,.hunt-experience-panel>header span{color:var(--hunt-cyan);font-family:Manrope,"Courier New",monospace;font-size:8px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.hunt-menu-heading strong,.hunt-experience-panel>header strong{color:var(--hunt-blue);font-size:24px;text-shadow:none}.hunt-menu-heading button{background:transparent;border:0;color:#d3f2ff;cursor:pointer;padding:5px}.hunt-menu-panel nav{display:grid;padding-top:6px}.hunt-menu-panel nav button{align-items:center;background:transparent;border:0;color:rgba(255,255,255,.67);cursor:pointer;display:flex;font-size:15px;font-weight:700;gap:14px;min-height:58px;padding:0 23px;text-align:left}.hunt-menu-panel nav button:hover,.hunt-menu-panel nav button[data-active=true]{background:rgba(0,229,255,.09);color:var(--hunt-cyan)}.hunt-menu-spacer{flex:1}.hunt-admin-link{align-items:center;color:rgba(255,255,255,.62);display:flex;font-size:12px;gap:6px;padding:10px 20px}.hunt-menu-panel>p{color:rgba(255,255,255,.42);font-size:10px;padding:0 20px 10px}.hunt-menu-stores{display:grid;gap:7px;grid-template-columns:repeat(2,1fr);padding:0 17px max(18px,env(safe-area-inset-bottom))}.hunt-menu-stores a{align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(138,168,243,.2);border-radius:10px;display:flex;font-size:11px;font-weight:800;gap:6px;justify-content:center;min-height:42px}
+.hunt-experience-panel{background:radial-gradient(circle at 84% 6%,rgba(0,229,255,.13),transparent 27%),radial-gradient(circle at 12% 30%,rgba(39,23,145,.35),transparent 30%),#090b18;color:#fff;inset:0;overflow-y:auto;position:fixed;z-index:130}.hunt-experience-panel>header{align-items:center;backdrop-filter:blur(15px);background:rgba(9,11,24,.82);border-bottom:1px solid rgba(138,168,243,.16);display:grid;gap:15px;grid-template-columns:44px 1fr auto;min-height:82px;padding:max(12px,env(safe-area-inset-top)) 20px 12px;position:sticky;top:0;z-index:4}.hunt-experience-panel>header>button{align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(138,168,243,.24);border-radius:50%;color:#fff;cursor:pointer;display:flex;height:40px;justify-content:center;padding:0;width:40px}.hunt-experience-panel>header>a{align-items:center;color:var(--hunt-cyan);display:flex;font-size:11px;font-weight:800;gap:5px}.hunt-passport-view,.hunt-guide-view,.hunt-how-view{margin:0 auto;max-width:1180px;padding:54px 24px 80px}.hunt-panel-intro>span,.hunt-coming-view>span{color:var(--hunt-cyan);font-family:Manrope,"Courier New",monospace;font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.hunt-panel-intro h1,.hunt-coming-view h1{color:#fff;font-family:Manrope,Impact,Haettenschweiler,"Arial Black",sans-serif;font-size:clamp(44px,8vw,94px);letter-spacing:.01em;line-height:.92;margin:12px 0 14px;max-width:850px}.hunt-panel-intro p,.hunt-coming-view p{color:var(--hunt-muted);font-size:15px;max-width:670px}
+.hunt-passport-progress{background:rgba(255,255,255,.07);border-radius:999px;height:8px;margin:30px 0 24px;overflow:hidden}.hunt-passport-progress span{background:linear-gradient(90deg,var(--hunt-cyan),var(--hunt-mint),var(--hunt-blue));box-shadow:0 0 15px rgba(0,229,255,.65);display:block;height:100%}.hunt-passport-grid{display:grid;gap:12px;grid-template-columns:repeat(4,minmax(0,1fr))}.hunt-passport-grid button{align-items:center;background:rgba(255,255,255,.035);border:1px dashed rgba(138,168,243,.24);border-radius:16px;color:rgba(255,255,255,.45);cursor:pointer;display:grid;gap:8px;min-height:168px;padding:15px;position:relative}.hunt-passport-grid button[data-stamped=true]{background:linear-gradient(135deg,rgba(0,229,255,.13),rgba(87,119,191,.13));border-style:solid;color:#fff}.hunt-passport-grid button small{font-family:Manrope,"Courier New",monospace;justify-self:start}.hunt-passport-grid button strong{font-size:40px}.hunt-passport-grid button span{font-size:12px;font-weight:800}.hunt-passport-grid button i{align-items:center;background:var(--hunt-mint);border-radius:50%;color:#051211;display:flex;font-style:normal;height:25px;justify-content:center;position:absolute;right:10px;top:10px;width:25px}
 
-.hunt-guide-search{margin:30px 0 20px;max-width:430px}.hunt-guide-grid{display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr))}.hunt-guide-grid button{background:rgba(255,255,255,.04);border:1px solid rgba(138,168,243,.18);border-radius:15px;color:#fff;cursor:pointer;min-height:210px;padding:18px;text-align:left}.hunt-guide-grid button:hover{border-color:var(--hunt-cyan);transform:translateY(-2px)}.hunt-guide-grid small{color:var(--hunt-cyan);font-family:"JetBrains Mono","Courier New",monospace;font-size:9px;letter-spacing:.1em}.hunt-guide-grid strong{align-items:center;display:flex;font-size:20px;gap:9px;margin:17px 0 10px}.hunt-guide-grid strong span{font-size:29px}.hunt-guide-grid p{color:var(--hunt-muted);font-size:12px;line-height:1.5}.hunt-guide-grid i{color:var(--hunt-mint);display:block;font-size:11px;font-style:normal;font-weight:900;margin-top:17px}.hunt-coming-view{align-items:center;display:flex;flex-direction:column;margin:0 auto;max-width:760px;min-height:calc(100dvh - 100px);padding:90px 24px;text-align:center}.hunt-coming-view>svg{color:var(--hunt-cyan);margin-bottom:20px}.hunt-coming-view p{max-width:620px}.hunt-coming-view>div,.hunt-how-apps{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px}.hunt-coming-view a,.hunt-how-apps a{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:12px;color:#081018;display:flex;font-size:12px;font-weight:900;gap:8px;min-height:46px;padding:0 16px}.hunt-how-grid{display:grid;gap:13px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:35px}.hunt-how-grid article{background:rgba(255,255,255,.04);border:1px solid rgba(138,168,243,.19);border-radius:18px;min-height:250px;padding:22px;position:relative}.hunt-how-grid article>b{color:rgba(255,255,255,.12);font-family:Ranchers,Impact,sans-serif;font-size:46px;position:absolute;right:18px;top:12px}.hunt-how-grid svg{color:var(--hunt-cyan);margin:20px 0 32px}.hunt-how-grid h2{color:#fff;font-size:20px;margin:0 0 9px}.hunt-how-grid p{color:var(--hunt-muted);font-size:13px}
+.hunt-guide-search{margin:30px 0 20px;max-width:430px}.hunt-guide-grid{display:grid;gap:12px;grid-template-columns:repeat(3,minmax(0,1fr))}.hunt-guide-grid button{background:rgba(255,255,255,.04);border:1px solid rgba(138,168,243,.18);border-radius:15px;color:#fff;cursor:pointer;min-height:210px;padding:18px;text-align:left}.hunt-guide-grid button:hover{border-color:var(--hunt-cyan);transform:translateY(-2px)}.hunt-guide-grid small{color:var(--hunt-cyan);font-family:Manrope,"Courier New",monospace;font-size:9px;letter-spacing:.1em}.hunt-guide-grid strong{align-items:center;display:flex;font-size:20px;gap:9px;margin:17px 0 10px}.hunt-guide-grid strong span{font-size:29px}.hunt-guide-grid p{color:var(--hunt-muted);font-size:12px;line-height:1.5}.hunt-guide-grid i{color:var(--hunt-mint);display:block;font-size:11px;font-style:normal;font-weight:900;margin-top:17px}.hunt-coming-view{align-items:center;display:flex;flex-direction:column;margin:0 auto;max-width:760px;min-height:calc(100dvh - 100px);padding:90px 24px;text-align:center}.hunt-coming-view>svg{color:var(--hunt-cyan);margin-bottom:20px}.hunt-coming-view p{max-width:620px}.hunt-coming-view>div,.hunt-how-apps{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px}.hunt-coming-view a,.hunt-how-apps a{align-items:center;background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));border-radius:12px;color:#081018;display:flex;font-size:12px;font-weight:900;gap:8px;min-height:46px;padding:0 16px}.hunt-how-grid{display:grid;gap:13px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:35px}.hunt-how-grid article{background:rgba(255,255,255,.04);border:1px solid rgba(138,168,243,.19);border-radius:18px;min-height:250px;padding:22px;position:relative}.hunt-how-grid article>b{color:rgba(255,255,255,.12);font-family:Manrope,Impact,sans-serif;font-size:46px;position:absolute;right:18px;top:12px}.hunt-how-grid svg{color:var(--hunt-cyan);margin:20px 0 32px}.hunt-how-grid h2{color:#fff;font-size:20px;margin:0 0 9px}.hunt-how-grid p{color:var(--hunt-muted);font-size:13px}
 .hunt-page button:focus-visible,.hunt-page a:focus-visible,.hunt-page input:focus-visible,.hunt-page select:focus-visible{outline:3px solid rgba(0,229,255,.8);outline-offset:3px}
-.hunt-theme-wobbles{font-family:Quicksand,Outfit,sans-serif;--hunt-void:#eef9ff;--hunt-deep:#d9f4ff;--hunt-panel:#fffdf7;--hunt-blue:#0078a8;--hunt-cyan:#0078a8;--hunt-mint:#00a783;--hunt-paper:#0d2847;--hunt-muted:rgba(13,40,71,.62)}.hunt-theme-wobbles .hunt-fallback-map{background:radial-gradient(circle at 65% 73%,rgba(0,120,168,.14),transparent 42%),linear-gradient(135deg,#f5fcff,#dff5ff 52%,#d7f5ef)}.hunt-theme-wobbles .hunt-fallback-map:before{background-image:linear-gradient(rgba(13,40,71,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(13,40,71,.04) 1px,transparent 1px)}.hunt-theme-wobbles .hunt-street{color:rgba(13,40,71,.68);text-shadow:0 1px 4px #eef9ff}.hunt-theme-wobbles .hunt-street:before{background:rgba(13,40,71,.18)}.hunt-theme-wobbles .hunt-street.major:before{background:rgba(13,40,71,.35)}.hunt-theme-wobbles .hunt-brand-lockup strong,.hunt-theme-wobbles .hunt-partnership,.hunt-theme-wobbles .hunt-brand-lockup small{color:#0d2847;text-shadow:none}.hunt-theme-wobbles .hunt-menu-button,.hunt-theme-wobbles .hunt-header-actions>button,.hunt-theme-wobbles .hunt-cross-street,.hunt-theme-wobbles .hunt-filter-panel,.hunt-theme-wobbles .hunt-zoom-controls button,.hunt-theme-wobbles .hunt-location-toast,.hunt-theme-wobbles .hunt-data-notice,.hunt-theme-wobbles .hunt-no-results{background:rgba(255,255,255,.88);border-color:rgba(13,40,71,.2);color:#0d2847}.hunt-theme-wobbles .hunt-detail-card{background:rgba(255,253,247,.93);border-color:rgba(13,40,71,.16);color:#0d2847}.hunt-theme-wobbles .hunt-detail-title h2,.hunt-theme-wobbles .hunt-detail-hours span{color:#0d2847}.hunt-theme-wobbles .hunt-detail-title p,.hunt-theme-wobbles .hunt-detail-mission{color:rgba(13,40,71,.68)}.hunt-theme-wobbles .hunt-detail-hours,.hunt-theme-wobbles .hunt-detail-mission{background:rgba(13,40,71,.05);border-color:rgba(13,40,71,.08)}.hunt-theme-wobbles .hunt-theme-toggle{background:rgba(255,255,255,.9);border-color:rgba(13,40,71,.2)}.hunt-theme-wobbles .hunt-theme-toggle button{color:rgba(13,40,71,.54)}.hunt-theme-wobbles .hunt-theme-toggle button[data-active=true]{background:linear-gradient(135deg,#0078a8,#005577);color:#fff}
+.hunt-theme-wobbles{font-family:Manrope,sans-serif;--hunt-void:#eef9ff;--hunt-deep:#d9f4ff;--hunt-panel:#fffdf7;--hunt-blue:#0078a8;--hunt-cyan:#0078a8;--hunt-mint:#00a783;--hunt-paper:#0d2847;--hunt-muted:rgba(13,40,71,.62)}.hunt-theme-wobbles .hunt-fallback-map{background:radial-gradient(circle at 65% 73%,rgba(0,120,168,.14),transparent 42%),linear-gradient(135deg,#f5fcff,#dff5ff 52%,#d7f5ef)}.hunt-theme-wobbles .hunt-fallback-map:before{background-image:linear-gradient(rgba(13,40,71,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(13,40,71,.04) 1px,transparent 1px)}.hunt-theme-wobbles .hunt-street{color:rgba(13,40,71,.68);text-shadow:0 1px 4px #eef9ff}.hunt-theme-wobbles .hunt-street:before{background:rgba(13,40,71,.18)}.hunt-theme-wobbles .hunt-street.major:before{background:rgba(13,40,71,.35)}.hunt-theme-wobbles .hunt-brand-lockup strong,.hunt-theme-wobbles .hunt-partnership,.hunt-theme-wobbles .hunt-brand-lockup small{color:#0d2847;text-shadow:none}.hunt-theme-wobbles .hunt-menu-button,.hunt-theme-wobbles .hunt-header-actions>button,.hunt-theme-wobbles .hunt-cross-street,.hunt-theme-wobbles .hunt-filter-panel,.hunt-theme-wobbles .hunt-zoom-controls button,.hunt-theme-wobbles .hunt-location-toast,.hunt-theme-wobbles .hunt-data-notice,.hunt-theme-wobbles .hunt-no-results{background:rgba(255,255,255,.88);border-color:rgba(13,40,71,.2);color:#0d2847}.hunt-theme-wobbles .hunt-detail-card{background:rgba(255,253,247,.93);border-color:rgba(13,40,71,.16);color:#0d2847}.hunt-theme-wobbles .hunt-detail-title h2,.hunt-theme-wobbles .hunt-detail-hours span{color:#0d2847}.hunt-theme-wobbles .hunt-detail-title p,.hunt-theme-wobbles .hunt-detail-mission{color:rgba(13,40,71,.68)}.hunt-theme-wobbles .hunt-detail-hours,.hunt-theme-wobbles .hunt-detail-mission{background:rgba(13,40,71,.05);border-color:rgba(13,40,71,.08)}.hunt-theme-wobbles .hunt-theme-toggle{background:rgba(255,255,255,.9);border-color:rgba(13,40,71,.2)}.hunt-theme-wobbles .hunt-theme-toggle button{color:rgba(13,40,71,.54)}.hunt-theme-wobbles .hunt-theme-toggle button[data-active=true]{background:linear-gradient(135deg,#0078a8,#005577);color:#fff}
 
 @media(min-width:768px){.hunt-fallback-marker,.hunt-mapbox-marker{height:66px;width:66px}.hunt-fallback-marker>span,.hunt-mapbox-marker>span{font-size:29px}.hunt-detail-card{padding:18px}.hunt-detail-title h2{font-size:21px}.hunt-detail-title p,.hunt-detail-hours span{font-size:13px}.hunt-start-mission{font-size:15px}}
-@media(max-width:720px){.hunt-map-header{left:15px;right:15px;top:max(14px,env(safe-area-inset-top))}.hunt-menu-button{height:40px;width:40px}.hunt-brand-lockup{gap:9px}.hunt-brand-lockup strong{font-size:31px}.hunt-partnership{font-size:7px}.hunt-brand-lockup small{font-size:7px;letter-spacing:.09em;margin-top:4px}.hunt-header-actions .hunt-get-app,.hunt-header-actions>button:first-child{display:none}.hunt-header-actions>button{height:42px;width:42px}.hunt-cross-street{font-size:10px;max-width:calc(100vw - 110px);overflow:hidden;padding:8px 12px;text-overflow:ellipsis;top:145px}.hunt-filter-panel{left:13px;top:105px;width:calc(100vw - 26px)}.hunt-fallback-marker,.hunt-mapbox-marker{height:48px;width:48px}.hunt-fallback-marker>span,.hunt-mapbox-marker>span{font-size:21px}.hunt-marker-tooltip{font-size:9px;top:-31px}.hunt-hq img{height:52px;width:52px}.hunt-hq strong{font-size:9px;margin-top:-66px}.hunt-hq-pulse{height:84px;width:84px}.hunt-zoom-controls{bottom:calc(182px + env(safe-area-inset-bottom));right:12px}.hunt-zoom-controls.lifted{bottom:calc(410px + env(safe-area-inset-bottom))}.hunt-zoom-controls button{height:40px;width:40px}.hunt-detail-card{border-radius:20px;bottom:calc(69px + env(safe-area-inset-bottom));left:9px;max-height:56vh;padding:14px;right:9px}.hunt-detail-meta span,.hunt-detail-meta strong{font-size:8px;letter-spacing:.1em}.hunt-detail-emoji{flex-basis:50px;font-size:24px;height:50px;width:50px}.hunt-detail-title h2{font-size:17px}.hunt-detail-title p{font-size:10px}.hunt-reward-badge{font-size:11px;padding:4px 7px}.hunt-detail-hours{align-items:flex-start;flex-wrap:wrap;gap:5px 9px}.hunt-detail-hours a{margin-left:auto}.hunt-detail-mission{font-size:12px}.hunt-start-mission{min-height:45px}.hunt-location-toast,.hunt-data-notice,.hunt-no-results{top:198px;width:min(330px,calc(100vw - 30px))}.hunt-passport-view,.hunt-guide-view,.hunt-how-view{padding:36px 15px 70px}.hunt-experience-panel>header{grid-template-columns:40px 1fr;padding-left:14px;padding-right:14px}.hunt-experience-panel>header>a{display:none}.hunt-panel-intro h1,.hunt-coming-view h1{font-size:46px}.hunt-passport-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hunt-passport-grid button{min-height:148px}.hunt-guide-grid,.hunt-how-grid{grid-template-columns:1fr}.hunt-how-grid article{min-height:220px}}
+@media(max-width:720px){.hunt-map-header{left:15px;right:15px;top:max(14px,env(safe-area-inset-top))}.hunt-menu-button{height:40px;width:40px}.hunt-brand-lockup{gap:9px}.hunt-brand-lockup strong{font-size:31px}.hunt-partnership{font-size:7px}.hunt-brand-lockup small{font-size:7px;letter-spacing:.09em;margin-top:4px}.hunt-header-actions .hunt-get-app,.hunt-header-actions .hunt-get-platepost,.hunt-header-actions>button:first-child{display:none}.hunt-header-actions>button{height:42px;width:42px}.hunt-cross-street{font-size:10px;max-width:calc(100vw - 110px);overflow:hidden;padding:8px 12px;text-overflow:ellipsis;top:145px}.hunt-filter-panel{left:13px;top:105px;width:calc(100vw - 26px)}.hunt-fallback-marker,.hunt-mapbox-marker{height:48px;width:48px}.hunt-fallback-marker>span,.hunt-mapbox-marker>span{font-size:21px}.hunt-marker-tooltip{font-size:9px;top:-31px}.hunt-hq img{height:52px;width:52px}.hunt-hq strong{font-size:9px;margin-top:-66px}.hunt-hq-pulse{height:84px;width:84px}.hunt-zoom-controls{bottom:calc(182px + env(safe-area-inset-bottom));right:12px}.hunt-zoom-controls.lifted{bottom:calc(410px + env(safe-area-inset-bottom))}.hunt-zoom-controls button{height:40px;width:40px}.hunt-detail-card{border-radius:20px;bottom:calc(69px + env(safe-area-inset-bottom));left:9px;max-height:56vh;padding:14px;right:9px}.hunt-detail-meta span,.hunt-detail-meta strong{font-size:8px;letter-spacing:.1em}.hunt-detail-emoji{flex-basis:50px;font-size:24px;height:50px;width:50px}.hunt-detail-title h2{font-size:17px}.hunt-detail-title p{font-size:10px}.hunt-reward-badge{font-size:11px;padding:4px 7px}.hunt-detail-hours{align-items:flex-start;flex-wrap:wrap;gap:5px 9px}.hunt-detail-hours a{margin-left:auto}.hunt-detail-mission{font-size:12px}.hunt-start-mission{min-height:45px}.hunt-location-toast,.hunt-data-notice,.hunt-no-results{top:198px;width:min(330px,calc(100vw - 30px))}.hunt-passport-view,.hunt-guide-view,.hunt-how-view{padding:36px 15px 70px}.hunt-experience-panel>header{grid-template-columns:40px 1fr;padding-left:14px;padding-right:14px}.hunt-experience-panel>header>a{display:none}.hunt-panel-intro h1,.hunt-coming-view h1{font-size:46px}.hunt-passport-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hunt-passport-grid button{min-height:148px}.hunt-guide-grid,.hunt-how-grid{grid-template-columns:1fr}.hunt-how-grid article{min-height:220px}}
 @media(max-width:420px){.hunt-cross-street{top:134px}.hunt-theme-toggle button{padding:7px 12px}.hunt-detail-hours span{font-size:10px}.hunt-zoom-controls.lifted{bottom:calc(390px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.hunt-fallback-layer,.hunt-fallback-marker,.hunt-mapbox-marker{transition:none}.hunt-fallback-marker[data-selected=true],.hunt-hq-pulse{animation:none}}
 
@@ -55,7 +55,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
   background: var(--hunt-cyan);
   border-radius: 0 0 10px 10px;
   color: #041216;
-  font-family: "JetBrains Mono", monospace;
+  font-family: Manrope, monospace;
   font-size: 11px;
   font-weight: 800;
   left: 18px;
@@ -111,7 +111,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
   bottom: max(25px, env(safe-area-inset-bottom));
   color: rgba(231, 240, 255, 0.78);
   display: flex;
-  font-family: "JetBrains Mono", monospace;
+  font-family: Manrope, monospace;
   font-size: 9px;
   font-weight: 700;
   gap: 8px;
@@ -208,7 +208,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 .hunt-brand-lockup h1 {
   color: #ffffff;
   filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.34));
-  font-family: Ranchers, Impact, Haettenschweiler, "Arial Black", sans-serif;
+  font-family: Manrope, Impact, Haettenschweiler, "Arial Black", sans-serif;
   font-size: clamp(62px, 7.3vw, 112px);
   font-weight: 900;
   letter-spacing: 0.025em;
@@ -258,7 +258,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 .hunt-cross-street {
   background: rgba(10, 14, 35, 0.72);
   border-color: rgba(168, 190, 255, 0.28);
-  font-family: "JetBrains Mono", monospace;
+  font-family: Manrope, monospace;
   font-size: 10px;
   letter-spacing: 0.1em;
   padding: 9px 15px;
@@ -303,7 +303,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
   backdrop-filter: blur(12px);
   background: rgba(9, 13, 33, 0.9);
   border-radius: 999px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: Manrope, monospace;
   letter-spacing: 0.04em;
   padding: 6px 11px;
 }
@@ -488,7 +488,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 
 .hunt-reward-badge small {
   color: rgba(211, 242, 255, 0.52);
-  font-family: "JetBrains Mono", monospace;
+  font-family: Manrope, monospace;
   font-size: 7px;
   letter-spacing: 0.15em;
 }
@@ -646,7 +646,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
   border-radius: 999px;
   color: rgba(231, 240, 255, 0.6);
   cursor: pointer;
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: Manrope, "Courier New", monospace;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -713,7 +713,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 
 .hunt-leaderboard-rank {
   color: var(--hunt-cyan);
-  font-family: Ranchers, Impact, sans-serif;
+  font-family: Manrope, Impact, sans-serif;
   font-size: 34px;
   letter-spacing: 0.05em;
   line-height: 1;
@@ -733,7 +733,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 .hunt-leaderboard-score {
   color: #fff;
   display: grid;
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: Manrope, "Courier New", monospace;
   font-size: 24px;
   font-weight: 800;
   line-height: 1;
@@ -798,7 +798,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 
 .hunt-leaderboard-loading span {
   color: var(--hunt-cyan);
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: Manrope, "Courier New", monospace;
   font-size: 9px;
   letter-spacing: 0.13em;
   margin-bottom: 6px;
@@ -826,7 +826,7 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
 
 .hunt-leaderboard-note {
   color: rgba(231, 240, 255, 0.46);
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: Manrope, "Courier New", monospace;
   font-size: 9px;
   letter-spacing: 0.04em;
   margin-top: 16px;
@@ -1248,3 +1248,358 @@ body:has(.hunt-map-screen){background:#050711;overflow:hidden}.shell:has(.hunt-m
     border: 2px solid ButtonText;
   }
 }
+/* Venue sheet: the missions available at the selected restaurant. */
+.hunt-venue-missions{display:flex;flex-direction:column;gap:6px;list-style:none;margin:12px 0 0;padding:0}
+.hunt-venue-mission{align-items:center;background:rgba(255,255,255,.05);border:1px solid transparent;border-radius:10px;color:inherit;cursor:pointer;display:grid;font:inherit;gap:10px;grid-template-columns:auto 1fr auto;padding:10px 12px;text-align:left;width:100%}
+.hunt-venue-mission:hover{background:rgba(255,255,255,.09)}
+.hunt-venue-mission[data-selected=true]{border-color:var(--hunt-cyan)}
+.hunt-venue-mission[data-complete=true] .hunt-venue-mission-title{opacity:.55;text-decoration:line-through}
+.hunt-venue-mission-shot{font-size:10px;letter-spacing:.08em;opacity:.7;text-transform:uppercase}
+.hunt-venue-mission-title{font-weight:600}
+.hunt-venue-mission-reward{font-variant-numeric:tabular-nums;font-weight:700}
+.hunt-theme-wobbles .hunt-venue-mission{background:rgba(13,40,71,.05);color:#0d2847}
+.hunt-theme-wobbles .hunt-venue-mission:hover{background:rgba(13,40,71,.09)}
+
+/* ---- PlatePost co-brand ------------------------------------------------- */
+/* The wordmark was clamp(62px,7.3vw,112px) — a third of the viewport wide, and
+   it collided with Mapbox street labels. PlatePost leads the lockup now, so the
+   wordmark becomes a line of type rather than a billboard. */
+.hunt-brand-lockup h1{
+  filter:none;
+  font-family:Manrope,ui-sans-serif,system-ui,sans-serif;
+  font-size:clamp(20px,2.2vw,26px);
+  font-weight:800;
+  letter-spacing:.06em;
+  line-height:1.05;
+  text-shadow:0 2px 10px rgba(7,17,38,.85);
+}
+@media (max-width:900px){.hunt-brand-lockup h1{font-size:20px}}
+@media (max-width:600px){.hunt-brand-lockup h1{font-size:18px;line-height:1.05}}
+
+.hunt-partnership{
+  color:var(--hunt-blue);
+  font-family:Manrope,ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.14em;
+  text-shadow:none;
+}
+
+/* The emblem is a square SVG, so the rotated teardrop treatment is dropped. */
+.hunt-brand-mark{
+  background:#fff;
+  border:2px solid rgba(69,118,239,.55);
+  border-radius:14px;
+  box-shadow:0 0 0 5px rgba(69,118,239,.14),0 6px 22px rgba(7,17,38,.55);
+  flex:0 0 44px;
+  height:44px;
+  width:44px;
+  padding:7px;
+  transform:none;
+}
+.hunt-brand-mark svg,.hunt-brand-mark img{transform:none;height:auto;width:100%}
+@media (max-width:900px){.hunt-brand-mark{flex-basis:40px;height:40px;width:40px}}
+@media (max-width:600px){.hunt-brand-mark{flex-basis:34px;height:34px;width:34px;padding:5px}}
+
+/* Jelly keeps the bright pill; PlatePost sits beside it as an outline so the
+   two brands read as partners rather than one burying the other. */
+.hunt-get-app{
+  background:linear-gradient(135deg,var(--hunt-cyan),var(--hunt-mint));
+  box-shadow:0 0 20px rgba(95,208,255,.28);
+  color:#071126;
+}
+.hunt-get-platepost{
+  align-items:center;
+  /* One step darker than brand #4576ef. White on the brand blue measures
+     4.13:1, under the 4.5 needed for an 11px bold label; this measures 4.74:1
+     and is indistinguishable from the brand colour at button size. Pins keep
+     the true --hunt-blue, where the ratio does not apply. */
+  background:#3f6ce0;
+  border-radius:999px;
+  box-shadow:0 0 20px rgba(69,118,239,.32);
+  color:#fff;
+  display:flex;
+  font-size:11px;
+  font-weight:900;
+  gap:6px;
+  min-height:42px;
+  padding:0 15px;
+  text-decoration:none;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.hunt-theme-wobbles .hunt-get-platepost{background:#3f6ce0;color:#fff}
+@media (max-width:600px){
+  .hunt-get-app,.hunt-get-platepost{font-size:10px;padding:0 11px;min-height:38px}
+}
+
+/* ---- Real map for people whose interactive map cannot start -------------- */
+/* The old fallback drew street names in an empty field, which tells a filmer
+   nothing. This is a picture of the actual city at the same centre and zoom the
+   pins are projected through, so a pin sits on the building it names. */
+.hunt-fallback-viewport{inset:0;position:absolute;transform-origin:50% 50%;transition:transform .26s ease}
+.hunt-static-map{display:block;height:100%;left:0;object-fit:cover;position:absolute;top:0;width:100%}
+.hunt-fallback-map.has-static{background:var(--hunt-void)}
+.hunt-fallback-map.has-static:before{content:none}
+/* Sink the map a touch so navy pins and white type stay legible over it. */
+.hunt-fallback-map.has-static .hunt-static-map{filter:saturate(.85) brightness(.82)}
+.hunt-theme-wobbles .hunt-fallback-map.has-static .hunt-static-map{filter:saturate(.9) brightness(1.02)}
+
+/* ---- The venue card ------------------------------------------------------ */
+/* It used to span the full width and stand half the screen tall, with the
+   selected mission's instruction alone in a large empty column. The map is the
+   point of this page, so the card docks to one side and stays out of the way. */
+@media (min-width:900px){
+  .hunt-detail-card{
+    border-radius:18px;
+    bottom:22px;
+    left:22px;
+    max-height:min(70vh,660px);
+    overflow-y:auto;
+    right:auto;
+    width:min(430px,calc(100vw - 44px));
+  }
+  .hunt-detail-grid{display:block}
+  .hunt-zoom-controls.lifted,.hunt-theme-toggle.lifted{transform:none}
+}
+
+/* One column everywhere: venue, then its menu, then what to film. */
+.hunt-detail-grid{display:block}
+.hunt-detail-mission{margin-top:12px}
+
+/* Menu rows: shot type and difficulty above, dish and what it pays below. */
+.hunt-venue-mission{
+  align-items:baseline;
+  gap:2px 10px;
+  grid-template-areas:"meta reward" "title reward";
+  grid-template-columns:1fr auto;
+  padding:9px 12px;
+}
+.hunt-venue-mission-shot{grid-area:meta;font-size:9.5px;letter-spacing:.1em}
+.hunt-venue-mission-title{grid-area:title;font-size:15px;line-height:1.25}
+.hunt-venue-mission-reward{
+  align-self:center;
+  font-size:15px;
+  grid-area:reward;
+  opacity:.92;
+}
+.hunt-venue-mission[data-selected=true]{background:rgba(95,208,255,.09)}
+
+/* The venue's own line: name big, everything else quiet. */
+.hunt-detail-title h2{font-size:clamp(21px,2.2vw,27px);line-height:1.12}
+.hunt-detail-title p{font-size:12.5px}
+.hunt-detail-emoji{flex-basis:44px;height:44px;width:44px;font-size:22px}
+.hunt-reward-badge strong{font-size:19px}
+
+/* Sticky was worse than the problem: it floated the button over the caption
+   that explains the shot. The card is short enough to hold everything once the
+   rows and caption are tightened, so the action simply sits last. */
+.hunt-detail-card .hunt-start-mission{margin-top:12px}
+
+/* What to film: a caption under the menu, not a panel of its own. */
+.hunt-detail-mission{padding:11px 13px}
+.hunt-detail-mission span{font-size:9.5px;letter-spacing:.1em}
+.hunt-detail-mission p{font-size:13.5px;line-height:1.45;margin:5px 0 0}
+
+/* JellyJelly HQ is a landmark, not a mission — it was outshining the pins it
+   sits among, and at Rivington it lands almost on top of one. */
+.hunt-hq img{height:34px;width:34px}
+.hunt-hq{opacity:.62;z-index:1}
+.hunt-hq strong{font-size:8px;letter-spacing:.12em}
+.hunt-hq .hunt-hq-pulse{opacity:.35;transform:scale(.55)}
+.hunt-mapbox-hq{pointer-events:none}
+
+/* Rows were 82px each, so five dishes plus the caption and the action overran
+   the card. A menu line does not need that much room. */
+.hunt-venue-mission{gap:1px 10px;padding:7px 11px}
+.hunt-venue-mission-shot{font-size:9px}
+.hunt-venue-mission-title{font-size:14px;line-height:1.2}
+.hunt-venue-mission-reward{font-size:14px}
+.hunt-venue-missions{gap:5px;margin-top:10px}
+
+@media (min-width:900px){
+  .hunt-detail-card{max-height:min(78vh,720px);padding:14px}
+  /* The drag handle promises a bottom sheet; on desktop this is a docked card. */
+  .hunt-detail-card .hunt-drawer-handle{display:none}
+  .hunt-detail-title h2{font-size:21px}
+  .hunt-detail-emoji{flex-basis:38px;height:38px;width:38px;font-size:19px}
+  .hunt-reward-badge strong{font-size:17px}
+  .hunt-detail-hours{padding:7px 11px}
+}
+
+/* Two partner marks, PlatePost first, joined by a quiet multiplication sign. */
+.hunt-brand-lockup-marks{align-items:center;display:flex;flex:0 0 auto;gap:6px}
+.hunt-brand-x{
+  color:var(--hunt-paper);
+  font-size:13px;
+  font-weight:700;
+  line-height:1;
+  opacity:.5;
+  text-shadow:0 1px 6px rgba(7,17,38,.9);
+}
+/* The Jelly mark is a soft illustration, so it needs a lighter ground and a
+   rounder frame than PlatePost's geometric emblem to sit level with it. */
+.hunt-brand-mark-jelly{
+  background:rgba(255,255,255,.94);
+  border-color:rgba(95,208,255,.55);
+  border-radius:50%;
+  padding:3px;
+}
+.hunt-brand-mark-jelly img{border-radius:50%}
+@media (max-width:600px){
+  .hunt-brand-lockup-marks{gap:4px}
+  .hunt-brand-x{font-size:11px}
+}
+
+/* A pre-existing rule hides the brand mark on small screens, which left the
+   × separator stranded on its own. Both partner marks stay, just smaller. */
+@media (max-width:600px){
+  .hunt-brand-lockup-marks .hunt-brand-mark{
+    display:flex;
+    flex-basis:28px;
+    height:28px;
+    padding:4px;
+    width:28px;
+  }
+  .hunt-brand-lockup-marks .hunt-brand-mark-jelly{padding:2px}
+}
+
+/* The shape and length of the clip, on the mission itself. */
+.hunt-capture-spec{
+  border-top:1px solid rgba(226,236,255,.14);
+  color:var(--hunt-cyan);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.05em;
+  margin:9px 0 0;
+  padding-top:8px;
+  text-transform:uppercase;
+}
+
+/* How to film, in the How It Works panel. */
+.hunt-how-filming{margin:26px 0 0;max-width:760px}
+.hunt-how-filming h2{font-size:19px;font-weight:800;margin:0}
+.hunt-how-filming-lede{color:var(--hunt-muted);font-size:14px;margin:6px 0 14px}
+.hunt-how-filming ul{display:grid;gap:9px;list-style:none;margin:0;padding:0}
+.hunt-how-filming li{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(226,236,255,.1);
+  border-radius:12px;
+  display:grid;
+  gap:3px;
+  padding:11px 13px;
+}
+.hunt-how-filming strong{font-size:14px}
+.hunt-how-filming span{color:var(--hunt-muted);font-size:13px;line-height:1.45}
+.hunt-theme-wobbles .hunt-how-filming li{background:rgba(13,40,71,.05);border-color:rgba(13,40,71,.12)}
+.hunt-theme-wobbles .hunt-how-filming span{color:rgba(13,40,71,.72)}
+
+/* ---- Pins ---------------------------------------------------------------- */
+/* They were 58px teardrops filled with a bright difficulty colour, so the food
+   fought the container and the colour meant nothing to a filmer. Now the pin is
+   a quiet navy disc, the dish is the only bright thing in it, and the ring says
+   how much is left to shoot here. */
+.hunt-mapbox-marker,.hunt-fallback-marker{
+  background:rgba(9,20,44,.94);
+  border:2.5px solid var(--accent);
+  border-radius:50%;
+  box-shadow:0 3px 14px rgba(4,10,26,.6),0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent);
+  height:46px;
+  transform:none;
+  width:46px;
+}
+.hunt-mapbox-marker>span,.hunt-fallback-marker>span{
+  font-size:21px;
+  line-height:1;
+  transform:none;
+}
+/* The stem, replacing the rotated-square trick. */
+.hunt-mapbox-marker:after,.hunt-fallback-marker:after{
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid var(--accent);
+  bottom:-8px;
+  content:"";
+  height:0;
+  left:50%;
+  position:absolute;
+  transform:translateX(-50%);
+  width:0;
+}
+.hunt-mapbox-marker[data-selected=true],.hunt-fallback-marker[data-selected=true],
+.hunt-mapbox-marker:hover,.hunt-fallback-marker:hover{
+  box-shadow:0 4px 18px rgba(4,10,26,.7),0 0 0 7px color-mix(in srgb,var(--accent) 30%,transparent);
+  transform:scale(1.07);
+}
+
+/* Dishes still to film at this restaurant. */
+.hunt-marker-count{
+  align-items:center;
+  background:var(--accent);
+  /* Positioned against the pin itself, not the taller marker anchor. */
+  border:2px solid rgba(9,20,44,.95);
+  border-radius:999px;
+  color:#071126;
+  display:flex;
+  font-size:11px;
+  font-style:normal;
+  font-weight:900;
+  height:20px;
+  justify-content:center;
+  min-width:20px;
+  padding:0 4px;
+  pointer-events:none;
+  position:absolute;
+  right:-6px;
+  top:-5px;
+}
+.hunt-marker-count[hidden]{display:none}
+.hunt-fallback-marker-anchor,.hunt-mapbox-marker-anchor{position:relative}
+
+@media (max-width:600px){
+  .hunt-mapbox-marker,.hunt-fallback-marker{height:40px;width:40px}
+  .hunt-mapbox-marker>span,.hunt-fallback-marker>span{font-size:18px}
+  .hunt-marker-count{font-size:10px;height:18px;min-width:18px}
+}
+
+/* The payoff: what the footage turns into. */
+.hunt-how-filming-lede a{
+  align-items:center;
+  color:var(--hunt-cyan);
+  display:inline-flex;
+  font-weight:700;
+  gap:3px;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.hunt-how-filming-lede a:hover{text-decoration:underline}
+
+/* Rights, stated where the decision is made rather than buried. */
+.hunt-usage-note{
+  color:var(--hunt-muted);
+  font-size:11.5px;
+  line-height:1.5;
+  margin:12px 0 0;
+}
+.hunt-usage-note button{
+  background:none;
+  border:0;
+  color:var(--hunt-cyan);
+  cursor:pointer;
+  font:inherit;
+  font-weight:700;
+  padding:0;
+  text-decoration:underline;
+}
+.hunt-how-rights{margin:26px 0 0;max-width:760px}
+.hunt-how-rights h2{font-size:19px;font-weight:800;margin:0 0 12px}
+.hunt-how-rights ul{display:grid;gap:9px;list-style:none;margin:0;padding:0}
+.hunt-how-rights li{
+  border-left:2px solid var(--hunt-blue);
+  color:var(--hunt-muted);
+  font-size:13.5px;
+  line-height:1.5;
+  padding:2px 0 2px 12px;
+}
+.hunt-how-rights strong{color:var(--hunt-paper)}
+.hunt-how-rights a{color:var(--hunt-cyan)}
+.hunt-theme-wobbles .hunt-how-rights li{color:rgba(13,40,71,.75)}
+.hunt-theme-wobbles .hunt-how-rights strong{color:#0d2847}

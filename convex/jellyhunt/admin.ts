@@ -47,6 +47,7 @@ const missionInput = v.object({
   category: v.string(),
   difficulty,
   emoji: v.string(),
+  shotType: v.optional(v.string()),
   neighborhood: v.string(),
   price: v.string(),
   hours: v.array(v.string()),
@@ -94,6 +95,7 @@ type AdminMissionInput = {
   category: string;
   difficulty: "easy" | "medium" | "hard" | "legendary";
   emoji: string;
+  shotType?: string;
   neighborhood: string;
   price: string;
   hours: string[];
@@ -267,12 +269,89 @@ function rewardTerms(rewardAmount: number) {
   };
 }
 
+/**
+ * Filming rules per shot type.
+ *
+ * Deliberately a second copy of `src/lib/jellyhunt/shot-types.ts`: Convex
+ * modules cannot import from `src/`, and a build step for five strings costs
+ * more than it saves. `tests/jellyhunt-shot-types.test.ts` reads this file and
+ * fails if the two ever disagree.
+ */
+const SHOT_TYPE_RULES: Record<
+  string,
+  { instruction: string; minDurationSeconds: number; maxDurationSeconds: number }
+> = {
+  dish: {
+    instruction:
+      "One plated item. Hold the phone steady and make a single close pass over it.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+  spread: {
+    instruction:
+      "The whole table. Show the scale first, then pan slowly across everything on it.",
+    minDurationSeconds: 10,
+    maxDurationSeconds: 20,
+  },
+  action: {
+    instruction:
+      "Something being made. Start filming before it starts and don't cut away early.",
+    minDurationSeconds: 10,
+    maxDurationSeconds: 20,
+  },
+  display: {
+    instruction:
+      "The case or counter. One slow pass, keeping the whole display in frame.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+  ritual: {
+    instruction:
+      "The moment people come here for. One take, and film the person doing it.",
+    minDurationSeconds: 8,
+    maxDurationSeconds: 15,
+  },
+};
+
+/**
+ * Recover a mission's shot type from its stored requirements.
+ *
+ * The shot type is not a column: adding one would mean a schema change, and an
+ * undeclared JellyHunt field has taken the restaurant platform down twice. It
+ * does not need to be. `requirements.post.prompt` holds the shot type's
+ * instruction, the five instructions are distinct, and
+ * `tests/jellyhunt-shot-types.test.ts` fails if they ever drift, so the mapping
+ * back is exact rather than a guess.
+ */
+const SHOT_TYPE_BY_INSTRUCTION: Record<string, string> = {};
+
+function shotTypeFromRequirements(reqs: any): string | undefined {
+  if (!Object.keys(SHOT_TYPE_BY_INSTRUCTION).length) {
+    for (const [id, rule] of Object.entries(SHOT_TYPE_RULES)) {
+      SHOT_TYPE_BY_INSTRUCTION[rule.instruction] = id;
+    }
+  }
+  const prompt = reqs?.post?.prompt;
+  return typeof prompt === "string" ? SHOT_TYPE_BY_INSTRUCTION[prompt] : undefined;
+}
+
 function requirements(mission: AdminMissionInput) {
+  const rule = mission.shotType ? SHOT_TYPE_RULES[mission.shotType] : undefined;
+  if (mission.shotType && !rule) throw new Error("invalid_shot_type");
+
   return {
     post: {
       allowedPostTypes: ["video"],
       authorshipPolicy: "canonical_owner",
-      prompt: mission.restaurantTag,
+      // Without a shot type this stays the legacy restaurantTag, so the 16
+      // pre-existing missions keep the exact requirements they were created with.
+      prompt: rule ? rule.instruction : mission.restaurantTag,
+      ...(rule
+        ? {
+            minDurationSeconds: rule.minDurationSeconds,
+            maxDurationSeconds: rule.maxDurationSeconds,
+          }
+        : {}),
       requiredVisibility: "public",
     },
     place: { attachmentRequired: true },
@@ -497,6 +576,7 @@ async function projectMission(ctx: any, mission: any) {
     category: mission.category,
     difficulty: mission.difficulty,
     emoji: mission.emoji,
+    shotType: shotTypeFromRequirements(revision.requirements),
     neighborhood: mission.neighborhood,
     price: mission.price,
     hours: display?.hours ?? toLegacyHours(place.hours),
@@ -731,6 +811,126 @@ export const createMissionWithLocation = mutationGeneric({
       nextState: { publicId: missionPublicId, status: mission.status, revision: 1 },
     });
     return { missionId: missionPublicId, locationId: placePublicId };
+  },
+});
+
+/**
+ * Admin/service-only: create a mission at a place that already exists.
+ *
+ * `createMissionWithLocation` creates a place per mission and enforces one
+ * place per `jellyPlaceId`, so it cannot express "five dishes at one
+ * restaurant" — the second call throws `place_already_linked_to_jelly_place_id`.
+ * That uniqueness rule is correct and stays; this mutation is the missing
+ * second half, attaching an additional mission to a place that has already
+ * been created and reviewed.
+ *
+ * The place is reused as-is. Its coordinates, hours, geofence, and review
+ * status are never rewritten here, because a later mission must not be able
+ * to silently move a venue that earlier missions were verified against.
+ */
+export const createMissionAtPlace = mutationGeneric({
+  args: {
+    serviceKey: v.string(),
+    actorId: v.string(),
+    locationId: v.string(),
+    mission: missionInput,
+    budgets: budgetInput,
+  },
+  handler: async (ctx: any, args: any) => {
+    requireServiceKey(args.serviceKey);
+    const actorId = required(args.actorId, "invalid_actor_id");
+    const campaign = await currentCampaign(ctx);
+    const mission = cleanMission(args.mission);
+
+    const place = await ctx.db
+      .query("jellyhuntPlaces")
+      .withIndex("by_public_id", (q: any) => q.eq("publicId", args.locationId))
+      .unique();
+    if (!place) throw new Error("place_not_found");
+
+    await ensureUniqueSlug(ctx, mission.slug);
+
+    const now = Date.now();
+    const missionPublicId = createPublicId("mis");
+    const reward = rewardTerms(mission.rewardAmount);
+    const missionId = await ctx.db.insert("jellyhuntMissions", {
+      publicId: missionPublicId,
+      campaignId: campaign._id,
+      legacySlug: mission.slug,
+      slug: mission.slug,
+      status: mission.status,
+      approvalMode: mission.approvalMode,
+      currentRevision: 1,
+      title: mission.title,
+      category: mission.category,
+      difficulty: mission.difficulty,
+      emoji: mission.emoji,
+      neighborhood: mission.neighborhood,
+      price: mission.price,
+      sortOrder: mission.sortOrder,
+      placeId: place._id,
+      reward,
+      acceptingSubmissions: mission.status === "active",
+      startsAt: mission.startsAt,
+      endsAt: mission.endsAt,
+      createdBy: actorId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const appliedBudgets = await applyMissionBudgets(
+      ctx,
+      campaign,
+      { _id: missionId, publicId: missionPublicId },
+      args.budgets,
+      reward.amount,
+      mission.status === "active",
+      now,
+    );
+    await ctx.db.patch(missionId, {
+      budgetAllocation: appliedBudgets.mission.allocatedAmount,
+    });
+
+    await ctx.db.insert("jellyhuntMissionRevisions", {
+      publicId: createPublicId("mrv"),
+      missionId,
+      revision: 1,
+      title: mission.title,
+      description: mission.description,
+      instructions: [mission.description],
+      requirements: requirements(mission),
+      approvalMode: mission.approvalMode,
+      reward,
+      place: {
+        placeId: place._id,
+        jellyPlaceId: place.jellyPlaceId,
+        name: place.name,
+        address: place.address,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        geofenceRadiusMeters: place.geofenceRadiusMeters,
+        timeZone: place.timeZone,
+      },
+      missionWindow: { startsAt: mission.startsAt, endsAt: mission.endsAt },
+      legacyDisplay: legacyDisplay(mission),
+      createdBy: actorId,
+      createdAt: now,
+    });
+
+    await bumpCatalog(ctx, campaign, now);
+    await recordAuditEvent(ctx, {
+      actor: actorId,
+      action: "mission.created",
+      entityType: "mission",
+      entityId: missionId,
+      nextState: {
+        publicId: missionPublicId,
+        status: mission.status,
+        revision: 1,
+        placeId: place.publicId,
+      },
+    });
+    return { missionId: missionPublicId, locationId: place.publicId };
   },
 });
 

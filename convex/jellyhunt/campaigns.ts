@@ -279,3 +279,54 @@ export const selectCurrentCampaign = mutationGeneric({
     return toCurrentCampaignResult(updated);
   },
 });
+
+/**
+ * Admin/service-only: create the program-config singleton if it is absent.
+ *
+ * `jellyhuntProgramConfig` is read by the leaderboards and approvals
+ * modules but had no creation path, so a fresh deployment threw
+ * `leaderboard_program_config_not_found` on both leaderboard tabs. This is
+ * idempotent by design: a second call returns the existing `publicId` and
+ * never rewrites `leaderboardLaunchEpoch`, because moving the epoch after
+ * completions exist would silently restate all-time standings.
+ */
+export const ensureProgramConfig = mutationGeneric({
+  args: {
+    serviceKey: v.string(),
+    actorId: v.string(),
+    requestId: v.optional(v.string()),
+    leaderboardLaunchEpoch: v.number(),
+  },
+  handler: async (ctx: any, args: any) => {
+    requireServiceKey(args.serviceKey);
+    const actorId = args.actorId.trim();
+
+    const existing = await ctx.db
+      .query("jellyhuntProgramConfig")
+      .withIndex("by_singleton_key", (q: any) => q.eq("singletonKey", "default"))
+      .unique();
+    if (existing) return existing.publicId;
+
+    const now = Date.now();
+    const publicId = createPublicId("cfg");
+    await ctx.db.insert("jellyhuntProgramConfig", {
+      publicId,
+      singletonKey: "default",
+      leaderboardLaunchEpoch: args.leaderboardLaunchEpoch,
+      leaderboardRevision: 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await recordAuditEvent(ctx, {
+      actor: actorId,
+      action: "program_config.created",
+      entityType: "program_config",
+      entityId: publicId,
+      nextState: { publicId, leaderboardLaunchEpoch: args.leaderboardLaunchEpoch },
+      requestId: args.requestId,
+    });
+
+    return publicId;
+  },
+});

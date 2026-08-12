@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+// Media that is always still valid. A fixed timestamp here meant the upstream
+// feed looked expired to `fetchJellyPlaceFeed` from 2026-08-05 onward, and both
+// route tests returned 502 forever after. The guard was right; the fixture aged.
+const MEDIA_EXPIRES_AT = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
 const repository = vi.hoisted(() => ({
   getMission: vi.fn(),
   getPlace: vi.fn(),
@@ -49,7 +54,7 @@ function partnerBody(nextCursor: string | null = null) {
         title: "Best slice on Orchard",
         summary: "A first bite at Scarr's.",
         thumbnailUrl: "https://cdn.jellyjelly.com/signed/thumb1.jpg",
-        mediaExpiresAt: "2026-08-05T19:45:00.000Z",
+        mediaExpiresAt: MEDIA_EXPIRES_AT,
         watchUrl: "https://jellyjelly.com/watch/01HXJELLYPOST000001",
         placeAssociation: {
           placeId: place.jellyPlaceId,
@@ -121,7 +126,7 @@ describe("JellyHunt v2 place-linked Jelly feeds", () => {
           title: "Best slice on Orchard",
           summary: "A first bite at Scarr's.",
           thumbnailUrl: "https://cdn.jellyjelly.com/signed/thumb1.jpg",
-          mediaExpiresAt: "2026-08-05T19:45:00.000Z",
+          mediaExpiresAt: MEDIA_EXPIRES_AT,
           watchUrl: "https://jellyjelly.com/watch/01HXJELLYPOST000001",
           postedAt: "2026-08-05T18:30:00.000Z",
         },

@@ -250,6 +250,7 @@ export function mapConvexMission(value: RawConvexMission): JellyhuntMission {
     category: value.category,
     difficulty: value.difficulty,
     emoji: value.emoji,
+    shotType: value.shotType,
     neighborhood: value.neighborhood,
     price: value.price,
     hours: value.hours,

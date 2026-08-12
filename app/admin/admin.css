@@ -1,0 +1,7 @@
+
+/* Venue grouping in the mission library: 175 flat rows is unusable. */
+.admin-venue{border-top:1px solid rgba(255,255,255,.08);padding-top:10px}
+.admin-venue:first-child{border-top:0;padding-top:0}
+.admin-venue-head{align-items:baseline;display:flex;gap:10px;justify-content:space-between;margin:0 0 6px;font-size:13px;font-weight:700}
+.admin-venue-head small{font-weight:500;opacity:.62;white-space:nowrap}
+.admin-shot-hint{grid-column:1/-1;margin:2px 0 0;font-size:12px;line-height:1.4;opacity:.7}

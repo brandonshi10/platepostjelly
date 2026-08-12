@@ -1,0 +1,535 @@
+[
+  {
+    "venue": {
+      "slug": "trapizzino",
+      "name": "Trapizzino",
+      "address": "144 Orchard St",
+      "latitude": 40.7201,
+      "longitude": -73.9893,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Roman Sandwich",
+      "price": "$",
+      "hours": [
+        "11:00-21:30",
+        "12:00-21:00",
+        "12:00-22:00",
+        "12:00-22:00",
+        "12:00-22:30",
+        "12:00-00:00",
+        "11:00-00:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "trapizzino-polpette-al-sugo",
+        "title": "Polpette al Sugo",
+        "shotType": "dish",
+        "description": "Film the meatball trapizzino. One close pass, get the sauce soaking into the pocket.",
+        "difficulty": "easy",
+        "emoji": "🍅",
+        "sortOrder": 300
+      },
+      {
+        "slug": "trapizzino-chicken-cacciatore",
+        "title": "Chicken Cacciatore",
+        "shotType": "dish",
+        "description": "Film the cacciatore trapizzino. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍗",
+        "sortOrder": 301
+      },
+      {
+        "slug": "trapizzino-eggplant-parmigiana",
+        "title": "Eggplant Parmigiana",
+        "shotType": "dish",
+        "description": "Film the eggplant parmigiana pocket. One close pass over the filling.",
+        "difficulty": "easy",
+        "emoji": "🍆",
+        "sortOrder": 302
+      },
+      {
+        "slug": "trapizzino-oxtail-ragu",
+        "title": "Oxtail Ragu",
+        "shotType": "dish",
+        "description": "Film the oxtail trapizzino. One close pass, get the ragu.",
+        "difficulty": "easy",
+        "emoji": "🥩",
+        "sortOrder": 303
+      },
+      {
+        "slug": "trapizzino-filling-the-pocket",
+        "title": "Filling the Pocket",
+        "shotType": "action",
+        "description": "Film a trapizzino being cut open and filled. Start before they start and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "👐",
+        "sortOrder": 304
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "economy-candy",
+      "name": "Economy Candy",
+      "address": "108 Rivington St",
+      "latitude": 40.7195,
+      "longitude": -73.9883,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Candy",
+      "price": "$",
+      "hours": [
+        "11:00-18:00",
+        "11:00-18:00",
+        "11:00-18:00",
+        "11:00-18:00",
+        "11:00-18:00",
+        "11:00-18:00",
+        "11:00-18:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "economy-candy-the-candy-wall",
+        "title": "The Candy Wall",
+        "shotType": "display",
+        "description": "Film the floor-to-ceiling candy wall. One slow pass, keeping as much of it in frame as you can.",
+        "difficulty": "medium",
+        "emoji": "🍬",
+        "sortOrder": 310
+      },
+      {
+        "slug": "economy-candy-halvah-counter",
+        "title": "Halvah Counter",
+        "shotType": "display",
+        "description": "Film the halvah at the counter. One slow pass across the whole case.",
+        "difficulty": "medium",
+        "emoji": "🍯",
+        "sortOrder": 311
+      },
+      {
+        "slug": "economy-candy-retro-candy-shelf",
+        "title": "Retro Candy Shelf",
+        "shotType": "display",
+        "description": "Film the discontinued and retro brands. One slow pass along the shelf.",
+        "difficulty": "medium",
+        "emoji": "🍭",
+        "sortOrder": 312
+      },
+      {
+        "slug": "economy-candy-chocolate-bar-wall",
+        "title": "Chocolate Bar Wall",
+        "shotType": "display",
+        "description": "Film the imported chocolate section. One slow pass, keep the whole run in frame.",
+        "difficulty": "medium",
+        "emoji": "🍫",
+        "sortOrder": 313
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "russ-and-daughters-cafe",
+      "name": "Russ & Daughters Cafe",
+      "address": "127 Orchard St",
+      "latitude": 40.7203,
+      "longitude": -73.9893,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Appetizing",
+      "price": "$$",
+      "hours": [
+        "08:30-15:30",
+        "08:30-14:30",
+        "08:30-14:30",
+        "08:30-14:30",
+        "08:30-14:30",
+        "08:30-15:30",
+        "08:30-15:30"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "russ-and-daughters-cafe-the-classic-board",
+        "title": "The Classic Board",
+        "shotType": "spread",
+        "description": "Film the Classic board. Show the whole board first, then pan slowly across the fish, bagel and capers.",
+        "difficulty": "medium",
+        "emoji": "🐟",
+        "sortOrder": 320
+      },
+      {
+        "slug": "russ-and-daughters-cafe-bagel-with-nova-lox",
+        "title": "Bagel with Nova Lox",
+        "shotType": "dish",
+        "description": "Film the bagel and lox. One close pass, get the fish.",
+        "difficulty": "easy",
+        "emoji": "🥯",
+        "sortOrder": 321
+      },
+      {
+        "slug": "russ-and-daughters-cafe-potato-latkes",
+        "title": "Potato Latkes",
+        "shotType": "dish",
+        "description": "Film the latkes with the sour cream. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🥔",
+        "sortOrder": 322
+      },
+      {
+        "slug": "russ-and-daughters-cafe-matzo-ball-soup",
+        "title": "Matzo Ball Soup",
+        "shotType": "dish",
+        "description": "Film the matzo ball soup. One close pass over the bowl.",
+        "difficulty": "easy",
+        "emoji": "🍲",
+        "sortOrder": 323
+      },
+      {
+        "slug": "russ-and-daughters-cafe-chocolate-babka-french-toast",
+        "title": "Chocolate Babka French Toast",
+        "shotType": "dish",
+        "description": "Film the babka french toast. One close pass, get the strawberries on top.",
+        "difficulty": "easy",
+        "emoji": "🍞",
+        "sortOrder": 324
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "cafe-integral",
+      "name": "Cafe Integral",
+      "address": "149 Elizabeth St",
+      "latitude": 40.7218,
+      "longitude": -73.9954,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Nolita",
+      "category": "Coffee",
+      "price": "$",
+      "hours": [
+        "08:00-16:00",
+        "08:00-16:00",
+        "08:00-16:00",
+        "08:00-16:00",
+        "08:00-16:00",
+        "08:00-16:00",
+        "08:00-16:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "cafe-integral-iced-horchata-latte",
+        "title": "Iced Horchata Latte",
+        "shotType": "dish",
+        "description": "Film the horchata latte. One close pass, get the layers before it's stirred.",
+        "difficulty": "easy",
+        "emoji": "🥛",
+        "sortOrder": 330
+      },
+      {
+        "slug": "cafe-integral-the-olivia",
+        "title": "The Olivia",
+        "shotType": "dish",
+        "description": "Film the Olivia. Hold steady, one close pass over the cup.",
+        "difficulty": "easy",
+        "emoji": "☕",
+        "sortOrder": 331
+      },
+      {
+        "slug": "cafe-integral-brazilian-cheesy-bread",
+        "title": "Brazilian Cheesy Bread",
+        "shotType": "dish",
+        "description": "Film the pao de queijo. One close pass, break one open if you can.",
+        "difficulty": "easy",
+        "emoji": "🧀",
+        "sortOrder": 332
+      },
+      {
+        "slug": "cafe-integral-nicaraguan-pour-over",
+        "title": "Nicaraguan Pour-Over",
+        "shotType": "action",
+        "description": "Film the pour-over being made. Start before the water hits and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "💧",
+        "sortOrder": 333
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "the-pastry-box",
+      "name": "The Pastry Box",
+      "address": "515 E 12th St",
+      "latitude": 40.7287,
+      "longitude": -73.9819,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Bakery",
+      "price": "$",
+      "hours": [
+        "10:30-17:00",
+        "closed",
+        "closed",
+        "11:00-19:00",
+        "11:00-19:00",
+        "10:30-19:00",
+        "10:30-19:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "the-pastry-box-quarter-pound-sea-salt-chocolate-chip-cookie",
+        "title": "Quarter-Pound Sea Salt Chocolate Chip Cookie",
+        "shotType": "dish",
+        "description": "Film the quarter-pound cookie. One close pass, get the sea salt and the thin edge.",
+        "difficulty": "easy",
+        "emoji": "🍪",
+        "sortOrder": 340
+      },
+      {
+        "slug": "the-pastry-box-black-and-white-cookie",
+        "title": "Black and White Cookie",
+        "shotType": "dish",
+        "description": "Film the black and white. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "⚫",
+        "sortOrder": 341
+      },
+      {
+        "slug": "the-pastry-box-brownie",
+        "title": "Brownie",
+        "shotType": "dish",
+        "description": "Film the brownie. One close pass, get the crust.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 342
+      },
+      {
+        "slug": "the-pastry-box-the-cookie-snap",
+        "title": "The Cookie Snap",
+        "shotType": "ritual",
+        "description": "Film the cookie being broken in half. One take, and film the person doing it.",
+        "difficulty": "medium",
+        "emoji": "✋",
+        "sortOrder": 343
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "librae-bakery",
+      "name": "Librae Bakery",
+      "address": "35 Cooper Sq",
+      "latitude": 40.7281,
+      "longitude": -73.9909,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "East Village",
+      "category": "Bakery",
+      "price": "$$",
+      "hours": [
+        "08:00-17:00",
+        "07:30-16:30",
+        "07:30-16:30",
+        "07:30-16:30",
+        "07:30-16:30",
+        "07:30-16:30",
+        "08:00-17:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "librae-bakery-rose-pistachio-croissant",
+        "title": "Rose Pistachio Croissant",
+        "shotType": "dish",
+        "description": "Film the rose pistachio croissant. One close pass, get the pistachio and the rose petals.",
+        "difficulty": "easy",
+        "emoji": "🌹",
+        "sortOrder": 350
+      },
+      {
+        "slug": "librae-bakery-loomi-babka-bun",
+        "title": "Loomi Babka Bun",
+        "shotType": "dish",
+        "description": "Film the loomi babka bun. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍋",
+        "sortOrder": 351
+      },
+      {
+        "slug": "librae-bakery-chocolate-halva-croissant",
+        "title": "Chocolate Halva Croissant",
+        "shotType": "dish",
+        "description": "Film the halva croissant. One close pass over the top.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 352
+      },
+      {
+        "slug": "librae-bakery-marmite-cheddar-morning-bun",
+        "title": "Marmite Cheddar Morning Bun",
+        "shotType": "dish",
+        "description": "Film the marmite cheddar bun. One close pass, get the cheese.",
+        "difficulty": "easy",
+        "emoji": "🧀",
+        "sortOrder": 353
+      },
+      {
+        "slug": "librae-bakery-pastry-case",
+        "title": "Pastry Case",
+        "shotType": "display",
+        "description": "Film the pastry case. One slow pass, keeping the whole case in frame.",
+        "difficulty": "medium",
+        "emoji": "🥐",
+        "sortOrder": 354
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "dimes",
+      "name": "Dimes",
+      "address": "49 Canal St",
+      "latitude": 40.7148,
+      "longitude": -73.992,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Restaurant",
+      "price": "$$",
+      "hours": [
+        "09:00-22:00",
+        "08:00-23:00",
+        "08:00-23:00",
+        "08:00-23:00",
+        "08:00-23:00",
+        "08:00-23:00",
+        "09:00-23:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "dimes-salmon-bowl",
+        "title": "Salmon Bowl",
+        "shotType": "dish",
+        "description": "Film the salmon bowl. One close pass over the whole bowl.",
+        "difficulty": "easy",
+        "emoji": "🐟",
+        "sortOrder": 360
+      },
+      {
+        "slug": "dimes-pozole",
+        "title": "Pozole",
+        "shotType": "dish",
+        "description": "Film the pozole. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌶️",
+        "sortOrder": 361
+      },
+      {
+        "slug": "dimes-black-sesame-toast",
+        "title": "Black Sesame Toast",
+        "shotType": "dish",
+        "description": "Film the black sesame toast. One close pass, get the colour.",
+        "difficulty": "easy",
+        "emoji": "🖤",
+        "sortOrder": 362
+      },
+      {
+        "slug": "dimes-sticky-miso-chicken",
+        "title": "Sticky Miso Chicken",
+        "shotType": "dish",
+        "description": "Film the miso chicken. One close pass over the plate.",
+        "difficulty": "easy",
+        "emoji": "🍗",
+        "sortOrder": 363
+      },
+      {
+        "slug": "dimes-maca-matcha",
+        "title": "Maca Matcha",
+        "shotType": "dish",
+        "description": "Film the maca matcha. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🍵",
+        "sortOrder": 364
+      }
+    ]
+  },
+  {
+    "venue": {
+      "slug": "morgensterns-rivington",
+      "name": "Morgenstern's",
+      "address": "2 Rivington St",
+      "latitude": 40.72159,
+      "longitude": -73.993042,
+      "geofenceRadiusMeters": 75,
+      "timeZone": "America/New_York",
+      "neighborhood": "Lower East Side",
+      "category": "Ice Cream",
+      "price": "$",
+      "hours": [
+        "12:00-00:00",
+        "12:00-00:00",
+        "12:00-00:00",
+        "12:00-00:00",
+        "12:00-00:00",
+        "12:00-00:00",
+        "12:00-00:00"
+      ]
+    },
+    "missions": [
+      {
+        "slug": "morgensterns-rivington-burnt-honey-vanilla",
+        "title": "Burnt Honey Vanilla",
+        "shotType": "dish",
+        "description": "Film the burnt honey vanilla scoop. One close pass, get the texture.",
+        "difficulty": "easy",
+        "emoji": "🍯",
+        "sortOrder": 370
+      },
+      {
+        "slug": "morgensterns-rivington-salt-pepper-pine-nut",
+        "title": "Salt & Pepper Pine Nut",
+        "shotType": "dish",
+        "description": "Film the salt and pepper pine nut. Hold steady, one close pass.",
+        "difficulty": "easy",
+        "emoji": "🌰",
+        "sortOrder": 371
+      },
+      {
+        "slug": "morgensterns-rivington-king-kong-banana-split",
+        "title": "King Kong Banana Split",
+        "shotType": "spread",
+        "description": "Film the banana split. Show the whole thing first, then pan slowly across every element.",
+        "difficulty": "medium",
+        "emoji": "🍌",
+        "sortOrder": 372
+      },
+      {
+        "slug": "morgensterns-rivington-chocolate-deluxe",
+        "title": "Chocolate Deluxe",
+        "shotType": "dish",
+        "description": "Film the Chocolate Deluxe. One close pass over the top.",
+        "difficulty": "easy",
+        "emoji": "🍫",
+        "sortOrder": 373
+      },
+      {
+        "slug": "morgensterns-rivington-the-scoop-pull",
+        "title": "The Scoop Pull",
+        "shotType": "action",
+        "description": "Film a scoop being pulled from the tub. Start before the scoop goes in and don't cut away early.",
+        "difficulty": "medium",
+        "emoji": "🍨",
+        "sortOrder": 374
+      }
+    ]
+  }
+]

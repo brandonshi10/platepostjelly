@@ -8,7 +8,6 @@ import {
   LocateFixed,
   Map as MapIcon,
   Menu,
-  Mic2,
   Navigation,
   Play,
   Search,
@@ -36,6 +35,14 @@ import {
   isMissionComplete,
   missionStatusLabel,
 } from "@/src/lib/jellyhunt/map-ui";
+import { groupMissionsIntoVenues, type Venue } from "@/src/lib/jellyhunt/venues";
+import { shotTypeSpec } from "@/src/lib/jellyhunt/shot-types";
+import { FILMING_RULES, captureSummary } from "@/src/lib/jellyhunt/filming-spec";
+import {
+  fitStaticMapView,
+  projectOntoStaticMap,
+  staticMapUrl,
+} from "@/src/lib/jellyhunt/static-map";
 
 type AppLinks = { ios: string; android: string };
 type Coordinates = { latitude: number; longitude: number };
@@ -74,11 +81,16 @@ const LEADERBOARD_ENDPOINTS: Record<LeaderboardScope, string> = {
 };
 const EMPTY_LEADERBOARD: LeaderboardLoadState = { status: "idle", standings: [] };
 const HQ = { latitude: 40.7228, longitude: -73.9881 };
+// Widened from the original Lower-East-Side-only window. The catalog now runs
+// from Battery Park City up to Morningside Heights, and venues outside these
+// bounds get clamped to the edge — Midtown pins piled up underneath the header.
+// The decorative street labels are projected through the same bounds, so they
+// stay geographically honest as the window grows.
 const MAP_BOUNDS = {
-  minLatitude: 40.711,
-  maxLatitude: 40.734,
-  minLongitude: -74.004,
-  maxLongitude: -73.978,
+  minLatitude: 40.702,
+  maxLatitude: 40.816,
+  minLongitude: -74.024,
+  maxLongitude: -73.953,
 };
 
 function jellyhuntMapStyle(theme: Theme): StyleSpecification {
@@ -206,11 +218,39 @@ function missionState(missionId: string, statuses: UserMissionStatus[]) {
   return statuses.find((status) => status.missionId === missionId)?.status ?? "not_started";
 }
 
+// Tuned to sit on the PlatePost navy ground rather than the old near-black.
 function missionAccent(mission: JellyhuntMission) {
-  if (mission.difficulty === "legendary") return "#f59e0b";
-  if (mission.difficulty === "hard") return "#f43f5e";
-  if (mission.difficulty === "medium") return "#a855f7";
-  return "#00d4aa";
+  if (mission.difficulty === "legendary") return "#f5a524";
+  if (mission.difficulty === "hard") return "#f4635e";
+  if (mission.difficulty === "medium") return "#9d8dff";
+  return "#3ddc97";
+}
+
+/**
+ * How many of a venue's missions are still open.
+ *
+ * A pin now stands for several missions, so difficulty no longer decides how it
+ * looks — one restaurant can hold an easy dish and a hard action shot at once.
+ * Progress does: a venue is only "done" when nothing is left to film there.
+ */
+function venueRemaining(venue: Venue, userStatus: UserMissionStatus[]) {
+  return venue.missions.filter(
+    (mission) => !isMissionComplete(missionState(mission.id, userStatus)),
+  ).length;
+}
+
+function venueState(venue: Venue, userStatus: UserMissionStatus[]) {
+  const remaining = venueRemaining(venue, userStatus);
+  if (remaining === 0) return "approved";
+  if (remaining < venue.missions.length) return "submitted";
+  return "not_started";
+}
+
+function venueAccent(venue: Venue, userStatus: UserMissionStatus[] = EMPTY_STATUSES) {
+  const remaining = venueRemaining(venue, userStatus);
+  if (remaining === 0) return "#3ddc97";                     // nothing left here
+  if (remaining < venue.missions.length) return "#5fd0ff";   // part-filmed
+  return "#4576ef";                                          // untouched
 }
 
 function formatDistance(meters: number) {
@@ -325,7 +365,16 @@ export function JellyhuntExplorer({
   const menuRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
+  // selectedId is a venue (place) id; selectedMissionId is the mission chosen
+  // inside it. Opening a different venue clears the latter so the panel never
+  // shows a mission belonging to the venue you just left.
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  // Measured so the static map image is requested at the container's own aspect
+  // ratio — any mismatch would crop the image and slide every pin off its building.
+  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const [staticMapFailed, setStaticMapFailed] = useState(false);
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
@@ -355,9 +404,25 @@ export function JellyhuntExplorer({
     [missions, query, category, status, userStatus],
   );
 
-  const selectedMission = selectedId
-    ? filteredMissions.find((mission) => mission.id === selectedId) ?? null
+  // One pin per venue. 175 missions across 37 addresses would otherwise stack
+  // five markers on a single restaurant.
+  const venues = useMemo(
+    () => groupMissionsIntoVenues(filteredMissions),
+    [filteredMissions],
+  );
+
+  const selectedVenue = selectedId
+    ? venues.find((venue) => venue.id === selectedId) ?? null
     : null;
+
+  const selectedMission = useMemo(() => {
+    if (!selectedVenue) return null;
+    return (
+      selectedVenue.missions.find((mission) => mission.id === selectedMissionId) ??
+      selectedVenue.missions[0] ??
+      null
+    );
+  }, [selectedVenue, selectedMissionId]);
 
   const completedCount = useMemo(
     () => missions.filter((mission) => isMissionComplete(missionState(mission.id, userStatus))).length,
@@ -367,10 +432,69 @@ export function JellyhuntExplorer({
   const activeLeaderboard = leaderboards[leaderboardScope];
 
   useEffect(() => {
-    if (selectedId && !filteredMissions.some((mission) => mission.id === selectedId)) {
-      setSelectedId(filteredMissions[0]?.id ?? null);
+    if (selectedId && !venues.some((venue) => venue.id === selectedId)) {
+      setSelectedId(venues[0]?.id ?? null);
     }
-  }, [filteredMissions, selectedId]);
+  }, [venues, selectedId]);
+
+  useEffect(() => {
+    setSelectedMissionId(null);
+  }, [selectedId]);
+
+  useEffect(() => {
+    const node = stageRef.current;
+    if (!node) return;
+    // Snap to a 64px grid. The image URL is derived from this size, so an
+    // unquantised measurement re-requests a multi-megabyte map on every pixel of
+    // resize — nine requests for one page load before this was added.
+    const snap = (value: number) => Math.max(64, Math.round(value / 64) * 64);
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      const width = snap(rect.width);
+      const height = snap(rect.height);
+      setStageSize((current) =>
+        current.width === width && current.height === height ? current : { width, height },
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Frame every visible venue, then ask Mapbox for a picture of exactly that.
+  const staticView = useMemo(
+    () =>
+      fitStaticMapView(
+        venues.map((venue) => ({ latitude: venue.latitude, longitude: venue.longitude })),
+        stageSize.width || 1200,
+        stageSize.height || 800,
+        Math.min(120, Math.max(56, (stageSize.height || 800) * 0.12)),
+      ),
+    [venues, stageSize.width, stageSize.height],
+  );
+
+  const staticMapSrc = useMemo(() => {
+    if (!mapboxToken || staticMapFailed || !stageSize.width || !stageSize.height) return null;
+    return staticMapUrl(
+      staticView,
+      stageSize.width,
+      stageSize.height,
+      mapboxToken,
+      theme === "wobbles" ? "light-v11" : "dark-v11",
+    );
+  }, [mapboxToken, staticMapFailed, staticView, stageSize.width, stageSize.height, theme]);
+
+  // Pins are placed with the same projection the image was rendered with, so a
+  // pin sits on the building it names. Before the stage is measured there is no
+  // image yet, so the old linear projection is only a placeholder.
+  const projectOnStage = useMemo(() => {
+    const width = stageSize.width;
+    const height = stageSize.height;
+    if (!width || !height) return projectCoordinates;
+    return (coordinates: Coordinates) =>
+      projectOntoStaticMap(coordinates, staticView, width, height);
+  }, [staticView, stageSize.width, stageSize.height]);
 
   useEffect(() => {
     if (experiencePanel !== "leaderboard") return;
@@ -450,6 +574,12 @@ export function JellyhuntExplorer({
         const mapboxModule = await import("mapbox-gl");
         if (cancelled || !mapContainerRef.current) return;
         const mapboxgl = mapboxModule.default;
+        // No WebGL means no interactive map, ever. Fail now and show the static
+        // map rather than making the visitor stare at nothing for 20 seconds.
+        if (typeof mapboxgl.supported === "function" && !mapboxgl.supported()) {
+          failMap();
+          return;
+        }
         mapboxModuleRef.current = mapboxgl;
         mapboxgl.accessToken = mapboxToken;
 
@@ -480,15 +610,22 @@ export function JellyhuntExplorer({
           .setLngLat([HQ.longitude, HQ.latitude])
           .addTo(map);
 
+        // 8 seconds was not enough headroom: a cold Mapbox load routinely runs
+        // past it on a slow connection, and because failMap() unmounts the map
+        // container the effect can never re-run — one slow load downgraded the
+        // whole session to the coordinate grid with no way back.
         failureTimer = window.setTimeout(() => {
           if (!cancelled && map && !map.loaded()) failMap();
-        }, 8_000);
+        }, 20_000);
 
         map.on("load", () => {
           if (cancelled) return;
           if (failureTimer) window.clearTimeout(failureTimer);
           setMapLoaded(true);
         });
+        // Deliberately NOT listening to `idle`: it fires even when the map has
+        // rendered nothing, which flipped mapLoaded true on a WebGL-less device,
+        // unmounted the fallback, and left a blank screen instead of a map.
         map.on("error", () => {
           if (!cancelled && map && !map.loaded()) failMap();
         });
@@ -517,59 +654,78 @@ export function JellyhuntExplorer({
     const mapboxgl = mapboxModuleRef.current;
     if (!mapLoaded || !map || !mapboxgl) return;
 
-    const visibleIds = new Set(filteredMissions.map((mission) => mission.id));
-    mapMarkersRef.current.forEach(({ marker }, missionId) => {
-      if (!visibleIds.has(missionId)) {
+    const visibleIds = new Set(venues.map((venue) => venue.id));
+    mapMarkersRef.current.forEach(({ marker }, venueId) => {
+      if (!visibleIds.has(venueId)) {
         marker.remove();
-        mapMarkersRef.current.delete(missionId);
+        mapMarkersRef.current.delete(venueId);
       }
     });
 
     const bounds = new mapboxgl.LngLatBounds();
-    for (const mission of filteredMissions) {
-      const missionStatus = missionState(mission.id, userStatus);
-      const accent = missionAccent(mission);
-      let entry = mapMarkersRef.current.get(mission.id);
+    for (const venue of venues) {
+      const venueStatus = venueState(venue, userStatus);
+      const accent = venueAccent(venue, userStatus);
+      let entry = mapMarkersRef.current.get(venue.id);
 
       if (!entry) {
         const markerElement = document.createElement("div");
         markerElement.className = "hunt-mapbox-marker-anchor";
         const markerButton = document.createElement("button");
         markerButton.type = "button";
-        markerButton.addEventListener("click", () => setSelectedId(mission.id));
+        markerButton.addEventListener("click", () => setSelectedId(venue.id));
         const markerLabel = document.createElement("span");
         markerLabel.setAttribute("aria-hidden", "true");
         const tooltip = document.createElement("small");
         tooltip.className = "hunt-marker-tooltip";
+        const count = document.createElement("i");
+        count.className = "hunt-marker-count";
         markerElement.append(markerButton, tooltip);
 
         const marker = new mapboxgl.Marker({ element: markerElement, anchor: "bottom" })
-          .setLngLat([mission.location.longitude, mission.location.latitude])
+          .setLngLat([venue.longitude, venue.latitude])
           .addTo(map);
         entry = { marker, button: markerButton, label: markerLabel, tooltip };
-        markerButton.append(markerLabel);
-        mapMarkersRef.current.set(mission.id, entry);
+        markerButton.append(markerLabel, count);
+        mapMarkersRef.current.set(venue.id, entry);
       }
 
-      entry.marker.setLngLat([mission.location.longitude, mission.location.latitude]);
-      entry.button.className = `hunt-mapbox-marker hunt-marker-${missionStatus}`;
+      const remaining = venueRemaining(venue, userStatus);
+      entry.marker.setLngLat([venue.longitude, venue.latitude]);
+      entry.button.className = `hunt-mapbox-marker hunt-marker-${venueStatus}`;
       entry.button.dataset.selected = "false";
-      entry.button.setAttribute("aria-label", `Open ${mission.title}`);
+      entry.button.setAttribute(
+        "aria-label",
+        `Open ${venue.name}, ${remaining} of ${venue.missions.length} missions left`,
+      );
       entry.button.style.setProperty("--accent", accent);
-      entry.label.textContent = isMissionComplete(missionStatus) ? "✓" : mission.emoji;
-      entry.tooltip.textContent = mission.location.name;
+      entry.label.textContent = remaining === 0 ? "✓" : venue.emoji;
+      const countEl = entry.marker.getElement().querySelector(".hunt-marker-count");
+      if (countEl) {
+        countEl.textContent = remaining === 0 ? "" : String(remaining);
+        (countEl as HTMLElement).style.setProperty("--accent", accent);
+        (countEl as HTMLElement).hidden = remaining === 0;
+      }
+      entry.tooltip.textContent = venue.name;
       entry.tooltip.style.borderColor = accent;
       entry.tooltip.hidden = true;
-      bounds.extend([mission.location.longitude, mission.location.latitude]);
+      bounds.extend([venue.longitude, venue.latitude]);
     }
 
-    if (filteredMissions.length > 1) {
-      map.fitBounds(bounds, { padding: 100, maxZoom: 14, duration: 0 });
-    } else if (filteredMissions.length === 1) {
-      const only = filteredMissions[0];
-      map.jumpTo({ center: [only.location.longitude, only.location.latitude], zoom: 14 });
+    if (venues.length > 1) {
+      // Even padding, clearing the header. Reserving the card's width here left
+      // a third of the frame showing New Jersey whenever no card was open; the
+      // card is dodged when a venue is selected instead, below.
+      map.fitBounds(bounds, {
+        padding: { top: 132, right: 80, bottom: 88, left: 80 },
+        maxZoom: 15.2,
+        duration: 0,
+      });
+    } else if (venues.length === 1) {
+      const only = venues[0];
+      map.jumpTo({ center: [only.longitude, only.latitude], zoom: 14 });
     }
-  }, [filteredMissions, mapLoaded, userStatus]);
+  }, [venues, mapLoaded, userStatus]);
 
   useEffect(() => {
     mapMarkersRef.current.forEach((entry, missionId) => {
@@ -581,8 +737,12 @@ export function JellyhuntExplorer({
 
     if (!selectedMission || !mapRef.current) return;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Shift the venue clear of the card that is about to cover it: right on a
+    // desktop where the card docks left, up on a phone where it is a bottom sheet.
+    const wide = window.innerWidth >= 900;
     mapRef.current.flyTo({
       center: [selectedMission.location.longitude, selectedMission.location.latitude],
+      offset: wide ? [200, 0] : [0, -170],
       zoom: Math.max(mapRef.current.getZoom(), 13.5),
       duration: reduceMotion ? 0 : 550,
       essential: false,
@@ -703,6 +863,9 @@ export function JellyhuntExplorer({
     setExperiencePanel(panel);
   }
 
+  // Selecting a mission from any list opens its venue and highlights that
+  // mission inside it. selectedId is a place id now, so setting it to a mission
+  // id here would silently match nothing and open an empty panel.
   function chooseMission(missionId: string) {
     setQuery("");
     setCategory("all");
@@ -710,7 +873,9 @@ export function JellyhuntExplorer({
     setExperiencePanel(null);
     setMenuOpen(false);
     setFiltersOpen(false);
-    setSelectedId(missionId);
+    const mission = missions.find((item) => item.id === missionId);
+    setSelectedId(mission?.location.id ?? null);
+    setSelectedMissionId(missionId);
   }
 
   const selectedState = selectedMission
@@ -750,71 +915,105 @@ export function JellyhuntExplorer({
             aria-label="Interactive Jellyhunt mission map"
           />
         ) : null}
-        {!mapboxActive || !mapLoaded ? (
-          <div className="hunt-fallback-map" role="region" aria-label="Interactive Jellyhunt coordinate map">
+        {/* The static map stays mounted underneath the interactive one. Detecting
+            "the GL map failed" is unreliable — it can report `load` having painted
+            nothing — so instead a real picture of the city is always the floor,
+            and the interactive map simply paints over it when it genuinely works.
+            It doubles as the loading state, so nobody ever sees an empty field. */}
+        {staticMapSrc || !mapboxActive || !mapLoaded ? (
+          <div
+            className={`hunt-fallback-map${staticMapSrc ? " has-static" : ""}`}
+            ref={stageRef}
+            role="region"
+            aria-label="Jellyhunt mission map"
+            aria-hidden={mapboxActive && mapLoaded ? true : undefined}
+          >
+            {/* A picture of the real city for anyone whose interactive map cannot
+                start. Plain <img>, not next/image: the URL is generated per
+                viewport size and must not be routed through the optimizer. */}
             <div
-              className="hunt-fallback-layer"
+              className="hunt-fallback-viewport"
               style={{ transform: `scale(${fallbackZoom})` }}
             >
-              {EAST_WEST_STREETS.map((street) => (
-                <div
-                  className={`hunt-street hunt-street-ew${street.major ? " major" : ""}${street.spine ? " spine" : ""}`}
-                  key={street.label}
-                  style={{ top: `${projectCoordinates({ latitude: street.latitude, longitude: HQ.longitude }).top}%` }}
-                  aria-hidden="true"
-                >
-                  <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
-                </div>
-              ))}
-              {NORTH_SOUTH_STREETS.map((street) => (
-                <div
-                  className={`hunt-street hunt-street-ns${street.major ? " major" : ""}`}
-                  key={street.label}
-                  style={{ left: `${projectCoordinates({ latitude: HQ.latitude, longitude: street.longitude }).left}%` }}
-                  aria-hidden="true"
-                >
-                  <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
-                </div>
-              ))}
+            {staticMapSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className="hunt-static-map"
+                src={staticMapSrc}
+                alt=""
+                aria-hidden="true"
+                onError={() => setStaticMapFailed(true)}
+              />
+            ) : null}
+            <div className="hunt-fallback-layer">
+              {!staticMapSrc ? (
+                <>
+                  {EAST_WEST_STREETS.map((street) => (
+                    <div
+                      className={`hunt-street hunt-street-ew${street.major ? " major" : ""}${street.spine ? " spine" : ""}`}
+                      key={street.label}
+                      style={{ top: `${projectOnStage({ latitude: street.latitude, longitude: HQ.longitude }).top}%` }}
+                      aria-hidden="true"
+                    >
+                      <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
+                    </div>
+                  ))}
+                  {NORTH_SOUTH_STREETS.map((street) => (
+                    <div
+                      className={`hunt-street hunt-street-ns${street.major ? " major" : ""}`}
+                      key={street.label}
+                      style={{ left: `${projectOnStage({ latitude: HQ.latitude, longitude: street.longitude }).left}%` }}
+                      aria-hidden="true"
+                    >
+                      <span>{street.label}</span><span>{street.label}</span><span>{street.label}</span>
+                    </div>
+                  ))}
+                </>
+              ) : null}
 
-              <div
+              {(!mapboxActive || !mapLoaded) ? <div
                 className="hunt-hq"
                 style={{
-                  left: `${projectCoordinates(HQ).left}%`,
-                  top: `${projectCoordinates(HQ).top}%`,
+                  left: `${projectOnStage(HQ).left}%`,
+                  top: `${projectOnStage(HQ).top}%`,
                 }}
               >
                 <span className="hunt-hq-pulse" aria-hidden="true" />
                 <Image src="/wobbles/wobble_product.png" alt="JellyJelly HQ" width={72} height={72} priority />
                 <strong>JELLYJELLY HQ</strong>
-              </div>
+              </div> : null}
 
-              {filteredMissions.map((mission) => {
-                const position = projectCoordinates({
-                  latitude: mission.location.latitude,
-                  longitude: mission.location.longitude,
+              {(!mapboxActive || !mapLoaded) && venues.map((venue) => {
+                const position = projectOnStage({
+                  latitude: venue.latitude,
+                  longitude: venue.longitude,
                 });
-                const missionStatus = missionState(mission.id, userStatus);
-                const accent = missionAccent(mission);
+                const status = venueState(venue, userStatus);
+                const accent = venueAccent(venue, userStatus);
+                const remaining = venueRemaining(venue, userStatus);
+                const isSelected = venue.id === selectedVenue?.id;
                 return (
                   <div
                     className="hunt-fallback-marker-anchor"
-                    key={mission.id}
-                    style={{ left: `${position.left}%`, top: `${position.top}%`, zIndex: mission.id === selectedMission?.id ? 6 : 3 }}
+                    key={venue.id}
+                    style={{ left: `${position.left}%`, top: `${position.top}%`, zIndex: isSelected ? 6 : 3 }}
                   >
                     <button
                       type="button"
-                      className={`hunt-fallback-marker hunt-marker-${missionStatus}`}
-                      data-selected={mission.id === selectedMission?.id}
-                      aria-pressed={mission.id === selectedMission?.id}
+                      className={`hunt-fallback-marker hunt-marker-${status}`}
+                      data-selected={isSelected}
+                      aria-pressed={isSelected}
                       style={{ "--accent": accent } as CSSProperties}
-                      onClick={() => setSelectedId(mission.id)}
-                      aria-label={`Open ${mission.title}`}
+                      onClick={() => setSelectedId(venue.id)}
+                      aria-label={`Open ${venue.name}, ${remaining} of ${venue.missions.length} missions left`}
                     >
-                      <span aria-hidden="true">{isMissionComplete(missionStatus) ? "✓" : mission.emoji}</span>
+                      <span aria-hidden="true">{remaining === 0 ? "✓" : venue.emoji}</span>
+                      {remaining > 0 ? (
+                        <i className="hunt-marker-count" aria-hidden="true">{remaining}</i>
+                      ) : null}
                     </button>
-                    {mission.id === selectedMission?.id ? (
-                      <small className="hunt-marker-tooltip" style={{ borderColor: accent }}>{mission.location.name}</small>
+                    {isSelected ? (
+                      <small className="hunt-marker-tooltip" style={{ borderColor: accent }}>{venue.name}</small>
                     ) : null}
                   </div>
                 );
@@ -824,13 +1023,14 @@ export function JellyhuntExplorer({
                 <span
                   className="hunt-fallback-user"
                   style={{
-                    left: `${projectCoordinates(userLocation).left}%`,
-                    top: `${projectCoordinates(userLocation).top}%`,
+                    left: `${projectOnStage(userLocation).left}%`,
+                    top: `${projectOnStage(userLocation).top}%`,
                   }}
                   role="img"
                   aria-label="Your approximate location"
                 />
               ) : null}
+            </div>
             </div>
           </div>
         ) : null}
@@ -852,13 +1052,23 @@ export function JellyhuntExplorer({
             >
               <Menu size={23} aria-hidden="true" />
             </button>
-            <span className="hunt-brand-mark" aria-hidden="true">
-              <Mic2 size={25} strokeWidth={2.4} />
+            {/* Both partners' marks, PlatePost first. Referenced as files, not
+                inlined as data: URIs — next/image returns 400 on data: sources.
+                The Jelly mark is the mascot's head; swapping in an official
+                JellyJelly logo is a one-file replacement. */}
+            <span className="hunt-brand-lockup-marks" aria-hidden="true">
+              <span className="hunt-brand-mark">
+                <Image src="/brand/platepost-emblem.svg" alt="" width={26} height={31} priority />
+              </span>
+              <span className="hunt-brand-x">&times;</span>
+              <span className="hunt-brand-mark hunt-brand-mark-jelly">
+                <Image src="/brand/jelly-mark.png" alt="" width={30} height={30} priority />
+              </span>
             </span>
             <div className="hunt-brand-copy">
-              <span className="hunt-partnership" translate="no">PlatePost x JellyJelly: Human Social!</span>
+              <span className="hunt-partnership" translate="no">PlatePost × JellyJelly</span>
               <h1>JELLYHUNT</h1>
-              <small><span>LOWER MANHATTAN</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
+              <small><span>NEW YORK CITY</span><i />{Math.max(0, missions.length - completedCount)} MISSIONS OPEN</small>
             </div>
           </div>
 
@@ -873,8 +1083,13 @@ export function JellyhuntExplorer({
             >
               <SlidersHorizontal size={18} aria-hidden="true" />
             </button>
+            {/* Two calls to action: Jelly gets the app install, PlatePost gets
+                its own front door. Before this the page converted only for Jelly. */}
             <a className="hunt-get-app" href={appLinks.ios} target="_blank" rel="noreferrer">
-              Get JellyJelly <ArrowUpRight size={15} aria-hidden="true" />
+              Get Jelly <ArrowUpRight size={15} aria-hidden="true" />
+            </a>
+            <a className="hunt-get-platepost" href="https://platepost.io" target="_blank" rel="noreferrer">
+              PlatePost <ArrowUpRight size={15} aria-hidden="true" />
             </a>
             <button type="button" aria-label="How Jellyhunt works" onClick={() => showPanel("how")}>
               <CircleHelp size={20} aria-hidden="true" />
@@ -927,7 +1142,7 @@ export function JellyhuntExplorer({
             {filteredMissions.length ? (
               <nav className="hunt-filter-results" aria-label="Visible missions">
                 {filteredMissions.map((mission) => (
-                  <button key={mission.id} type="button" aria-pressed={mission.id === selectedMission?.id} onClick={() => { setSelectedId(mission.id); setFiltersOpen(false); }}>
+                  <button key={mission.id} type="button" aria-pressed={mission.id === selectedMission?.id} onClick={() => { setSelectedId(mission.location.id); setSelectedMissionId(mission.id); setFiltersOpen(false); }}>
                     <span aria-hidden="true">{mission.emoji}</span>
                     <strong>{mission.location.name}<small>{mission.neighborhood}</small></strong>
                     <i>+{mission.rewardAmount}</i>
@@ -964,48 +1179,90 @@ export function JellyhuntExplorer({
           </div>
         ) : null}
 
-        {selectedMission ? (
+        {selectedVenue && selectedMission ? (
           <article className="hunt-detail-card" aria-live="polite" aria-labelledby="hunt-mission-title">
             <span className="hunt-drawer-handle" aria-hidden="true" />
-            <button className="hunt-detail-close" type="button" onClick={() => setSelectedId(null)} aria-label="Close mission details">
+            <button className="hunt-detail-close" type="button" onClick={() => setSelectedId(null)} aria-label="Close venue details">
               <X size={18} aria-hidden="true" />
             </button>
             <div className="hunt-detail-meta">
               <span>SELECTED · {selectedDistance === null ? "NEARBY" : `${formatDistance(selectedDistance)} FROM ${userLocation ? "YOU" : "HQ"}`}</span>
-              <strong style={{ color: missionAccent(selectedMission) }}>{difficultyLabels[selectedMission.difficulty].toUpperCase()} MISSION</strong>
+              <strong style={{ color: venueAccent(selectedVenue, userStatus) }}>
+                {venueRemaining(selectedVenue, userStatus)} OF {selectedVenue.missions.length} LEFT
+              </strong>
             </div>
             <div className="hunt-detail-grid">
               <div className="hunt-detail-venue">
                 <div className="hunt-detail-row">
-                  <span className="hunt-detail-emoji" style={{ borderColor: missionAccent(selectedMission) }} aria-hidden="true">{selectedMission.emoji}</span>
+                  <span className="hunt-detail-emoji" style={{ borderColor: venueAccent(selectedVenue, userStatus) }} aria-hidden="true">{selectedVenue.emoji}</span>
                   <div className="hunt-detail-title">
-                    <h2 id="hunt-mission-title">{selectedMission.location.name}</h2>
-                    <p><span style={{ color: missionAccent(selectedMission) }} aria-hidden="true">●</span> {selectedMission.location.address} · {selectedMission.neighborhood}</p>
+                    <h2 id="hunt-mission-title">{selectedVenue.name}</h2>
+                    <p><span style={{ color: venueAccent(selectedVenue, userStatus) }} aria-hidden="true">●</span> {selectedVenue.address} · {selectedVenue.neighborhood}</p>
                   </div>
                   <span className="hunt-reward-badge">
-                    <small>REWARD</small>
-                    <strong><i aria-hidden="true" /> {selectedMission.rewardAmount}<em> JMJ</em></strong>
+                    <small>UP TO</small>
+                    <strong><i aria-hidden="true" /> {selectedVenue.rewardTotal}<em> wobbles</em></strong>
                   </span>
                 </div>
                 <div className="hunt-detail-hours">
                   <strong data-open={openState === "open"}>{selectedMission.venueType === "shows" ? "• SHOWS" : openState === "open" ? "• OPEN" : "○ CLOSED"}</strong>
                   <span>{formatHours(selectedMission)}</span>
-                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${selectedMission.location.latitude},${selectedMission.location.longitude}`} target="_blank" rel="noreferrer">Directions <Navigation size={14} aria-hidden="true" /></a>
+                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${selectedVenue.latitude},${selectedVenue.longitude}`} target="_blank" rel="noreferrer">Directions <Navigation size={14} aria-hidden="true" /></a>
                 </div>
+                <ul className="hunt-venue-missions">
+                  {selectedVenue.missions.map((mission) => {
+                    const spec = shotTypeSpec(mission.shotType ?? "");
+                    const status = missionState(mission.id, userStatus);
+                    return (
+                      <li key={mission.id}>
+                        <button
+                          type="button"
+                          className="hunt-venue-mission"
+                          data-selected={mission.id === selectedMission.id}
+                          data-complete={isMissionComplete(status)}
+                          aria-pressed={mission.id === selectedMission.id}
+                          onClick={() => setSelectedMissionId(mission.id)}
+                        >
+                          <span className="hunt-venue-mission-shot" style={{ color: missionAccent(mission) }}>
+                            {spec?.label ?? "Mission"} · {difficultyLabels[mission.difficulty]}
+                          </span>
+                          <span className="hunt-venue-mission-title">{mission.title}</span>
+                          <span className="hunt-venue-mission-reward">{isMissionComplete(status) ? "✓" : mission.rewardAmount}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
               <div className="hunt-detail-mission">
-                <span>YOUR MISSION</span>
+                <span>{shotTypeSpec(selectedMission.shotType ?? "")?.label.toUpperCase() ?? "YOUR MISSION"} · {selectedMission.title.toUpperCase()}</span>
                 <p>{selectedMission.description}</p>
+                {/* Every videomenu layout is vertical, so the shape of the clip
+                    is as much a requirement as the dish in it. */}
+                {(() => {
+                  const spec = shotTypeSpec(selectedMission.shotType ?? "");
+                  return spec ? (
+                    <p className="hunt-capture-spec">
+                      {captureSummary(spec.minDurationSeconds, spec.maxDurationSeconds)}
+                    </p>
+                  ) : null;
+                })()}
               </div>
             </div>
             {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason ? (
               <div className="hunt-rejection"><strong>Try again:</strong> {userStatus.find((item) => item.missionId === selectedMission.id)?.rejectionReason}</div>
             ) : null}
+            <p className="hunt-usage-note">
+              Filming this gives PlatePost permission to use your clip in{" "}
+              {selectedVenue.name}&rsquo;s menu. You keep the video and can ask for it
+              to be removed.{" "}
+              <button type="button" onClick={() => showPanel("how")}>How your video is used</button>
+            </p>
             {canStartMission(selectedState) ? (
               <a
                 className={`hunt-start-mission hunt-start-${selectedState}`}
                 href={`jellyjelly://camera?mission_id=${encodeURIComponent(selectedMission.id)}`}
-                aria-label={`${missionStatusLabel(selectedState)} in JellyJelly`}
+                aria-label={`${missionStatusLabel(selectedState)}: ${selectedMission.title} at ${selectedVenue.name}`}
               >
                 {missionStatusLabel(selectedState)}
               </a>
@@ -1019,7 +1276,7 @@ export function JellyhuntExplorer({
 
         <div className={`hunt-theme-toggle${selectedMission ? " lifted" : ""}`} role="group" aria-label="Map theme">
           <button type="button" aria-pressed={theme === "dark"} data-active={theme === "dark"} onClick={() => setTheme("dark")}>🌙 Dark</button>
-          <button type="button" aria-pressed={theme === "wobbles"} data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>🌊 Wobbles</button>
+          <button type="button" aria-pressed={theme === "wobbles"} data-active={theme === "wobbles"} onClick={() => setTheme("wobbles")}>☀️ Light</button>
         </div>
       </section>
 
@@ -1043,6 +1300,9 @@ export function JellyhuntExplorer({
             <div className="hunt-menu-stores">
               <a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={17} aria-hidden="true" /> iPhone</a>
               <a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={17} aria-hidden="true" /> Android</a>
+              {/* Both header CTAs are hidden on small screens, so PlatePost needs a
+                  home here for parity with Jelly's two store links. */}
+              <a href="https://platepost.io" target="_blank" rel="noreferrer"><Sparkles size={17} aria-hidden="true" /> PlatePost</a>
             </div>
           </aside>
         </>
@@ -1085,7 +1345,7 @@ export function JellyhuntExplorer({
               <div className="hunt-panel-intro"><span>Editorial map</span><h1>{missions.length} reasons to go outside.</h1><p>A living guide to local places, playful prompts, and real moments worth sharing.</p></div>
               <label className="hunt-guide-search"><Search size={17} aria-hidden="true" /><span className="sr-only">Search mission guide</span><input type="search" name="guideSearch" autoComplete="off" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the guide…" /></label>
               <div className="hunt-guide-grid">
-                {filteredMissions.map((mission, index) => <button key={mission.id} type="button" onClick={() => chooseMission(mission.id)}><small>STOP {String(index + 1).padStart(2, "0")} · {mission.neighborhood}</small><strong><span>{mission.emoji}</span>{mission.location.name}</strong><p>{mission.description}</p><i>+{mission.rewardAmount} JMJ</i></button>)}
+                {filteredMissions.map((mission, index) => <button key={mission.id} type="button" onClick={() => chooseMission(mission.id)}><small>STOP {String(index + 1).padStart(2, "0")} · {mission.neighborhood}</small><strong><span>{mission.emoji}</span>{mission.location.name}</strong><p>{mission.description}</p><i>+{mission.rewardAmount} wobbles</i></button>)}
               </div>
             </div>
           ) : null}
@@ -1171,8 +1431,49 @@ export function JellyhuntExplorer({
               <div className="hunt-how-grid">
                 <article><b>01</b><MapIcon size={28} aria-hidden="true" /><h2>Pick a place</h2><p>Choose a live mission on the map and check the venue details.</p></article>
                 <article><b>02</b><Sparkles size={28} aria-hidden="true" /><h2>Make a Jelly</h2><p>Visit the location, complete the prompt, and post the real moment in JellyJelly.</p></article>
-                <article><b>03</b><Trophy size={28} aria-hidden="true" /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the final Jelly-My-Jelly reward.</p></article>
+                <article><b>03</b><Trophy size={28} aria-hidden="true" /><h2>Earn after review</h2><p>PlatePost verifies the mission. Jelly sends the wobbles.</p></article>
               </div>
+              {/* The rules that decide whether a clip can be used at all. The
+                  iPhone one matters most: the default camera format records
+                  HEVC, which browsers cannot play. */}
+              <section className="hunt-how-filming" aria-labelledby="hunt-filming-heading">
+                <h2 id="hunt-filming-heading">Filming a clip we can use</h2>
+                <p className="hunt-how-filming-lede">
+                  Your video becomes part of the restaurant&rsquo;s menu, so it has to
+                  survive being cropped and played on a phone.{" "}
+                  <a href="https://qua.platepost.io" target="_blank" rel="noreferrer">
+                    See a finished videomenu <ArrowUpRight size={13} aria-hidden="true" />
+                  </a>
+                </p>
+                <ul>
+                  {FILMING_RULES.map((rule) => (
+                    <li key={rule.id}>
+                      <strong>{rule.label}</strong>
+                      <span>{rule.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              {/* The programme's whole point is putting these clips into a
+                  restaurant's commercial menu, so the terms of that cannot be
+                  left implicit. NOT LAWYER-REVIEWED — see docs/NEXT_STEPS.md. */}
+              <section className="hunt-how-rights" aria-labelledby="hunt-rights-heading">
+                <h2 id="hunt-rights-heading">What happens to your video</h2>
+                <ul>
+                  <li><strong>It goes into the restaurant&rsquo;s menu.</strong> PlatePost builds a
+                    videomenu from these clips and gives it to the restaurant. Yours may be
+                    trimmed, cropped, and shown next to the dish it features.</li>
+                  <li><strong>You keep it.</strong> Filming a mission does not hand over
+                    ownership. You are giving PlatePost permission to use the clip for this
+                    purpose, and you can keep posting it wherever you like.</li>
+                  <li><strong>You can pull it back.</strong> Email{" "}
+                    <a href="mailto:hello@platepost.io">hello@platepost.io</a> and we will take
+                    your clip out of any menu it appears in.</li>
+                  <li><strong>Film the food, not the room.</strong> Do not film other diners or
+                    staff who have not agreed to it. Clips with recognisable people in them are
+                    rejected at review.</li>
+                </ul>
+              </section>
               <div className="hunt-how-apps"><a href={appLinks.ios} target="_blank" rel="noreferrer"><Apple size={18} aria-hidden="true" /> Get JellyJelly for iPhone</a><a href={appLinks.android} target="_blank" rel="noreferrer"><Play size={18} aria-hidden="true" /> Get JellyJelly for Android</a></div>
             </div>
           ) : null}

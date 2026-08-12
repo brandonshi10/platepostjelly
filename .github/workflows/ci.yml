@@ -1,0 +1,59 @@
+name: CI
+
+# This repository had no CI at all: lint, tests and the build existed as pnpm
+# scripts but nothing ran them on a pull request, so three tests sat red for
+# days without anyone being told. All three were rotted fixtures — a campaign
+# that became "active" on its own start date, and feed media pinned to a
+# timestamp that expired — the kind of decay a scheduled run catches and a
+# push-triggered one does not.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Daily, to catch date-dependent rot before a human trips over it.
+    - cron: "17 13 * * *"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # No version pin here on purpose: package.json's `packageManager` field
+      # is the single source of truth, and specifying both makes the action
+      # refuse to run at all.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Convex tests
+        run: pnpm test:convex
+
+      - name: Contract tests
+        run: pnpm test:contracts
+
+      - name: OpenAPI
+        run: pnpm validate:openapi
+
+      # Runs last: it is the slowest, and a type error usually shows up in the
+      # tests first. No Convex or Mapbox credentials are needed to build.
+      - name: Build
+        run: pnpm build

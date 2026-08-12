@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SHOT_TYPES } from "./shot-types";
 
 export const approvalModeSchema = z.enum(["manual", "automatic"]);
 export const missionStatusSchema = z.enum(["draft", "active", "paused", "archived"]);
@@ -46,6 +47,10 @@ export const missionSchema = z.object({
   category: z.string().min(1),
   difficulty: missionDifficultySchema,
   emoji: z.string().min(1),
+  // What the filmer is being asked to capture. Optional because the 16 legacy
+  // missions predate shot types. Stripped from the v1 projection below, so
+  // Jelly's legacy payload is unchanged by its presence.
+  shotType: z.enum(SHOT_TYPES).optional(),
   neighborhood: z.string().default(""),
   price: z.string().default(""),
   hours: operatingHoursSchema,
@@ -92,7 +97,7 @@ export type UserMissionStatus = z.infer<typeof userMissionStatusSchema>;
 export type MissionsResponse = z.infer<typeof missionsResponseSchema>;
 export type SubmissionRequest = z.infer<typeof submissionRequestSchema>;
 
-const V1_ADDITIVE_KEYS = new Set(["publicId", "revision", "requestId"]);
+const V1_ADDITIVE_KEYS = new Set(["publicId", "revision", "requestId", "shotType"]);
 
 export function projectLegacyV1(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(projectLegacyV1);

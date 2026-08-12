@@ -15,7 +15,9 @@
     "validate:openapi": "redocly lint openapi/jellyhunt-v2.yaml",
     "typecheck:convex": "convex dev --once --typecheck enable",
     "convex": "convex dev",
-    "migrate:legacy-jellyhunt": "node scripts/import-legacy-jellyhunt.mjs"
+    "migrate:legacy-jellyhunt": "node scripts/import-legacy-jellyhunt.mjs",
+    "migrate:nyc-catalog": "node scripts/import-nyc-catalog.mjs",
+    "migrate:archive-dropped": "node scripts/archive-dropped-venues.mjs"
   },
   "dependencies": {
     "convex": "^1.27.1",
